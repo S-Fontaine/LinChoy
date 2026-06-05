@@ -1,0 +1,47 @@
+:root {
+  --bg-main: #0f0f10;
+  --bg-surface: #1a1a1c;
+  --bg-input: #242426;
+  --text-high: #ffffff;
+  --text-medium: #b3b3b3;
+  --text-low: #666666;
+  --border: #2d2d30;
+
+  /* Accents originaux LinChoy */
+  --lin-orange: #ff8c00;
+  --lin-orange-light: #ffb366;
+  --lin-orange-glow: rgba(255, 140, 0, 0.3);
+
+  --choy-green: #32cd32;
+  --choy-green-light: #70ffad;
+  --choy-green-glow: rgba(50, 205, 50, 0.2);
+
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- BASE --- */
+body {
+  padding: 0;
+  margin: 0;
+  background-color: var(--bg-main);
+  color: var(--text-medium);
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  margin: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h3 {
+  /* Espace sous le titre pour ne pas coller au texte */
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: var(--text-high);
+}

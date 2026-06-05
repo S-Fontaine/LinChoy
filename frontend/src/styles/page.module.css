@@ -1,0 +1,154 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  transition: var(--transition-smooth);
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  border-color: var(--choy-green);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card h2 {
+  color: var(--text-high);
+  margin: 0 0 15px 0;
+  font-size: 1.6rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  background: var(--choy-green-glow);
+  color: var(--choy-green);
+}
+
+/* --- BOXE DE CONTRÔLE --- */
+.controlBox {
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  padding: 60px 40px;
+  text-align: center;
+  transition: var(--transition-smooth);
+  position: relative;
+  max-width: 450px;
+  margin: 100px auto;
+}
+/* ÉTAT OFF (Par défaut) */
+.controlBox.isOff {
+  border-color: #333;
+  box-shadow: none;
+}
+.backgroundOff {
+  min-width: 300px;
+  min-height: 200px;
+  background-image: url("../../public/plaworld.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: grayscale(100%);
+}
+.backgroundOn {
+  min-width: 300px;
+  min-height: 200px;
+  background-image: url("../../public/plaworld.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ÉTAT ON (Effet de lueur verte électrique) */
+.controlBox.isOn {
+  border-color: var(--choy-green);
+  box-shadow:
+    0 0 30px var(--choy-green-glow),
+    inset 0 0 15px var(--choy-green-glow);
+}
+/* Indicateur lumineux */
+.statusIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #444;
+  margin: 0 auto 15px;
+  transition: var(--transition-smooth);
+}
+
+.isOn .statusIndicator {
+  background: var(--choy-green);
+  box-shadow: 0 0 10px var(--choy-green);
+}
+
+.statusLabel {
+  font-weight: bold;
+  transition: var(--transition-smooth);
+}
+
+.isOn .statusLabel {
+  color: var(--choy-green);
+}
+.isOff .statusLabel {
+  color: var(--text-low);
+}
+
+/* --- LE BOUTON TOGGLE --- */
+.toggleBtn {
+  width: 70px;
+  height: 35px;
+  background-color: #333;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  margin-top: 40px;
+  transition: var(--transition-smooth);
+  padding: 0;
+}
+
+.switch {
+  width: 27px;
+  height: 27px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  transition: var(--transition-smooth);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Animation du bouton quand ON */
+.isOn .toggleBtn {
+  background-color: var(--choy-green);
+}
+
+.isOn .switch {
+  left: 39px;
+  box-shadow: 0 0 10px white;
+}
+
+/* Animation du bouton quand OFF */
+.isOff .toggleBtn {
+  background-color: var(
+    --lin-orange
+  ); /* Rappel de l'orange feu quand activable */
+  opacity: 0.6;
+}
