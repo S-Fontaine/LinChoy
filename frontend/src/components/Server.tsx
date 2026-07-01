@@ -1,7 +1,7 @@
 "use client";
 import styles from "../styles/page.module.css";
 import { useEffect, useState } from "react";
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BACKEND_URL = process.env.PUBLIC_BACKEND_URL;
 //Typescript
 interface ServerData {
   status: string;
@@ -18,7 +18,7 @@ export default function Home() {
     setIsOn(isOn === styles.isOff ? styles.isOn : styles.isOff);
   }
   useEffect(() => {
-    fetch(`${BACKEND_URL}/server/server-status`)
+    fetch(`${BACKEND_URL}/serverStatus`)
       .then((reponse) => reponse.json())
       .then((data: ServerData) => {
         setServerState(data);
