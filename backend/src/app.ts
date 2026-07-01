@@ -1,23 +1,24 @@
 import "dotenv/config";
 import express from "express";
-import https from "https";
-import fs from "fs";
 import cors from "cors";
+import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import indexRouter from "./routes/index.js";
-import serverStatusRouter from "./routes/server.js";
+import usersRouter from "./routes/users.js";
+import serverStatusRouter from "./routes/serverStatus.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
-const PORT = 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middlewares
-app.use(cors());
+app.use(helmet());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -25,29 +26,20 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 // Route
 app.use("/", indexRouter);
-app.use("/server", serverStatusRouter);
+app.use("/users", usersRouter);
+app.use("/serverStatus", serverStatusRouter)
+app.use("/auth", authRouter);
 
-if (process.env.NODE_ENV === "production") {
-  app.listen(PORT, () => {
-    console.log(`🌐 API de monitoring en Production (HTTP) active sur le port ${PORT}`);
-  });
-} else {
-    
-  try {
-    const sslOptions = {
-      key: fs.readFileSync("./localhost+2-key.pem"),
-      cert: fs.readFileSync("./localhost+2.pem"),
-    };
+// Check
+app.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
 
-    https.createServer(sslOptions, app).listen(PORT, () => {
-      console.log(`💻 API de monitoring Locale (HTTPS) sécurisée sur https://localhost:${PORT}`);
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("❌ Erreur au lancement du serveur HTTPS Local :", error.message);
-      console.log("💡 Astuce : Si tu es sur OVH, assure-toi que NODE_ENV=production est bien configuré.");
-    }
+app.use(
+  (err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
   }
-}
+);
 
 export default app;

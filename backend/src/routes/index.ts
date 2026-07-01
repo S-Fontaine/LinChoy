@@ -1,8 +1,8 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 const router = express.Router();
 
 /* GET home page. */
-router.get('/', (req: Request, res: Response) => {
+router.get('/', (req, res) => {
   res.json({ message: "Boilerplate Express 5 + TypeScript opérationnelle ! 🚀" });
 });
 
