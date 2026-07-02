@@ -11,7 +11,8 @@
     "express": "^5.2.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.6.3"
+    "mongoose": "^9.6.3",
+    "nodemailer": "^9.0.3"
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -28,6 +29,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/supertest": "^7.2.0",
     "jest": "^30.4.2",
     "mongodb-memory-server": "^11.2.0",

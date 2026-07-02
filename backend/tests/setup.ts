@@ -1,4 +1,3 @@
-// tests/setup.ts
 import { describe, it, expect, beforeAll, afterEach, afterAll } from "@jest/globals";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";

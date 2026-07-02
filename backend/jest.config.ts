@@ -9,6 +9,7 @@ const config: JestConfigWithTsJest = {
   transform: {
     "^.+\\.ts$": ["ts-jest", { useESM: true, tsconfig: "tsconfig.test.json" }],
   },
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
 };
 
 export default config;

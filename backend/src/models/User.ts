@@ -4,13 +4,29 @@ import bcrypt from "bcryptjs";
 export interface IUser extends Document {
   username: string;
   email: string;
-  password?: string;
+  password: string;
   authProvider: string;
-  comparePassword(candidatePassword: string): Promise<boolean>;
+  isVerified: boolean;
+  comparePassword(userPassword: string): Promise<boolean>;
 }
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, trim: true },
+  username: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true,
+    validate: {
+      validator: function (value: string): boolean {
+        if (!value) return true;
+        const hasMinLength = value.length >= 3;
+        const hasMaxLength = value.length <= 15;
+        return hasMinLength && hasMaxLength;
+      },
+      message:
+        "Le nom d'utilisateur doit contenir un minmum de 3 caractères et un maximum de 15 caractères.",
+    },
+  },
   email: {
     type: String,
     required: true,
@@ -20,8 +36,19 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: function (this: any) {
+    required: function (this: IUser) {
       return this.authProvider === "local";
+    },
+    validate: {
+      validator: function (value: string): boolean {
+        if (!value) return true;
+        const hasMinLength = value.length >= 12;
+        const hasUppercase = /[A-Z]/.test(value);
+        const hasSpecialChar = /[^A-Za-z0-9]/.test(value);
+        return hasMinLength && hasUppercase && hasSpecialChar;
+      },
+      message:
+        "Le mot de passe doit contenir au moins 12 caractères, une majuscule et un caractère spécial.",
     },
   },
   authProvider: {
@@ -29,9 +56,14 @@ const userSchema = new mongoose.Schema({
     enum: ["local", "google", "github"],
     default: "local",
   },
+  isVerified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   if (!this.isModified("password") || !this.password) {
     return;
   }
@@ -41,10 +73,10 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (
-  candidatePassword: string
+  userPassword: string,
 ): Promise<boolean> {
   if (!this.password) return false;
-  return bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(userPassword, this.password);
 };
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model<IUser>("User", userSchema);
