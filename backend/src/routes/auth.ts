@@ -145,39 +145,44 @@ router.get("/email/verify", async (req, res) => {
   }
 });
 
-// router.post("/email/resend-verification", async (req, res) => {
-//   const { email } = req.body;
+router.post("/email/resend-verification", async (req, res) => {
+  const { email } = req.body;
+  if (!email?.trim()) {
+    return res.status(400).json({ result: false, message: "Champs requis" });
+  }
+  let user;
+  try {
+    user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Utilisateur introuvable" });
+    }
 
-//   const user = await User.findOne({ email });
-//   if (!user) {
-//     return res.status(404).json({ result: false, message: "Utilisateur introuvable" });
-//   }
+    if (user.isVerified) {
+      return res
+        .status(400)
+        .json({ result: false, message: "Utilisateur déjà vérifié" });
+    }
+  } catch (err) {
+    console.error("[DB Resend]: Erreur recherche utilisateur", err);
+    return res.status(500).json({ result: false, message: "Erreur serveur" });
+  }
+  try {
+    const verifyToken = generateVerifyToken({ userId: user._id.toString() });
+    await mailer.sendVerificationEmail(user.email, verifyToken, user.username);
+  } catch (err) {
+    console.error("[Mail Resend]: Échec de l'envoi de l'email", err);
+    return res.status(500).json({
+      result: false,
+      message:
+        "Impossible d'envoyer l'email pour le moment. Réessayez plus tard.",
+    });
+  }
 
-//   if (user.isVerified) {
-//     return res.status(400).json({ result: false, message: "Ce compte est déjà vérifié" });
-//   }
-
-//   const verifyToken = generateVerifyToken({ userId: user._id.toString() });
-//   await sendVerificationEmail(user.email, verifyToken, user.username);
-
-//   return res.status(200).json({ result: true, message: "Email de vérification renvoyé" });
-// });
-
-// router.post("/refresh", (req, res) => {
-//   const { refreshToken } = req.body;
-
-//   if (!refreshToken) {
-//     return res.status(401).json({ result: false, message: "Refresh token manquant" });
-//   }
-
-//   try {
-//     const payload = verifyRefreshToken(refreshToken);
-//     const newAccessToken = generateAccessToken({ userId: payload.userId });
-
-//     res.json({ accessToken: newAccessToken });
-//   } catch {
-//     return res.status(401).json({ result: false, message: "Refresh token invalide ou expiré" });
-//   }
-// });
+  return res
+    .status(200)
+    .json({ result: true, message: "Email de vérification renvoyé" });
+});
 
 export default router;
