@@ -2,8 +2,9 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
+const BASE_URL = "/api/auth/login";
 
-describe("POST /login", () => {
+describe("Test route: POST /api/auth/login", () => {
   const jwtRegex =
     /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/;
   const payload = {
@@ -17,7 +18,7 @@ describe("POST /login", () => {
     await User.create(payload);
 
     const res = await request(app)
-      .post("/auth/login")
+      .post(BASE_URL)
       .send({ email: payload.email, password: payload.password });
 
     expect(res.status).toBe(200);
@@ -32,7 +33,7 @@ describe("POST /login", () => {
 
   it("Refuse un email invalide", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: "pas-un-email",
       password: payload.password,
     });
@@ -43,7 +44,7 @@ describe("POST /login", () => {
 
   it("Refuse un mot de passe invalide", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: payload.email,
       password: "mauvaisMotDePasse",
     });
@@ -55,7 +56,7 @@ describe("POST /login", () => {
 
   it("Refuse un utilisateur non vérifié", async () => {
     await User.create({ ...payload, isVerified: false });
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: payload.email,
       password: payload.password,
     });
@@ -67,7 +68,7 @@ describe("POST /login", () => {
   it("Refuse un utilisateur inexistant", async () => {});
   it("Resfuse un email absent", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: "",
       password: payload.password,
     });
@@ -77,7 +78,7 @@ describe("POST /login", () => {
   });
   it("Resfuse un email undefined", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: undefined,
       password: payload.password,
     });
@@ -87,7 +88,7 @@ describe("POST /login", () => {
   });
   it("Resfuse un password absent", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: payload.email,
       password: "",
     });
@@ -97,7 +98,7 @@ describe("POST /login", () => {
   });
   it("Resfuse un password undefined", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: payload.email,
       password: undefined,
     });
@@ -107,7 +108,7 @@ describe("POST /login", () => {
   });
   it("Resfuse un password et un email absent", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: "",
       password: "",
     });
@@ -117,7 +118,7 @@ describe("POST /login", () => {
   });
   it("Resfuse un password et un email undefined", async () => {
     await User.create(payload);
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post(BASE_URL).send({
       email: undefined,
       password: undefined,
     });

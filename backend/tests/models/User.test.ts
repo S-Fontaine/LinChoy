@@ -2,7 +2,7 @@ import { describe, it, expect } from "@jest/globals";
 import bcrypt from "bcryptjs";
 import User from "../../src/models/User.js";
 
-describe("Test du Modèle User", () => {
+describe("Test Modèle: User", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",

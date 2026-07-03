@@ -3,8 +3,9 @@ import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
 import { generateVerifyToken } from "../../../src/utils/jwt.js";
+const BASE_URL = "/api/auth/email/verify";
 
-describe("GET /auth/email/verify", () => {
+describe("Test route: GET /api/auth/email/verify", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",
@@ -16,7 +17,7 @@ describe("GET /auth/email/verify", () => {
     expect(user.isVerified).toBe(false);
 
     const token = generateVerifyToken({ userId: user._id.toString() });
-    const res = await request(app).get(`/auth/email/verify?token=${token}`);
+    const res = await request(app).get(`${BASE_URL}?token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.result).toBe(true);
@@ -26,14 +27,14 @@ describe("GET /auth/email/verify", () => {
   });
 
   it("Refuse une requête sans token", async () => {
-    const res = await request(app).get("/auth/email/verify");
+    const res = await request(app).get(BASE_URL);
 
     expect(res.status).toBe(400);
     expect(res.body.result).toBe(false);
   });
 
   it("Refuse un token invalide", async () => {
-    const res = await request(app).get("/auth/email/verify?token=token.invalide.faux");
+    const res = await request(app).get(`${BASE_URL}?token=token.invalide.faux`);
 
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/invalide|expiré/i);
@@ -47,7 +48,7 @@ describe("GET /auth/email/verify", () => {
       { expiresIn: "-1s" }
     );
 
-    const res = await request(app).get(`/auth/email/verify?token=${expiredToken}`);
+    const res = await request(app).get(`${BASE_URL}?token=${expiredToken}`);
 
     expect(res.status).toBe(400);
     expect(res.body.message).toMatch(/invalide|expiré/i);
@@ -59,7 +60,7 @@ describe("GET /auth/email/verify", () => {
 
     await User.deleteOne({ _id: user._id });
 
-    const res = await request(app).get(`/auth/email/verify?token=${token}`);
+    const res = await request(app).get(`${BASE_URL}?token=${token}`);
 
     expect(res.status).toBe(404);
   });
@@ -68,7 +69,7 @@ describe("GET /auth/email/verify", () => {
     const user = await User.create({ ...payload, isVerified: true });
     const token = generateVerifyToken({ userId: user._id.toString() });
 
-    const res = await request(app).get(`/auth/email/verify?token=${token}`);
+    const res = await request(app).get(`${BASE_URL}?token=${token}`);
 
     expect(res.status).toBe(200);
   });

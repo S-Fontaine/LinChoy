@@ -10,7 +10,7 @@ function createMockRes(): Response {
   return res;
 }
 
-describe("Middleware auth", () => {
+describe("Test middleware: auth", () => {
   it("Appelle next() avec un token valide", () => {
     const token = generateAccessToken({ userId: "abc123" });
     const req = {

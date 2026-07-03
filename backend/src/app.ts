@@ -23,8 +23,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
 // Route
-app.use("/serverStatus", serverStatusRouter)
-app.use("/auth", authRouter);
+app.use("/api/serverStatus", serverStatusRouter)
+app.use("/api/auth", authRouter);
 
 // Check
 app.use((req, res) => {
