@@ -8,7 +8,7 @@ describe("POST /login", () => {
     /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/;
   const payload = {
     username: "linchoyTest",
-    email: "contact@linchoy.com",
+    email: "fake@linchoy.com",
     password: "adminLinchoyTest!",
     isVerified: true,
   };

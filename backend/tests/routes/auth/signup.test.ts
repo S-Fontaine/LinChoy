@@ -7,7 +7,7 @@ import { mailer } from "../../../src/utils/mailer.js";
 describe("POST /auth/signup", () => {
   const payload = {
     username: "linchoyTest",
-    email: "contact@linchoy.com",
+    email: "fake@linchoy.com",
     password: "adminLinchoyTest!",
   };
   it("Crée un utilisateur avec des données valides", async () => {

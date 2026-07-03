@@ -7,7 +7,7 @@ import { generateVerifyToken } from "../../../src/utils/jwt.js";
 describe("GET /auth/email/verify", () => {
   const payload = {
     username: "linchoyTest",
-    email: "contact@linchoy.com",
+    email: "fake@linchoy.com",
     password: "MotDePasse123!",
   };
 

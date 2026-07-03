@@ -7,7 +7,7 @@ import { mailer } from "../../../src/utils/mailer.js";
 describe("POST /auth/email/resend-verification", () => {
   const payload = {
     username: "linchoyTest",
-    email: "contact@linchoy.com",
+    email: "fake@linchoy.com",
     password: "MotDePasse123!",
   };
 

@@ -5,7 +5,7 @@ import User from "../../src/models/User.js";
 describe("Test du Modèle User", () => {
   const payload = {
     username: "linchoyTest",
-    email: "contact@linchoy.com",
+    email: "fake@linchoy.com",
     password: "adminLinchoyTest!",
   };
   it("Refuse un user sans username", () => {
