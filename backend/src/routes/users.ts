@@ -25,7 +25,7 @@ router.patch("/update/:id", requireAuth, async (req: AuthRequest, res) => {
     const usernameChanged =
       username !== undefined && username !== user.username;
     const emailChanged = email !== undefined && email !== user.email;
-    const passwordProvided = password !== undefined; // toujours appliqué si fourni
+    const passwordProvided = password !== undefined;
 
     if (!usernameChanged && !emailChanged && !passwordProvided) {
       return res.status(400).json({
@@ -80,6 +80,43 @@ router.patch("/update/:id", requireAuth, async (req: AuthRequest, res) => {
         isVerified: user.isVerified,
       },
     });
+  } catch (err) {
+    return handleMongooseError(err, res);
+  }
+});
+
+router.delete("/delete/:id", requireAuth, async (req: AuthRequest, res) => {
+  const { password } = req.body;
+
+  if (req.user?.userId !== req.params.id) {
+    return res.status(403).json({ result: false, message: "Accès refusé" });
+  }
+
+  if (!password) {
+    return res.status(400).json({
+      result: false,
+      message: "Mot de passe requis pour confirmer la suppression",
+    });
+  }
+
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Utilisateur introuvable" });
+    }
+
+    const match = await user.comparePassword(password);
+    if (!match) {
+      return res
+        .status(401)
+        .json({ result: false, message: "Mot de passe incorrect" });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+
+    return res.status(204).send();
   } catch (err) {
     return handleMongooseError(err, res);
   }
