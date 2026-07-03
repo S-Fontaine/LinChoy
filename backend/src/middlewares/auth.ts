@@ -13,17 +13,17 @@ export function requireAuth(
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Token manquant" });
+    return res.status(401).json({ result: false, message: "Token manquant" });
   }
 
   const token = authHeader.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ error: "Token manquant" });
+    return res.status(401).json({ result: false, message: "Token manquant" });
   }
   try {
     req.user = verifyAccessToken(token);
     next();
   } catch {
-    return res.status(401).json({ error: "Token invalide ou expiré" });
+    return res.status(401).json({ result: false, message: "Token invalide ou expiré" });
   }
 }

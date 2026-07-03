@@ -7,3 +7,5 @@ frontend/.next/
 frontend/out/
 frontend/.env*.local
 frontend/.env
+
+.env.test

@@ -1,7 +1,9 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from "@jest/globals";
+import dotenv from "dotenv";
+import { beforeAll, afterEach, afterAll } from "@jest/globals";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
+dotenv.config({ path: ".env.test" });
 let mongod: MongoMemoryServer;
 
 beforeAll(async () => {

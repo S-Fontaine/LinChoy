@@ -10,20 +10,17 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendVerificationEmail(
-  to: string,
-  token: string,
-  username: string,
-) {
-  const verifyUrl = `${process.env.FRONTEND_URL}/users/email/verify?token=${token}`;
+export const mailer = {
+  async sendVerificationEmail(to: string, token: string, username: string) {
+    const verifyUrl = `${process.env.FRONTEND_URL}/auth/email/verify?token=${token}`;
 
-  try {
-    await transporter.sendMail({
-      from: '"LinChoy" <contact@linchoy.com>',
-      to,
-      subject: "Activez votre compte LinChoy",
-      text: `Bonjour ${username},\n\nBienvenue chez LinChoy ! Veuillez confirmer votre adresse email en copiant-collant le lien suivant dans votre navigateur : ${verifyUrl}\n\nCe lien expire dans 24 heures.\n\nÀ très vite !`,
-      html: `
+    try {
+      await transporter.sendMail({
+        from: '"LinChoy" <contact@linchoy.com>',
+        to,
+        subject: "Activez votre compte LinChoy",
+        text: `Bonjour ${username},\n\nBienvenue chez LinChoy ! Veuillez confirmer votre adresse email en copiant-collant le lien suivant dans votre navigateur : ${verifyUrl}\n\nCe lien expire dans 24 heures.\n\nÀ très vite !`,
+        html: `
        <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -96,9 +93,10 @@ export async function sendVerificationEmail(
 
 </body>
 </html>`,
-    });
-  } catch (err) {
-    console.error("[mail]: Échec d'envoi", err);
-    throw err;
-  }
-}
+      });
+    } catch (err) {
+      console.error("[mail]: Échec d'envoi", err);
+      throw err;
+    }
+  },
+};

@@ -6,8 +6,6 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import indexRouter from "./routes/index.js";
-import usersRouter from "./routes/users.js";
 import serverStatusRouter from "./routes/serverStatus.js";
 import authRouter from "./routes/auth.js";
 
@@ -25,20 +23,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
 // Route
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
 app.use("/serverStatus", serverStatusRouter)
 app.use("/auth", authRouter);
 
 // Check
 app.use((req, res) => {
-  res.status(404).json({ error: "Not found" });
+  res.status(404).json({ result: false, message: "Not found" });
 });
 
 app.use(
   (err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ result: false, message: "Internal server error" });
   }
 );
 

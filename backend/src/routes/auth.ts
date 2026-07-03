@@ -1,49 +1,183 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import {
+  generateVerifyToken,
   generateAccessToken,
   generateRefreshToken,
-  verifyRefreshToken,
+  verifyEmailToken,
 } from "../utils/jwt.js";
+import { mailer } from "../utils/mailer.js";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user || !user.password) {
-    return res.status(401).json({ error: "Identifiants invalides" });
+router.post("/signup", async (req, res) => {
+  const { username, email, password } = req.body;
+  if (!email?.trim() || !username?.trim() || !password) {
+    return res.status(400).json({ result: false, message: "Champs manquants" });
   }
+  let newUser;
 
-  const match = await bcrypt.compare(password, String(user.password));
-  if (!match) {
-    return res.status(401).json({ error: "Identifiants invalides" });
+  try {
+    const existingUser = await User.findOne({
+      $or: [{ email }, { username }],
+    });
+    if (existingUser) {
+      return res.status(409).json({
+        result: false,
+        message: "Connectez-vous s'il vous plaît",
+      });
+    }
+
+    newUser = await User.create({
+      username,
+      email,
+      password,
+    });
+  } catch (err) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      const errors: Record<string, string> = {};
+      Object.entries(err.errors).forEach(([field, errorObj]) => {
+        errors[field] = errorObj.message;
+      });
+      const message = Object.values(errors);
+      return res
+        .status(400)
+        .json({ result: false, message: message.join(", ") });
+    }
+
+    console.error(err);
+    return res.status(500).json({ result: false, message: "Erreur serveur" });
   }
-
-  const payload = { userId: String(user._id) };
-  const accessToken = generateAccessToken(payload);
-  const refreshToken = generateRefreshToken(payload);
-
-  res.json({ accessToken, refreshToken });
+  try {
+    const verifyToken = generateVerifyToken({ userId: newUser._id.toString() });
+    await mailer.sendVerificationEmail(
+      newUser.email,
+      verifyToken,
+      newUser.username,
+    );
+  } catch (err) {
+    console.error("[mail]: Échec d'envoi de l'email de vérification", err);
+    return res.status(201).json({
+      result: true,
+      message:
+        "Compte créé, mais l'email de vérification n'a pas pu être envoyé. Contactez le support ou réessayez plus tard.",
+      data: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      },
+    });
+  }
+  return res.status(201).json({
+    result: true,
+    message: "Compte créé. Vérifiez votre email pour l'activer.",
+    data: {
+      id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+    },
+  });
 });
 
-router.post("/refresh", (req, res) => {
-  const { refreshToken } = req.body;
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  if (!email?.trim() || !password) {
+    return res.status(400).json({ result: false, message: "Champs requis" });
+  }
+  try {
+    const user = await User.findOne({ email });
+    if (!user || !user.password) {
+      return res
+        .status(401)
+        .json({ result: false, message: "Identifiants invalides" });
+    }
 
-  if (!refreshToken) {
-    return res.status(401).json({ error: "Refresh token manquant" });
+    const match = await bcrypt.compare(password, String(user.password));
+    if (!match) {
+      return res
+        .status(401)
+        .json({ result: false, message: "Identifiants invalides" });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({
+        result: false,
+        message: "Veuillez vérifier votre email avant de vous connecter",
+      });
+    }
+    const payload = { userId: String(user._id) };
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    return res.status(200).json({ result: true, accessToken, refreshToken });
+  } catch (err) {
+    console.error("[login]: Erreur serveur", err);
+    return res.status(500).json({ result: false, message: "Erreur serveur" });
+  }
+});
+
+router.get("/email/verify", async (req, res) => {
+  const { token } = req.query;
+
+  if (typeof token !== "string") {
+    return res.status(400).json({ result: false, message: "Token manquant" });
   }
 
   try {
-    const payload = verifyRefreshToken(refreshToken);
-    const newAccessToken = generateAccessToken({ userId: payload.userId });
-
-    res.json({ accessToken: newAccessToken });
+    const payload = verifyEmailToken(token);
+    const user = await User.findById(payload.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Utilisateur introuvable" });
+    }
+    user.isVerified = true;
+    await user.save();
+    return res
+      .status(200)
+      .json({ result: true, message: "Email vérifié avec succès" });
   } catch {
-    return res.status(401).json({ error: "Refresh token invalide ou expiré" });
+    return res
+      .status(400)
+      .json({ result: false, message: "Token invalide ou expiré" });
   }
 });
+
+// router.post("/email/resend-verification", async (req, res) => {
+//   const { email } = req.body;
+
+//   const user = await User.findOne({ email });
+//   if (!user) {
+//     return res.status(404).json({ result: false, message: "Utilisateur introuvable" });
+//   }
+
+//   if (user.isVerified) {
+//     return res.status(400).json({ result: false, message: "Ce compte est déjà vérifié" });
+//   }
+
+//   const verifyToken = generateVerifyToken({ userId: user._id.toString() });
+//   await sendVerificationEmail(user.email, verifyToken, user.username);
+
+//   return res.status(200).json({ result: true, message: "Email de vérification renvoyé" });
+// });
+
+// router.post("/refresh", (req, res) => {
+//   const { refreshToken } = req.body;
+
+//   if (!refreshToken) {
+//     return res.status(401).json({ result: false, message: "Refresh token manquant" });
+//   }
+
+//   try {
+//     const payload = verifyRefreshToken(refreshToken);
+//     const newAccessToken = generateAccessToken({ userId: payload.userId });
+
+//     res.json({ accessToken: newAccessToken });
+//   } catch {
+//     return res.status(401).json({ result: false, message: "Refresh token invalide ou expiré" });
+//   }
+// });
 
 export default router;

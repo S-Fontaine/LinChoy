@@ -7,7 +7,7 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN as string;
 const JWT_VERIFY_SECRET = process.env.JWT_VERIFY_SECRET as string;
 const JWT_VERIFY_EXPIRES_IN = process.env.JWT_VERIFY_EXPIRES_IN as string;
 
-if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+if (!JWT_SECRET || !JWT_REFRESH_SECRET || !JWT_VERIFY_SECRET) {
   throw new Error(
     "JWT_SECRET ou JWT_REFRESH_SECRET ou JWT_VERIFY_SECRET manquant dans le .env",
   );
@@ -17,15 +17,23 @@ export interface JwtPayload {
   userId: string;
 }
 
-export function generateAccessToken(payload: JwtPayload): string {
+export function generateAccessToken(
+  payload: JwtPayload,
+  options?: jwt.SignOptions,
+): string {
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN as SignOptions["expiresIn"],
+    ...options,
   });
 }
 
-export function generateRefreshToken(payload: JwtPayload): string {
+export function generateRefreshToken(
+  payload: JwtPayload,
+  options?: jwt.SignOptions,
+): string {
   return jwt.sign(payload, JWT_REFRESH_SECRET, {
     expiresIn: JWT_REFRESH_EXPIRES_IN as SignOptions["expiresIn"],
+    ...options,
   });
 }
 
