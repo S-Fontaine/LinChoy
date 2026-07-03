@@ -80,7 +80,7 @@ describe("POST /auth/email/resend-verification", () => {
 
     const res = await request(app)
       .post("/auth/email/resend-verification")
-      .send({ email: "test@example.com" });
+      .send({ email: payload.email });
 
     expect(res.status).toBe(500);
     expect(res.body.message).toBe("Erreur serveur");
@@ -94,7 +94,7 @@ describe("POST /auth/email/resend-verification", () => {
       .mockRejectedValueOnce(new Error("SMTP Server Down"));
     const res = await request(app)
       .post("/auth/email/resend-verification")
-      .send({ email: "linfu@example.com" });
+      .send({ email: payload.email });
 
     expect(res.status).toBe(500);
     expect(res.body).toEqual({
