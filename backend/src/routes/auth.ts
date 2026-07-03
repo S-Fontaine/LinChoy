@@ -1,5 +1,5 @@
 import { Router } from "express";
-import mongoose from "mongoose";
+import { handleMongooseError } from "../utils/handleMongooseError.js";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import {
@@ -35,21 +35,7 @@ router.post("/signup", async (req, res) => {
       email,
       password,
     });
-  } catch (err) {
-    if (err instanceof mongoose.Error.ValidationError) {
-      const errors: Record<string, string> = {};
-      Object.entries(err.errors).forEach(([field, errorObj]) => {
-        errors[field] = errorObj.message;
-      });
-      const message = Object.values(errors);
-      return res
-        .status(400)
-        .json({ result: false, message: message.join(", ") });
-    }
-
-    console.error(err);
-    return res.status(500).json({ result: false, message: "Erreur serveur" });
-  }
+  } catch (err) {return handleMongooseError(err, res);}
   try {
     const verifyToken = generateVerifyToken({ userId: newUser._id.toString() });
     await mailer.sendVerificationEmail(

@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 
 import serverStatusRouter from "./routes/serverStatus.js";
 import authRouter from "./routes/auth.js";
+import usersRouter from "./routes/users.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 // Route
 app.use("/api/serverStatus", serverStatusRouter)
 app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 
 // Check
 app.use((req, res) => {
