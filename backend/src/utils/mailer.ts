@@ -28,7 +28,6 @@ export const mailer = {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vérification LinChoy</title>
   <style>
-    /* Effet hover fonctionnel sur desktop */
     .btn-orange:hover {
       background-color: #ffb366 !important;
       border-color: #ffb366 !important;
