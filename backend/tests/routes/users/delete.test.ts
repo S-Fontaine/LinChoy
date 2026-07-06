@@ -18,7 +18,7 @@ describe("DELETE /users/delete/:id", () => {
 
     const res = await request(app)
       .delete(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ password: payload.password });
 
     expect(res.status).toBe(204);
@@ -33,7 +33,7 @@ describe("DELETE /users/delete/:id", () => {
 
     const res = await request(app)
       .delete(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({});
 
     expect(res.status).toBe(400);
@@ -45,7 +45,7 @@ describe("DELETE /users/delete/:id", () => {
 
     const res = await request(app)
       .delete(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ password: "MauvaisMotDePasse" });
 
     expect(res.status).toBe(401);
@@ -65,7 +65,7 @@ describe("DELETE /users/delete/:id", () => {
 
     const res = await request(app)
       .delete(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ password: payload.password });
 
     expect(res.status).toBe(403);
@@ -90,7 +90,7 @@ describe("DELETE /users/delete/:id", () => {
 
     const res = await request(app)
       .delete(`${BASE_URL}/${fakeId}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ password: payload.password });
 
     expect(res.status).toBe(404);

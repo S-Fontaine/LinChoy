@@ -14,7 +14,7 @@ describe("Test middleware: auth", () => {
   it("Appelle next() avec un token valide", () => {
     const token = generateAccessToken({ userId: "abc123" });
     const req = {
-      headers: { authorization: `Bearer ${token}` },
+      cookies: { accessToken: token },
     } as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
@@ -25,8 +25,8 @@ describe("Test middleware: auth", () => {
     expect(req.user?.userId).toBe("abc123");
   });
 
-  it("Renvoie 401 si le header Authorization est absent", () => {
-    const req = { headers: {} } as AuthRequest;
+  it("Renvoie 401 si le cookie accessToken est absent", () => {
+    const req = { cookies: {} } as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
 
@@ -40,19 +40,8 @@ describe("Test middleware: auth", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it("Renvoie 401 si le header ne commence pas par 'Bearer '", () => {
-    const req = { headers: { authorization: "Basic abc123" } } as AuthRequest;
-    const res = createMockRes();
-    const next = jest.fn() as NextFunction;
-
-    requireAuth(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(next).not.toHaveBeenCalled();
-  });
-
-  it("Renvoie 401 si le token est absent après 'Bearer '", () => {
-    const req = { headers: { authorization: "Bearer " } } as AuthRequest;
+  it("Renvoie 401 si l'objet cookies est totalement absent (aucun cookie envoyé)", () => {
+    const req = { cookies: undefined } as unknown as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
 
@@ -64,7 +53,7 @@ describe("Test middleware: auth", () => {
 
   it("Renvoie 401 si le token est invalide", () => {
     const req = {
-      headers: { authorization: "Bearer token.invalide.bidon" },
+      cookies: { accessToken: "token.invalide.bidon" },
     } as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
@@ -85,7 +74,7 @@ describe("Test middleware: auth", () => {
       { expiresIn: "-1s" },
     );
     const req = {
-      headers: { authorization: `Bearer ${expiredToken}` },
+      cookies: { accessToken: expiredToken },
     } as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;

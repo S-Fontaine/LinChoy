@@ -19,7 +19,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ username: "linchoy" });
 
     expect(res.status).toBe(200);
@@ -37,7 +37,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ username: "linchoy", email: "fake2@linchoy.com" });
 
     expect(res.status).toBe(200);
@@ -60,7 +60,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ email: "fake2@linchoy.com" });
 
     expect(res.status).toBe(200);
@@ -79,7 +79,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ username: "linchoy" });
 
     expect(res.status).toBe(200);
@@ -98,7 +98,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ email: payload.email });
 
     expect(res.status).toBe(400);
@@ -116,7 +116,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ username: payload.username });
 
     expect(res.status).toBe(400);
@@ -135,7 +135,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ username: payload.username, email: "fake2@linchoy.com" });
 
     expect(res.status).toBe(200);
@@ -152,7 +152,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ username: payload.username, email: payload.email });
 
     expect(res.status).toBe(400);
@@ -165,7 +165,7 @@ describe("Test route: PATCH /api/users/update/:id", () => {
 
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", `accessToken=${token}`)
       .send({ password: "NouveauMotDePasse456!" });
 
     expect(res.status).toBe(200);

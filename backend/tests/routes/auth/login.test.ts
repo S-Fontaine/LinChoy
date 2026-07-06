@@ -5,8 +5,6 @@ import User from "../../../src/models/User.js";
 const BASE_URL = "/api/auth/login";
 
 describe("Test route: POST /api/auth/login", () => {
-  const jwtRegex =
-    /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/;
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",
@@ -20,15 +18,21 @@ describe("Test route: POST /api/auth/login", () => {
     const res = await request(app)
       .post(BASE_URL)
       .send({ email: payload.email, password: payload.password });
+    const cookies = res.headers["set-cookie"];
+    const accessCookie = cookies.find((c: string) =>
+      c.startsWith("accessToken="),
+    );
+    const refreshCookie = cookies.find((c: string) =>
+      c.startsWith("refreshToken="),
+    );
 
     expect(res.status).toBe(200);
     expect(res.body.result).toBe(true);
-    expect(typeof res.body.accessToken).toBe("string");
-    expect(res.body.accessToken.length).toBeGreaterThan(20);
-    expect(res.body.accessToken).toMatch(jwtRegex);
-    expect(typeof res.body.refreshToken).toBe("string");
-    expect(res.body.refreshToken.length).toBeGreaterThan(20);
-    expect(res.body.refreshToken).toMatch(jwtRegex);
+    expect(cookies).toBeDefined();
+    expect(accessCookie).toBeDefined();
+    expect(accessCookie).toContain("HttpOnly");
+    expect(refreshCookie).toBeDefined();
+    expect(refreshCookie).toContain("HttpOnly");
   });
 
   it("Refuse un email invalide", async () => {

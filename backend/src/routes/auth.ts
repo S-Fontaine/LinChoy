@@ -35,7 +35,9 @@ router.post("/signup", async (req, res) => {
       email,
       password,
     });
-  } catch (err) {return handleMongooseError(err, res);}
+  } catch (err) {
+    return handleMongooseError(err, res);
+  }
   try {
     const verifyToken = generateVerifyToken({ userId: newUser._id.toString() });
     await mailer.sendVerificationEmail(
@@ -96,8 +98,21 @@ router.post("/login", async (req, res) => {
     const payload = { userId: String(user._id) };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
 
-    return res.status(200).json({ result: true, accessToken, refreshToken });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/auth/refresh",
+    });
+    return res.status(200).json({ result: true, username: user.username, email: user.email });
   } catch (err) {
     console.error("[login]: Erreur serveur", err);
     return res.status(500).json({ result: false, message: "Erreur serveur" });
