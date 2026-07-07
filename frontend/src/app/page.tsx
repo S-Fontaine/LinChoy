@@ -1,9 +1,9 @@
-import Server from "@/components/Server";
+import LandingPage from "@/components/LandingPage";
 
 export default function Home() {
   return (
     <div>
-      <Server />
+      <LandingPage />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 import styles from "../styles/page.module.css";
 import { useEffect, useState } from "react";
-const BACKEND_URL = process.env.PUBLIC_BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 //Typescript
-interface ServerData {
+interface ServerStatus {
   status: string;
   statusRAM: string;
   statusCharge1: string;
@@ -12,15 +12,15 @@ interface ServerData {
 }
 
 export default function Home() {
-  const [serverState, setServerState] = useState<ServerData | null>(null);
+  const [serverState, setServerState] = useState<ServerStatus | null>(null);
   const [isOn, setIsOn] = useState<string>(styles.isOff);
   function togglePower() {
     setIsOn(isOn === styles.isOff ? styles.isOn : styles.isOff);
   }
   useEffect(() => {
-    fetch(`${BACKEND_URL}/serverStatus`)
+    fetch(`${BACKEND_URL}/server/status`)
       .then((reponse) => reponse.json())
-      .then((data: ServerData) => {
+      .then((data: ServerStatus) => {
         setServerState(data);
         console.log(data);
       });

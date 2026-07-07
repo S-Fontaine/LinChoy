@@ -4,7 +4,7 @@
   --bg-input: #242426;
   --text-high: #ffffff;
   --text-medium: #b3b3b3;
-  --text-low: #666666;
+  --text-low: #8C8C8C;
   --border: #2d2d30;
 
   /* Accents originaux LinChoy */
@@ -39,9 +39,22 @@ body {
   box-sizing: border-box;
 }
 
-h3 {
-  /* Espace sous le titre pour ne pas coller au texte */
+h2 {
   margin-bottom: 20px;
   font-size: 1.8rem;
   color: var(--text-high);
+}
+
+.auth-input:focus {
+  border-color: var(--lin-orange) !important;
+  box-shadow: 0 0 0 2px var(--lin-orange-glow);
+}
+
+.auth-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.auth-btn-switch:hover {
+  color: var(--text-high) !important;
 }
