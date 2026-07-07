@@ -15,7 +15,7 @@ describe("Test middleware: auth", () => {
     const token = generateAccessToken({ userId: "abc123" });
     const req = {
       cookies: { accessToken: token },
-    } as AuthRequest;
+    } as unknown  as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
 
@@ -54,7 +54,7 @@ describe("Test middleware: auth", () => {
   it("Renvoie 401 si le token est invalide", () => {
     const req = {
       cookies: { accessToken: "token.invalide.bidon" },
-    } as AuthRequest;
+    }  as unknown as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
 
@@ -75,7 +75,7 @@ describe("Test middleware: auth", () => {
     );
     const req = {
       cookies: { accessToken: expiredToken },
-    } as AuthRequest;
+    }  as unknown as AuthRequest;
     const res = createMockRes();
     const next = jest.fn() as NextFunction;
 

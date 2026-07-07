@@ -18,13 +18,9 @@ describe("Test route: POST /api/auth/login", () => {
     const res = await request(app)
       .post(BASE_URL)
       .send({ email: payload.email, password: payload.password });
-    const cookies = res.headers["set-cookie"];
-    const accessCookie = cookies.find((c: string) =>
-      c.startsWith("accessToken="),
-    );
-    const refreshCookie = cookies.find((c: string) =>
-      c.startsWith("refreshToken="),
-    );
+    const cookies = [res.headers["set-cookie"]].flat();
+    const accessCookie = cookies.find((c) => c?.startsWith("accessToken="));
+    const refreshCookie = cookies.find((c) => c?.startsWith("refreshToken="));
 
     expect(res.status).toBe(200);
     expect(res.body.result).toBe(true);

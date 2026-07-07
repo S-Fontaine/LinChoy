@@ -17,7 +17,7 @@ function formatRAM(totalRAM: number, FreeRAM: number): string {
  return `Mémoire utilisée : ${usedRAM} GB sur ${RAM} GB (Il reste ${freeRAM} GB libres)`;
 }
 
-router.get("/", (req, res) => {
+router.get("/status", (req, res) => {
   const [load1, load5, load15] = os.loadavg() as [number, number, number];
   res.json({
     status: "Serveur allumé depuis " + formatUptime(os.uptime()),
