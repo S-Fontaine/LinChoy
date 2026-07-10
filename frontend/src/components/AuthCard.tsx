@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "../styles/AuthCard.module.css";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const eyeOff = (
@@ -35,8 +36,17 @@ const eyeOn = (
   </svg>
 );
 
-export default function AuthCard() {
-  const [isLogin, setIsLogin] = useState(true);
+interface IAuthCard {
+  isLogin: boolean;
+  onSwitchClick: () => void;
+  onResult: () => void;
+}
+
+export default function AuthCard({
+  isLogin,
+  onSwitchClick,
+  onResult,
+}: IAuthCard) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -55,7 +65,6 @@ export default function AuthCard() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔧 Correction du type ici : FormEvent à la place de ChangeEvent
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLogin && formData.password !== confirmPassword) {
@@ -93,6 +102,9 @@ export default function AuthCard() {
             ? "Connexion réussie !"
             : "Compte créé ! Vérifie tes emails.",
         });
+        if (data.result && isLogin) {
+          onResult();
+        }
       }
     } catch {
       setApiResponse({
@@ -104,15 +116,13 @@ export default function AuthCard() {
   };
 
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.bgGlow}></div>
-
-      <div style={styles.card}>
-        <div style={styles.header}>
-          <h2 style={styles.title}>
+    <div className={styles.wrapper}>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>
             {isLogin ? "Bon retour !" : "Rejoindre le club"}
           </h2>
-          <p style={styles.subtitle}>
+          <p className={styles.subtitle}>
             {isLogin
               ? "Accède à tes serveurs et au chat."
               : "Crée un compte pour demander ton accès."}
@@ -120,17 +130,21 @@ export default function AuthCard() {
         </div>
 
         {apiResponse.error && (
-          <div style={styles.errorBox}>{apiResponse.error}</div>
+          <div className={styles.errorBox}>{apiResponse.error}</div>
         )}
         {apiResponse.success && (
-          <div style={styles.successBox}>{apiResponse.success}</div>
+          <div className={styles.successBox}>{apiResponse.success}</div>
         )}
 
         {isLogin ? (
           /* --- FORMULAIRE DE CONNEXION --- */
-          <form onSubmit={handleSubmit} style={styles.form} key="form-register">
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Adresse Email</label>
+          <form
+            onSubmit={handleSubmit}
+            className={styles.form}
+            key="form-register"
+          >
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Adresse Email</label>
               <input
                 type="text"
                 inputMode="email"
@@ -139,15 +153,14 @@ export default function AuthCard() {
                 required
                 placeholder="JosephLeGourmand@exemple.com"
                 autoComplete="username"
-                className="auth-input"
-                style={{ ...styles.input, width: "100%" }}
+                className={styles.input}
                 value={formData.email}
                 onChange={handleInputChange}
               />
             </div>
 
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Mot de passe</label>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Mot de passe</label>
               <div style={{ position: "relative", width: "100%" }}>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -156,23 +169,17 @@ export default function AuthCard() {
                   required
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="auth-input"
-                  style={{
-                    ...styles.input,
-                    width: "100%",
-                    paddingRight: "45px",
-                  }}
+                  className={styles.input}
                   value={formData.password}
                   onChange={handleInputChange}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={styles.eyeButton}
+                  className={styles.eyeButton}
                   aria-label="Afficher ou masquer le mot de passe"
                 >
                   {showPassword ? eyeOff : eyeOn}{" "}
-                  {/* 👁️ Tes SVG intégrés ici */}
                 </button>
               </div>
             </div>
@@ -180,30 +187,34 @@ export default function AuthCard() {
             <button
               type="submit"
               disabled={apiResponse.loading}
-              style={styles.btnPrimary}
+              className={styles.btnPrimary}
             >
               {apiResponse.loading ? "Patientez..." : "Se connecter"}
             </button>
           </form>
         ) : (
           /* --- FORMULAIRE D'INSCRIPTION --- */
-          <form onSubmit={handleSubmit} style={styles.form} key="form-login">
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Nom d&apos;utilisateur</label>
+          <form
+            onSubmit={handleSubmit}
+            className={styles.form}
+            key="form-login"
+          >
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Nom d&apos;utilisateur</label>
               <input
                 type="text"
                 name="username"
                 required
                 placeholder="JosephLeGourmand"
                 autoComplete="username"
-                style={{ ...styles.input, width: "100%" }}
+                className={styles.input}
                 value={formData.username}
                 onChange={handleInputChange}
               />
             </div>
 
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Adresse Email</label>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Adresse Email</label>
               <input
                 type="text"
                 inputMode="email"
@@ -211,35 +222,29 @@ export default function AuthCard() {
                 required
                 placeholder="josephlegourmand@exemple.com"
                 autoComplete="email"
-                className="auth-input"
-                style={{ ...styles.input, width: "100%" }}
+                className={styles.input}
                 value={formData.email}
                 onChange={handleInputChange}
               />
             </div>
 
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Mot de passe</label>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Mot de passe</label>
               <div style={{ position: "relative", width: "100%" }}>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
                   autoComplete="new-password"
-                  className="auth-input"
                   placeholder="••••••••"
-                  style={{
-                    ...styles.input,
-                    width: "100%",
-                    paddingRight: "45px",
-                  }}
+                  className={styles.input}
                   value={formData.password}
                   onChange={handleInputChange}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={styles.eyeButton}
+                  className={styles.eyeButton}
                   aria-label="Afficher ou masquer le mot de passe"
                 >
                   {showPassword ? eyeOff : eyeOn}
@@ -247,19 +252,18 @@ export default function AuthCard() {
               </div>
             </div>
 
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Confirmer le mot de passe</label>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Confirmer le mot de passe</label>
               <div style={{ position: "relative", width: "100%" }}>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   required
                   autoComplete="new-password"
-                  className="auth-input"
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={styles.input}
                   style={{
-                    ...styles.input,
                     width: "100%",
                     paddingRight: "45px",
                     borderColor:
@@ -272,7 +276,7 @@ export default function AuthCard() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={styles.eyeButton}
+                  className={styles.eyeButton}
                   aria-label="Confirmer le mot de passe"
                 >
                   {showConfirmPassword ? eyeOff : eyeOn}
@@ -283,21 +287,20 @@ export default function AuthCard() {
             <button
               type="submit"
               disabled={apiResponse.loading}
-              style={styles.btnPrimary}
+              className={styles.btnPrimary}
             >
               {apiResponse.loading ? "Patientez..." : "S'inscrire"}
             </button>
           </form>
         )}
 
-        <div style={styles.footer}>
+        <div className={styles.footerContainer}>
           <button
             onClick={() => {
-              setIsLogin(!isLogin);
-              setApiResponse({ loading: false, error: "", success: "" }); // Reset les messages lors du switch
+              onSwitchClick();
+              setApiResponse({ loading: false, error: "", success: "" });
             }}
-            className="auth-btn-switch"
-            style={styles.switchBtn}
+            className={styles.switchBtn}
           >
             {isLogin
               ? "Pas encore de compte ? S'inscrire"
@@ -308,140 +311,3 @@ export default function AuthCard() {
     </div>
   );
 }
-
-// --- STYLES INLINE ---
-const styles: Record<string, React.CSSProperties> = {
-  wrapper: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "var(--bg-main)",
-    position: "relative",
-    padding: "24px",
-  },
-  bgGlow: {
-    position: "absolute",
-    width: "300px",
-    height: "300px",
-    background: "var(--lin-orange-glow)",
-    filter: "blur(120px)",
-    borderRadius: "50%",
-    pointerEvents: "none",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "460px",
-    background: "var(--bg-surface)",
-    border: "1px solid var(--border)",
-    borderRadius: "16px",
-    padding: "40px",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-    position: "relative",
-    zIndex: 10,
-  },
-  header: {
-    textAlign: "center",
-    marginBottom: "32px",
-  },
-  title: {
-    fontSize: "1.75rem",
-    fontWeight: "700",
-    color: "var(--text-high)",
-    margin: "0 0 8px 0",
-    letterSpacing: "-0.5px",
-  },
-  subtitle: {
-    fontSize: "0.95rem",
-    color: "var(--text-medium)",
-    margin: 0,
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  inputGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  label: {
-    fontSize: "0.85rem",
-    fontWeight: "500",
-    color: "var(--text-high)",
-  },
-  input: {
-    background: "var(--bg-input)",
-    border: "1px solid var(--border)",
-    color: "var(--text-high)",
-    padding: "12px 16px",
-    borderRadius: "8px",
-    fontSize: "0.95rem",
-    outline: "none",
-    transition: "var(--transition-smooth)",
-    boxSizing: "border-box",
-  },
-  btnPrimary: {
-    background: "var(--text-high)",
-    color: "var(--bg-main)",
-    border: "none",
-    padding: "14px",
-    borderRadius: "8px",
-    fontWeight: "600",
-    fontSize: "0.95rem",
-    cursor: "pointer",
-    marginTop: "10px",
-    transition: "var(--transition-smooth)",
-  },
-  errorBox: {
-    background: "rgba(255, 140, 0, 0.1)",
-    border: "1px solid var(--lin-orange)",
-    color: "var(--lin-orange-light)",
-    padding: "12px",
-    borderRadius: "8px",
-    fontSize: "0.9rem",
-    marginBottom: "24px",
-    textAlign: "center",
-  },
-  successBox: {
-    background: "rgba(50, 205, 50, 0.1)",
-    border: "1px solid var(--choy-green)",
-    color: "var(--choy-green-light)",
-    padding: "12px",
-    borderRadius: "8px",
-    fontSize: "0.9rem",
-    marginBottom: "24px",
-    textAlign: "center",
-  },
-  footer: {
-    textAlign: "center",
-    marginTop: "24px",
-    borderTop: "1px solid var(--border)",
-    paddingTop: "24px",
-  },
-  switchBtn: {
-    background: "none",
-    border: "none",
-    color: "var(--text-medium)",
-    fontSize: "0.85rem",
-    cursor: "pointer",
-    transition: "var(--transition-smooth)",
-    textDecoration: "underline",
-    textUnderlineOffset: "4px",
-  },
-  eyeButton: {
-    position: "absolute",
-    right: "20px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    padding: "0",
-    borderRadius: "50%",
-    zIndex: 2,
-  },
-};

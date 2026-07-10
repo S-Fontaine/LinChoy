@@ -1,5 +1,5 @@
 "use client";
-import styles from "../styles/page.module.css";
+import styles from "../styles/serverStatus.module.css";
 import { useEffect, useState } from "react";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 //Typescript
@@ -22,7 +22,6 @@ export default function Home() {
       .then((reponse) => reponse.json())
       .then((data: ServerStatus) => {
         setServerState(data);
-        console.log(data);
       });
   }, []);
   return (

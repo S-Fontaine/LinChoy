@@ -1,6 +1,19 @@
 "use client";
 
-export default function LandingPage() {
+import AuthCard from "./AuthCard";
+import { useState, useEffect } from "react";
+
+interface ILandingPage {
+  propsIsLogin: boolean;
+  propsIsOpen: boolean;
+  onSuccess: () => void;
+}
+
+export default function LandingPage({
+  propsIsLogin,
+  propsIsOpen,
+  onSuccess,
+}: ILandingPage) {
   const games = [
     { name: "Minecraft", icon: "⛏️", status: "Disponible" },
     { name: "Palworld", icon: "🦊", status: "Disponible" },
@@ -10,127 +23,137 @@ export default function LandingPage() {
   ];
 
   const platforms = ["Steam", "Xbox Live", "Epic Games", "PlayStation Network"];
+  const [isOpen, setIsOpen] = useState<boolean>(propsIsOpen);
+  const [isLogin, setIsLogin] = useState<boolean>(propsIsLogin);
+
+  useEffect(() => {
+    setIsOpen(propsIsOpen);
+  }, [propsIsOpen]);
+
+  useEffect(() => {
+    setIsLogin(propsIsLogin);
+  }, [propsIsLogin]);
+
+  console.log(isLogin, "et", isOpen);
+  function onSwitchClick() {
+    setIsLogin(!isLogin);
+  }
+  function onRegisterClick() {
+    setIsLogin(propsIsLogin);
+    setIsOpen(!isOpen);
+  }
+
+  function onResult() {
+    onSuccess();
+  }
 
   return (
     <div style={styles.container}>
-      {/* --- GLOWS DE FOND (Effet Portfolio Tech) --- */}
-      <div style={styles.glowOrange}></div>
-      <div style={styles.glowGreen}></div>
+      {/* --- GLOWS DE FOND --- */}
 
-      {/* --- HEADER / NAV --- */}
-      <header style={styles.header}>
-        <div style={styles.logo}>
-          <span style={{ color: "var(--lin-orange)" }}>Lin</span>
-          <span style={{ color: "var(--choy-green)" }}>Choy</span>
-          <span style={styles.logoDot}>.</span>
-        </div>
-        <button style={styles.btnSecondary}>Connexion</button>
-      </header>
-
-      {/* --- BLOC CENTRAL ÉLARGI --- */}
-      <main style={styles.mainContent}>
-        {/* --- HERO SECTION --- */}
-        <section style={styles.hero}>
-          <div style={styles.badge}>
-            <span style={styles.badgeDot}></span> Serveurs propulsés maison •
-            Accès libre
-          </div>
-          <h1 style={styles.mainTitle}>
-            Rejoins notre communauté de <br />
-            <span style={styles.gradientText}>Joueurs & Serveurs privés</span>
-          </h1>
-          <p style={styles.subtitle}>
-            J&apos;héberge et j&apos;administre des infrastructures dédiées pour
-            nos jeux préférés. Connecte tes plateformes, bascule sur le chat en
-            temps réel, note tes sessions et viens build ou survivre avec nous !
-          </p>
-          <div style={styles.heroActions}>
-            <button style={styles.btnPrimary}>
-              Demander un accès (Discord/Inscription)
-            </button>
-            <button style={styles.btnSecondary}>
-              Voir l&apos;état des serveurs
-            </button>
-          </div>
-        </section>
-
-        {/* --- GRID DE CONTENU (BENTO BOX STYLE) --- */}
-        <section style={styles.grid}>
-          {/* Box 1 : Les Serveurs (Large) */}
-          <div style={{ ...styles.card, ...styles.cardLarge }}>
-            <h2>Nos Serveurs Actifs</h2>
-            <div style={styles.gameList}>
-              {games.map((game, idx) => (
-                <div key={idx} style={styles.gameItem}>
-                  <div style={styles.gameInfo}>
-                    <span style={styles.gameIcon}>{game.icon}</span>
-                    <span style={styles.gameName}>{game.name}</span>
+      {isOpen ? (
+        <AuthCard
+          isLogin={isLogin}
+          onSwitchClick={onSwitchClick}
+          onResult={onResult}
+        />
+      ) : (
+        <main style={styles.mainContent}>
+          <section style={styles.hero}>
+            <h1 style={styles.mainTitle}>
+              Rejoins notre communauté de <br />
+              <span style={styles.gradientText}>Joueurs & Serveurs privés</span>
+            </h1>
+            <p style={styles.subtitle}>
+              Connecte tes plateformes, bascule sur le chat en temps réel, note
+              tes jeux et viens build ou survivre avec nous !
+            </p>
+            <div style={styles.heroActions}>
+              <button style={styles.btnPrimary} onClick={onRegisterClick}>
+                Inscription
+              </button>
+              <button style={styles.btnPrimary}>
+                Voir l&apos;état des serveurs
+              </button>
+            </div>
+          </section>
+          <section style={styles.grid}>
+            {/* Box 1 : Les Serveurs (Large) */}
+            <div style={{ ...styles.card, ...styles.cardLarge }}>
+              <h2>Nos Serveurs Actifs</h2>
+              <div style={styles.gameList}>
+                {games.map((game, idx) => (
+                  <div key={idx} style={styles.gameItem}>
+                    <div style={styles.gameInfo}>
+                      <span style={styles.gameIcon}>{game.icon}</span>
+                      <span style={styles.gameName}>{game.name}</span>
+                    </div>
+                    <span
+                      style={{
+                        ...styles.statusTag,
+                        color:
+                          game.status === "Disponible"
+                            ? "var(--choy-green-light)"
+                            : "var(--text-low)",
+                        borderColor:
+                          game.status === "Disponible"
+                            ? "rgba(50, 205, 50, 0.2)"
+                            : "var(--border)",
+                      }}
+                    >
+                      {game.status}
+                    </span>
                   </div>
-                  <span
-                    style={{
-                      ...styles.statusTag,
-                      color:
-                        game.status === "Disponible"
-                          ? "var(--choy-green-light)"
-                          : "var(--text-low)",
-                      borderColor:
-                        game.status === "Disponible"
-                          ? "rgba(50, 205, 50, 0.2)"
-                          : "var(--border)",
-                    }}
-                  >
-                    {game.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Box 2 : Cross-Platform */}
-          <div style={styles.card}>
-            <h2>Liaison Multi-Plateforme</h2>
-            <p style={{ color: "var(--text-medium)", marginBottom: "24px" }}>
-              Connecte tes comptes pour synchroniser ta progression et retrouver
-              tes amis en un clic.
-            </p>
-            <div style={styles.platformGrid}>
-              {platforms.map((platform, idx) => (
-                <div key={idx} style={styles.platformBadge}>
-                  {platform}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Box 3 : Communauté / Chat */}
-          <div style={styles.card}>
-            <h2>Chat & Notes</h2>
-            <p style={{ color: "var(--text-medium)", marginBottom: "20px" }}>
-              Un espace de discussion intégré directement lié à tes serveurs.
-              Note et partage tes retours sur vos parties endiablées.
-            </p>
-            <div style={styles.fakeChat}>
-              <div style={styles.chatMessage}>
-                <strong style={{ color: "var(--lin-orange-light)" }}>
-                  Linfu:
-                </strong>{" "}
-                Quelqu&apos;un est chaud pour un boss sur Valheim ? 🔥
-              </div>
-              <div style={styles.chatMessage}>
-                <strong style={{ color: "var(--choy-green-light)" }}>
-                  Choy:
-                </strong>{" "}
-                J&apos;arrive, je répare ma pioche ! ⛏️
+                ))}
               </div>
             </div>
-          </div>
-        </section>
-      </main>
+
+            {/* Box 2 : Cross-Platform */}
+            <div style={styles.card}>
+              <h2>Liaison Multi-Plateforme</h2>
+              <p style={{ color: "var(--text-medium)", marginBottom: "24px" }}>
+                Connecte tes comptes pour synchroniser ta progression et
+                retrouver tes amis en un clic.
+              </p>
+              <div style={styles.platformGrid}>
+                {platforms.map((platform, idx) => (
+                  <div key={idx} style={styles.platformBadge}>
+                    {platform}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Box 3 : Communauté / Chat */}
+            <div style={styles.card}>
+              <h2>Chat & Notes</h2>
+              <p style={{ color: "var(--text-medium)", marginBottom: "20px" }}>
+                Un espace de discussion intégré directement lié à tes serveurs.
+                Note et partage tes retours sur vos parties endiablées.
+              </p>
+              <div style={styles.fakeChat}>
+                <div style={styles.chatMessage}>
+                  <strong style={{ color: "var(--lin-orange-light)" }}>
+                    Linfu:
+                  </strong>{" "}
+                  Chaud pour Palworld ?
+                </div>
+                <div style={styles.chatMessage}>
+                  <strong style={{ color: "var(--choy-green-light)" }}>
+                    Drahoy:
+                  </strong>{" "}
+                  Je finis ma game, et je suis là !
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      )}
     </div>
   );
 }
 
-// --- STYLES INLINE (Utilisent tes variables CSS existantes) ---
+// --- STYLES INLINE ---
 const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: "100vh",
@@ -138,51 +161,9 @@ const styles: Record<string, React.CSSProperties> = {
     overflowX: "hidden",
     paddingBottom: "80px",
   },
-  glowOrange: {
-    position: "absolute",
-    top: "-10%",
-    left: "15%",
-    width: "40vw",
-    height: "40vw",
-    background: "var(--lin-orange-glow)",
-    filter: "blur(150px)",
-    borderRadius: "50%",
-    pointerEvents: "none",
-    zIndex: 0,
-  },
-  glowGreen: {
-    position: "absolute",
-    top: "40%",
-    right: "-5%",
-    width: "35vw",
-    height: "35vw",
-    background: "var(--choy-green-glow)",
-    filter: "blur(130px)",
-    borderRadius: "50%",
-    pointerEvents: "none",
-    zIndex: 0,
-  },
-  header: {
-    maxWidth: "1200px", // Bloc central élargi
-    margin: "0 auto",
-    padding: "30px 24px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    position: "relative",
-    zIndex: 10,
-  },
-  logo: {
-    fontSize: "1.5rem",
-    fontWeight: "800",
-    letterSpacing: "-0.5px",
-    color: "var(--text-high)",
-  },
-  logoDot: {
-    color: "var(--lin-orange)",
-  },
+
   mainContent: {
-    maxWidth: "1250px", // Plus large que ton portfolio actuel pour aérer le contenu
+    maxWidth: "1250px",
     margin: "0 auto",
     padding: "0 24px",
     position: "relative",
@@ -194,25 +175,7 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: "800px",
     margin: "0 auto",
   },
-  badge: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    background: "var(--bg-surface)",
-    border: "1px solid var(--border)",
-    padding: "6px 14px",
-    borderRadius: "100px",
-    fontSize: "0.85rem",
-    color: "var(--text-high)",
-    marginBottom: "24px",
-  },
-  badgeDot: {
-    width: "6px",
-    height: "6px",
-    background: "var(--choy-green)",
-    borderRadius: "50%",
-    boxShadow: "0 0 8px var(--choy-green)",
-  },
+
   mainTitle: {
     fontSize: "clamp(2.5rem, 5vw, 4rem)",
     fontWeight: "800",
@@ -250,17 +213,6 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     transition: "var(--transition-smooth)",
   },
-  btnSecondary: {
-    background: "var(--bg-surface)",
-    color: "var(--text-high)",
-    border: "1px solid var(--border)",
-    padding: "14px 28px",
-    borderRadius: "8px",
-    fontWeight: "600",
-    fontSize: "0.95rem",
-    cursor: "pointer",
-    transition: "var(--transition-smooth)",
-  },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
@@ -277,7 +229,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "flex-start",
   },
   cardLarge: {
-    gridColumn: "1 / -1", // Prend toute la largeur pour imiter le look Bento Pro
+    gridColumn: "1 / -1",
   },
   gameList: {
     display: "grid",

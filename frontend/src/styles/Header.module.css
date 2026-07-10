@@ -1,0 +1,40 @@
+.container {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.headerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-high);
+}
+
+.lin {
+  color: var(--lin-orange);
+}
+.choy {
+  color: var(--choy-green);
+}
+
+.btn {
+  background: var(--bg-surface);
+  color: var(--text-high);
+  border: 1px solid var(--border);
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}

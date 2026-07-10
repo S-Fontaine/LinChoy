@@ -4,7 +4,7 @@
   --bg-input: #242426;
   --text-high: #ffffff;
   --text-medium: #b3b3b3;
-  --text-low: #8C8C8C;
+  --text-low: #8c8c8c;
   --border: #2d2d30;
 
   /* Accents originaux LinChoy */
@@ -20,6 +20,7 @@
 }
 
 /* --- BASE --- */
+
 body {
   padding: 0;
   margin: 0;
@@ -30,13 +31,22 @@ body {
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;
-  margin: 0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  background-color: var(--bg-main);
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--bg-input) var(--bg-main); /* Firefox */
 }
 
 * {
   box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
 }
 
 h2 {
@@ -45,16 +55,69 @@ h2 {
   color: var(--text-high);
 }
 
-.auth-input:focus {
-  border-color: var(--lin-orange) !important;
-  box-shadow: 0 0 0 2px var(--lin-orange-glow);
+@keyframes floatOrange {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, 50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
 }
 
-.auth-btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+@keyframes floatGreen {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-40px, 30px) scale(1.15);
+  }
+  66% {
+    transform: translate(20px, -40px) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+.glowWrapper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.auth-btn-switch:hover {
-  color: var(--text-high) !important;
+.glowOrange {
+  position: absolute;
+  top: -10%;
+  left: 15%;
+  width: 40vw;
+  height: 40vw;
+  background: var(--lin-orange-glow);
+  filter: blur(150px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatOrange 15s ease-in-out infinite;
+  will-change: transform;
+}
+
+.glowGreen {
+  position: absolute;
+  top: 40%;
+  right: -5%;
+  width: 35vw;
+  height: 35vw;
+  background: var(--choy-green-glow);
+  filter: blur(130px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatGreen 18s ease-in-out infinite;
+  animation-delay: -5s;
+  will-change: transform;
 }
