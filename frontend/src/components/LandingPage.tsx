@@ -1,19 +1,9 @@
 "use client";
 
-import AuthCard from "./AuthCard";
-import { useState, useEffect } from "react";
-
 interface ILandingPage {
-  propsIsLogin: boolean;
-  propsIsOpen: boolean;
-  onSuccess: () => void;
+  openAuth: () => void;
 }
-
-export default function LandingPage({
-  propsIsLogin,
-  propsIsOpen,
-  onSuccess,
-}: ILandingPage) {
+export default function LandingPage({ openAuth }: ILandingPage) {
   const games = [
     { name: "Minecraft", icon: "⛏️", status: "Disponible" },
     { name: "Palworld", icon: "🦊", status: "Disponible" },
@@ -23,132 +13,99 @@ export default function LandingPage({
   ];
 
   const platforms = ["Steam", "Xbox Live", "Epic Games", "PlayStation Network"];
-  const [isOpen, setIsOpen] = useState<boolean>(propsIsOpen);
-  const [isLogin, setIsLogin] = useState<boolean>(propsIsLogin);
-
-  useEffect(() => {
-    setIsOpen(propsIsOpen);
-  }, [propsIsOpen]);
-
-  useEffect(() => {
-    setIsLogin(propsIsLogin);
-  }, [propsIsLogin]);
-
-  console.log(isLogin, "et", isOpen);
-  function onSwitchClick() {
-    setIsLogin(!isLogin);
-  }
-  function onRegisterClick() {
-    setIsLogin(propsIsLogin);
-    setIsOpen(!isOpen);
-  }
-
-  function onResult() {
-    onSuccess();
-  }
 
   return (
     <div style={styles.container}>
-      {/* --- GLOWS DE FOND --- */}
+      <main style={styles.mainContent}>
+        <section style={styles.hero}>
+          <h1 style={styles.mainTitle}>
+            Rejoins notre communauté de <br />
+            <span style={styles.gradientText}>Joueurs & Serveurs privés</span>
+          </h1>
+          <p style={styles.subtitle}>
+            Connecte tes plateformes, bascule sur le chat en temps réel, note
+            tes jeux et viens build ou survivre avec nous !
+          </p>
+          <div style={styles.heroActions}>
+            <button style={styles.btnPrimary} onClick={openAuth}>
+              Inscription
+            </button>
+            <button style={styles.btnPrimary}>
+              Voir l&apos;état des serveurs
+            </button>
+          </div>
+        </section>
+        <section style={styles.grid}>
+          {/* Box 1 : Les Serveurs (Large) */}
+          <div style={{ ...styles.card, ...styles.cardLarge }}>
+            <h2>Nos Serveurs Actifs</h2>
+            <div style={styles.gameList}>
+              {games.map((game, idx) => (
+                <div key={idx} style={styles.gameItem}>
+                  <div style={styles.gameInfo}>
+                    <span style={styles.gameIcon}>{game.icon}</span>
+                    <span style={styles.gameName}>{game.name}</span>
+                  </div>
+                  <span
+                    style={{
+                      ...styles.statusTag,
+                      color:
+                        game.status === "Disponible"
+                          ? "var(--choy-green-light)"
+                          : "var(--text-low)",
+                      borderColor:
+                        game.status === "Disponible"
+                          ? "rgba(50, 205, 50, 0.2)"
+                          : "var(--border)",
+                    }}
+                  >
+                    {game.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      {isOpen ? (
-        <AuthCard
-          isLogin={isLogin}
-          onSwitchClick={onSwitchClick}
-          onResult={onResult}
-        />
-      ) : (
-        <main style={styles.mainContent}>
-          <section style={styles.hero}>
-            <h1 style={styles.mainTitle}>
-              Rejoins notre communauté de <br />
-              <span style={styles.gradientText}>Joueurs & Serveurs privés</span>
-            </h1>
-            <p style={styles.subtitle}>
-              Connecte tes plateformes, bascule sur le chat en temps réel, note
-              tes jeux et viens build ou survivre avec nous !
+          {/* Box 2 : Cross-Platform */}
+          <div style={styles.card}>
+            <h2>Liaison Multi-Plateforme</h2>
+            <p style={{ color: "var(--text-medium)", marginBottom: "24px" }}>
+              Connecte tes comptes pour synchroniser ta progression et retrouver
+              tes amis en un clic.
             </p>
-            <div style={styles.heroActions}>
-              <button style={styles.btnPrimary} onClick={onRegisterClick}>
-                Inscription
-              </button>
-              <button style={styles.btnPrimary}>
-                Voir l&apos;état des serveurs
-              </button>
-            </div>
-          </section>
-          <section style={styles.grid}>
-            {/* Box 1 : Les Serveurs (Large) */}
-            <div style={{ ...styles.card, ...styles.cardLarge }}>
-              <h2>Nos Serveurs Actifs</h2>
-              <div style={styles.gameList}>
-                {games.map((game, idx) => (
-                  <div key={idx} style={styles.gameItem}>
-                    <div style={styles.gameInfo}>
-                      <span style={styles.gameIcon}>{game.icon}</span>
-                      <span style={styles.gameName}>{game.name}</span>
-                    </div>
-                    <span
-                      style={{
-                        ...styles.statusTag,
-                        color:
-                          game.status === "Disponible"
-                            ? "var(--choy-green-light)"
-                            : "var(--text-low)",
-                        borderColor:
-                          game.status === "Disponible"
-                            ? "rgba(50, 205, 50, 0.2)"
-                            : "var(--border)",
-                      }}
-                    >
-                      {game.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Box 2 : Cross-Platform */}
-            <div style={styles.card}>
-              <h2>Liaison Multi-Plateforme</h2>
-              <p style={{ color: "var(--text-medium)", marginBottom: "24px" }}>
-                Connecte tes comptes pour synchroniser ta progression et
-                retrouver tes amis en un clic.
-              </p>
-              <div style={styles.platformGrid}>
-                {platforms.map((platform, idx) => (
-                  <div key={idx} style={styles.platformBadge}>
-                    {platform}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Box 3 : Communauté / Chat */}
-            <div style={styles.card}>
-              <h2>Chat & Notes</h2>
-              <p style={{ color: "var(--text-medium)", marginBottom: "20px" }}>
-                Un espace de discussion intégré directement lié à tes serveurs.
-                Note et partage tes retours sur vos parties endiablées.
-              </p>
-              <div style={styles.fakeChat}>
-                <div style={styles.chatMessage}>
-                  <strong style={{ color: "var(--lin-orange-light)" }}>
-                    Linfu:
-                  </strong>{" "}
-                  Chaud pour Palworld ?
+            <div style={styles.platformGrid}>
+              {platforms.map((platform, idx) => (
+                <div key={idx} style={styles.platformBadge}>
+                  {platform}
                 </div>
-                <div style={styles.chatMessage}>
-                  <strong style={{ color: "var(--choy-green-light)" }}>
-                    Drahoy:
-                  </strong>{" "}
-                  Je finis ma game, et je suis là !
-                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Box 3 : Communauté / Chat */}
+          <div style={styles.card}>
+            <h2>Chat & Notes</h2>
+            <p style={{ color: "var(--text-medium)", marginBottom: "20px" }}>
+              Un espace de discussion intégré directement lié à tes serveurs.
+              Note et partage tes retours sur vos parties endiablées.
+            </p>
+            <div style={styles.fakeChat}>
+              <div style={styles.chatMessage}>
+                <strong style={{ color: "var(--lin-orange-light)" }}>
+                  Linfu:
+                </strong>{" "}
+                Chaud pour Palworld ?
+              </div>
+              <div style={styles.chatMessage}>
+                <strong style={{ color: "var(--choy-green-light)" }}>
+                  Drachoy:
+                </strong>{" "}
+                Je finis ma game, et je suis là !
               </div>
             </div>
-          </section>
-        </main>
-      )}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
@@ -156,9 +113,8 @@ export default function LandingPage({
 // --- STYLES INLINE ---
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: "100vh",
+    minHeight: "100%",
     position: "relative",
-    overflowX: "hidden",
     paddingBottom: "80px",
   },
 

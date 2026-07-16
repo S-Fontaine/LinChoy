@@ -1,46 +1,15 @@
 "use client";
-import styles from "../styles/serverStatus.module.css";
-import { useEffect, useState } from "react";
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import styles from "../styles/ServerStatus.module.css";
+import { useState } from "react";
 //Typescript
-interface ServerStatus {
-  status: string;
-  statusRAM: string;
-  statusCharge1: string;
-  statusCharge5: string;
-  statusCharge15: string;
-}
 
 export default function Home() {
-  const [serverState, setServerState] = useState<ServerStatus | null>(null);
   const [isOn, setIsOn] = useState<string>(styles.isOff);
   function togglePower() {
     setIsOn(isOn === styles.isOff ? styles.isOn : styles.isOff);
   }
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/server/status`)
-      .then((reponse) => reponse.json())
-      .then((data: ServerStatus) => {
-        setServerState(data);
-      });
-  }, []);
   return (
     <div className={styles.container}>
-      <div className={styles.grid}>
-        <div className={styles.card}>
-          <div className={styles.badge}>Performance</div>
-          <h2>Etat Global du Serveur</h2>
-
-          {serverState !== null && (
-            <div>
-              <p>{serverState.status}</p>
-              <p>{serverState.statusRAM}</p>
-              <p>{serverState.statusCharge1}</p>
-              <p>{serverState.statusCharge5}</p>
-              <p>{serverState.statusCharge15}</p>
-            </div>
-          )}
-        </div>
         <div className={`${styles.controlBox} ${isOn}`}>
           <div className={styles.statusIndicator}></div>
           <h3>Etat du serveur</h3>
@@ -61,6 +30,5 @@ export default function Home() {
           </button>
         </div>
       </div>
-    </div>
   );
 }

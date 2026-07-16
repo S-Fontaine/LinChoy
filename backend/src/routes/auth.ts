@@ -112,7 +112,9 @@ router.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/auth/refresh",
     });
-    return res.status(200).json({ result: true, username: user.username, email: user.email });
+    return res
+      .status(200)
+      .json({ result: true, username: user.username, email: user.email });
   } catch (err) {
     console.error("[login]: Erreur serveur", err);
     return res.status(500).json({ result: false, message: "Erreur serveur" });
@@ -133,6 +135,11 @@ router.get("/email/verify", async (req, res) => {
       return res
         .status(404)
         .json({ result: false, message: "Utilisateur introuvable" });
+    }
+    if (user.isVerified === true) {
+      return res
+        .status(409)
+        .json({ result: false, message: "Mail déja verifié" });
     }
     user.isVerified = true;
     await user.save();

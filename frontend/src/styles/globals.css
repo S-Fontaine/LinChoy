@@ -20,12 +20,18 @@
 }
 
 /* --- BASE --- */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
 
 body {
   padding: 0;
   margin: 0;
   background-color: var(--bg-main);
-  color: var(--text-medium);
   font-family:
     "Inter",
     -apple-system,
@@ -33,20 +39,23 @@ body {
     sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  position: relative;
   overflow-x: hidden;
-  overflow-y: scroll;
-  background-color: var(--bg-main);
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: var(--bg-input) var(--bg-main); /* Firefox */
-}
-
-* {
-  box-sizing: border-box;
+  scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-low);
+  border-radius: 5px;
+  border: 2px solid var(--bg-main);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-medium);
 }
 
 h2 {
@@ -120,4 +129,24 @@ h2 {
   animation: floatGreen 18s ease-in-out infinite;
   animation-delay: -5s;
   will-change: transform;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

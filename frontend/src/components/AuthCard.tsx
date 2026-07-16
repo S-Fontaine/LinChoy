@@ -1,15 +1,16 @@
 "use client";
+import SignIn from "./AuthCard/SignIn";
+import SignUp from "./AuthCard/SignUp";
 
 import { useState } from "react";
 import styles from "../styles/AuthCard.module.css";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const eyeOff = (
+export const eyeOff = (
   <svg
     width="20"
     height="20"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
     fillRule="evenodd"
     clipRule="evenodd"
   >
@@ -20,12 +21,11 @@ const eyeOff = (
   </svg>
 );
 
-const eyeOn = (
+export const eyeOn = (
   <svg
     width="20"
     height="20"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
     fillRule="evenodd"
     clipRule="evenodd"
   >
@@ -37,37 +37,35 @@ const eyeOn = (
 );
 
 interface IAuthCard {
+  onResult?: (success: boolean) => void;
   isLogin: boolean;
   onSwitchClick: () => void;
-  onResult: () => void;
 }
 
 export default function AuthCard({
+  onResult,
   isLogin,
   onSwitchClick,
-  onResult,
 }: IAuthCard) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [apiResponse, setApiResponse] = useState({
     loading: false,
     error: "",
     success: "",
   });
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isLogin && formData.password !== confirmPassword) {
+    if (!isLogin && formData.password !== formData.confirmPassword) {
       setApiResponse({
         loading: false,
         error: "Les mots de passe ne correspondent pas.",
@@ -103,7 +101,7 @@ export default function AuthCard({
             : "Compte créé ! Vérifie tes emails.",
         });
         if (data.result && isLogin) {
-          onResult();
+          onResult?.(data);
         }
       }
     } catch {
@@ -114,6 +112,7 @@ export default function AuthCard({
       });
     }
   };
+
 
   return (
     <div className={styles.wrapper}>
@@ -137,161 +136,19 @@ export default function AuthCard({
         )}
 
         {isLogin ? (
-          /* --- FORMULAIRE DE CONNEXION --- */
-          <form
-            onSubmit={handleSubmit}
-            className={styles.form}
-            key="form-register"
-          >
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Adresse Email</label>
-              <input
-                type="text"
-                inputMode="email"
-                name="email"
-                id="login-username"
-                required
-                placeholder="JosephLeGourmand@exemple.com"
-                autoComplete="username"
-                className={styles.input}
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Mot de passe</label>
-              <div style={{ position: "relative", width: "100%" }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  id="login-password"
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  className={styles.input}
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={styles.eyeButton}
-                  aria-label="Afficher ou masquer le mot de passe"
-                >
-                  {showPassword ? eyeOff : eyeOn}{" "}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={apiResponse.loading}
-              className={styles.btnPrimary}
-            >
-              {apiResponse.loading ? "Patientez..." : "Se connecter"}
-            </button>
-          </form>
+          <SignIn
+            handleSubmit={handleSubmit}
+            handleInputChange={handleInputChange}
+            formData={formData}
+            apiResponse={apiResponse}
+          />
         ) : (
-          /* --- FORMULAIRE D'INSCRIPTION --- */
-          <form
-            onSubmit={handleSubmit}
-            className={styles.form}
-            key="form-login"
-          >
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Nom d&apos;utilisateur</label>
-              <input
-                type="text"
-                name="username"
-                required
-                placeholder="JosephLeGourmand"
-                autoComplete="username"
-                className={styles.input}
-                value={formData.username}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Adresse Email</label>
-              <input
-                type="text"
-                inputMode="email"
-                name="email"
-                required
-                placeholder="josephlegourmand@exemple.com"
-                autoComplete="email"
-                className={styles.input}
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Mot de passe</label>
-              <div style={{ position: "relative", width: "100%" }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  required
-                  autoComplete="new-password"
-                  placeholder="••••••••"
-                  className={styles.input}
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={styles.eyeButton}
-                  aria-label="Afficher ou masquer le mot de passe"
-                >
-                  {showPassword ? eyeOff : eyeOn}
-                </button>
-              </div>
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Confirmer le mot de passe</label>
-              <div style={{ position: "relative", width: "100%" }}>
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  autoComplete="new-password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={styles.input}
-                  style={{
-                    width: "100%",
-                    paddingRight: "45px",
-                    borderColor:
-                      confirmPassword.length > 0 &&
-                      confirmPassword !== formData.password
-                        ? "var(--lin-orange)"
-                        : "var(--border)",
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className={styles.eyeButton}
-                  aria-label="Confirmer le mot de passe"
-                >
-                  {showConfirmPassword ? eyeOff : eyeOn}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={apiResponse.loading}
-              className={styles.btnPrimary}
-            >
-              {apiResponse.loading ? "Patientez..." : "S'inscrire"}
-            </button>
-          </form>
+          <SignUp
+            handleSubmit={handleSubmit}
+            handleInputChange={handleInputChange}
+            formData={formData}
+            apiResponse={apiResponse}
+          />
         )}
 
         <div className={styles.footerContainer}>

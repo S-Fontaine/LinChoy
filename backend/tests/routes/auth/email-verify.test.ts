@@ -71,6 +71,6 @@ describe("Test route: GET /api/auth/email/verify", () => {
 
     const res = await request(app).get(`${BASE_URL}?token=${token}`);
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(409);
   });
 });

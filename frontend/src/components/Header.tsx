@@ -1,11 +1,38 @@
 "use client";
+import { useState } from "react";
 import styles from "../styles/Header.module.css";
+import AuthCard from "./AuthCard";
+import Modal from "./Modal";
+
+interface IHeader {
+  onSuccess?: () => void;
+  isAuthOpen?: boolean;
+  onOpenAuth?: () => void;
+  onCloseAuth?: () => void;
+}
 
 export default function Header({
-  onLoginClick,
-}: {
-  onLoginClick?: () => void;
-}) {
+  onSuccess,
+  isAuthOpen = false,
+  onOpenAuth,
+  onCloseAuth,
+}: IHeader) {
+  const [isLogin, setIsLogin] = useState(false);
+
+  const onResult = (data: boolean) => {
+    if (data) {
+      onCloseAuth?.();
+      onSuccess?.();
+    }
+  };
+  const onSwitchClick = () => {
+    setIsLogin(!isLogin);
+  };
+  const isUserLogin = () => {
+    setIsLogin(true);
+    onOpenAuth?.();
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.headerContainer}>
@@ -13,9 +40,24 @@ export default function Header({
           <span className={styles.lin}>Lin</span>
           <span className={styles.choy}>Choy</span>
         </div>
-        <button className={styles.btn} onClick={onLoginClick}>
-          Connexion
-        </button>
+        <div>
+          <button className={styles.btn} onClick={isUserLogin}>
+            Connexion
+          </button>
+          <Modal
+            isAuthOpen={isAuthOpen}
+            onCloseAuth={() => {
+              setIsLogin(false);
+              onCloseAuth?.();
+            }}
+          >
+            <AuthCard
+              onResult={onResult}
+              isLogin={isLogin}
+              onSwitchClick={onSwitchClick}
+            />
+          </Modal>
+        </div>
       </header>
     </div>
   );
