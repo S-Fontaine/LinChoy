@@ -1,30 +1,25 @@
 "use client";
 import { useState } from "react";
+
 import styles from "../styles/Header.module.css";
 import AuthCard from "./AuthCard";
 import Modal from "./Modal";
 
 interface IHeader {
-  onSuccess?: () => void;
+  onLoginSuccess?: () => void;
   isAuthOpen?: boolean;
   onOpenAuth?: () => void;
   onCloseAuth?: () => void;
 }
 
 export default function Header({
-  onSuccess,
+  onLoginSuccess,
   isAuthOpen = false,
   onOpenAuth,
   onCloseAuth,
 }: IHeader) {
   const [isLogin, setIsLogin] = useState(false);
 
-  const onResult = (data: boolean) => {
-    if (data) {
-      onCloseAuth?.();
-      onSuccess?.();
-    }
-  };
   const onSwitchClick = () => {
     setIsLogin(!isLogin);
   };
@@ -52,7 +47,7 @@ export default function Header({
             }}
           >
             <AuthCard
-              onResult={onResult}
+              onLoginSuccess={onLoginSuccess}
               isLogin={isLogin}
               onSwitchClick={onSwitchClick}
             />

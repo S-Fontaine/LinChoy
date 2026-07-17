@@ -3,9 +3,9 @@ import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
 import { generateAccessToken } from "../../../src/utils/jwt.js";
-const BASE_URL = "/api/users/delete";
+const BASE_URL = "/users";
 
-describe("DELETE /users/delete/:id", () => {
+describe("DELETE /users/:id", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",

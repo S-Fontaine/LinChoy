@@ -2,9 +2,9 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
-const BASE_URL = "/api/auth/login";
+const BASE_URL = "/auth/login";
 
-describe("Test route: POST /api/auth/login", () => {
+describe("Test route: POST /auth/login", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",
@@ -65,7 +65,13 @@ describe("Test route: POST /api/auth/login", () => {
     expect(res.body.message).toContain("Veuillez vérifier votre email");
   });
 
-  it("Refuse un utilisateur inexistant", async () => {});
+  it("Refuse un utilisateur inexistant", async () => {
+    const res = await request(app).post(BASE_URL).send(payload);
+
+    expect(res.status).toBe(401);
+    expect(res.body.result).toBe(false);
+    expect(res.body.message).toBe("Identifiants invalides");
+  });
   it("Resfuse un email absent", async () => {
     await User.create(payload);
     const res = await request(app).post(BASE_URL).send({
@@ -125,5 +131,15 @@ describe("Test route: POST /api/auth/login", () => {
     expect(res.status).toBe(400);
     expect(res.body.result).toBe(false);
     expect(res.body.message).toBe("Champs requis");
+  });
+  it("Renvoie les infos user dans la réponse de login", async () => {
+    await User.create({ ...payload, isVerified: true });
+
+    const res = await request(app).post(BASE_URL).send(payload);
+
+    expect(res.status).toBe(200);
+    expect(res.body.user.username).toBeDefined();
+    expect(res.body.user.email).toBe(payload.email);
+    expect(res.body.user.password).toBeUndefined();
   });
 });

@@ -3,9 +3,9 @@ import request from "supertest";
 import User from "../../../src/models/User.js";
 import app from "../../../src/app.js";
 import { generateAccessToken } from "../../../src/utils/jwt.js";
-const BASE_URL = "/api/users/update";
+const BASE_URL = "/users";
 
-describe("Test route: PATCH /api/users/update/:id", () => {
+describe("Test route: PATCH /users/:id", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",

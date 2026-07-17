@@ -3,9 +3,9 @@ import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
 import { mailer } from "../../../src/utils/mailer.js";
-const BASE_URL = "/api/auth/email/resend-verification";
+const BASE_URL = "/auth/email/resend-verification";
 
-describe("Test route: POST /api/auth/email/resend-verification", () => {
+describe("Test route: POST /auth/email/resend-verification", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",

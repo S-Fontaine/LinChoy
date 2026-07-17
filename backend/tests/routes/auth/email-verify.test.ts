@@ -3,9 +3,9 @@ import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
 import { generateVerifyToken } from "../../../src/utils/jwt.js";
-const BASE_URL = "/api/auth/email/verify";
+const BASE_URL = "/auth/email/verify";
 
-describe("Test route: GET /api/auth/email/verify", () => {
+describe("Test route: GET /auth/email/verify", () => {
   const payload = {
     username: "linchoyTest",
     email: "fake@linchoy.com",

@@ -18,8 +18,8 @@
 
 .closeBtn {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 12px;
+  right: 12px;
   background: var(--bg-input);
   border: 1px solid var(--border);
   width: 32px;

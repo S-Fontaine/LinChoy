@@ -1,7 +1,6 @@
 "use client";
 import styles from "../styles/ServerStatus.module.css";
 import { useState } from "react";
-//Typescript
 
 export default function Home() {
   const [isOn, setIsOn] = useState<string>(styles.isOff);

@@ -1,7 +1,7 @@
 "use client";
 import SignIn from "./AuthCard/SignIn";
 import SignUp from "./AuthCard/SignUp";
-
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import styles from "../styles/AuthCard.module.css";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -37,16 +37,17 @@ export const eyeOn = (
 );
 
 interface IAuthCard {
-  onResult?: (success: boolean) => void;
+  onLoginSuccess?: () => void;
   isLogin: boolean;
   onSwitchClick: () => void;
 }
 
 export default function AuthCard({
-  onResult,
+  onLoginSuccess,
   isLogin,
   onSwitchClick,
 }: IAuthCard) {
+  const { setUser } = useAuth();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -101,7 +102,8 @@ export default function AuthCard({
             : "Compte créé ! Vérifie tes emails.",
         });
         if (data.result && isLogin) {
-          onResult?.(data);
+          setUser(data.user);
+          onLoginSuccess?.();
         }
       }
     } catch {
@@ -112,7 +114,6 @@ export default function AuthCard({
       });
     }
   };
-
 
   return (
     <div className={styles.wrapper}>

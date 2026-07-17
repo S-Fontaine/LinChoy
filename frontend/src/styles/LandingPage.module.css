@@ -1,0 +1,144 @@
+.container {
+  min-height: 100%;
+  position: relative;
+  padding-bottom: 80px;
+}
+
+.mainContent {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 10;
+}
+.hero {
+  text-align: center;
+  padding: 80px 0 60px 0;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mainTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  color: var(--text-high);
+  margin-bottom: 24px;
+}
+.gradientText {
+  background: linear-gradient(
+    to right,
+    var(--lin-orange),
+    var(--choy-green-light)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--lin-orange);
+}
+.subtitle {
+  font-size: 1.15rem;
+  color: var(--text-medium);
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  line-height: 1.7;
+}
+.heroActions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+.btn {
+  background: var(--text-high);
+  color: var(--bg-main);
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.cardLarge {
+  grid-column: 1 / -1;
+}
+.gameList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+.gameItem {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.gameInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gameIcon {
+  font-size: 1.3rem;
+}
+.gameName {
+  color: var(--text-high);
+  font-weight: 500;
+}
+.statusTag {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid;
+  font-weight: 600;
+}
+.platformGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.platformBadge {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 100px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-high);
+  font-weight: 500;
+}
+.fakeChat {
+  background: var(--bg-input);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+.chatMessage {
+  line-height: 1.4;
+  color: var(--text-high);
+}

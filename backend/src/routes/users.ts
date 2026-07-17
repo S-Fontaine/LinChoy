@@ -7,7 +7,7 @@ import { handleMongooseError } from "../utils/handleMongooseError.js";
 
 const router = Router();
 
-router.patch("/update/:id", requireAuth, async (req: AuthRequest, res) => {
+router.patch("/:id", requireAuth, async (req: AuthRequest, res) => {
   const { username, email, password } = req.body;
 
   if (req.user?.userId !== req.params.id) {
@@ -85,7 +85,7 @@ router.patch("/update/:id", requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
-router.delete("/delete/:id", requireAuth, async (req: AuthRequest, res) => {
+router.delete("/:id", requireAuth, async (req: AuthRequest, res) => {
   const { password } = req.body;
 
   if (req.user?.userId !== req.params.id) {

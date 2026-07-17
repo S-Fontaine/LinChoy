@@ -1,16 +1,30 @@
 "use client";
 import Header from "@/components/Header";
-import styles from "../../styles/AuthCard.module.css";
+import Modal from "@/components/Modal";
+import AuthCard from "@/components/AuthCard";
+import styles from "@/styles/verify-email.module.css";
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+interface IResponse {
+  result: boolean;
+  message: string;
+}
 
-export default function VerifyEmailPage() {
+interface IVerifyEmailPage {
+  onSwitchClick?: () => void;
+}
+export default function VerifyEmailPage({ onSwitchClick }: IVerifyEmailPage) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [message, setMessage] = useState("");
+  const [response, setResponse] = useState<IResponse>({
+    result: false,
+    message: "",
+  });
+  const [isAuthOpen, setIsAuthOpen] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -21,34 +35,57 @@ export default function VerifyEmailPage() {
           { method: "GET", credentials: "include" },
         );
         const data = await response.json();
-        setMessage(data.message);
+        setResponse(data);
       } catch {
-        setMessage("Impossible de joindre le serveur. Réessayez plus tard.");
+        setResponse({
+          result: false,
+          message: "Impossible de joindre le serveur. Réessayez plus tard.",
+        });
       }
     }
 
     verifyEmail();
   }, [searchParams]);
 
+  const closeAuth = () => {
+    setIsAuthOpen(false);
+    router.push("/");
+  };
+
   return (
     <div>
       <Header />
-      <div className={styles.wrapper}>
-        <div className={styles.card}>
-          <div className={styles.header}>
-            <h2 className={styles.title}>{message}</h2>
+
+      <Modal isAuthOpen={isAuthOpen} onCloseAuth={closeAuth}>
+        {showAuth ? (
+          <AuthCard isLogin={true} onSwitchClick={() => onSwitchClick?.()} />
+        ) : (
+          <div className={styles.wrapper}>
+            <div className={styles.card}>
+              <div className={styles.header}>
+                <h2 className={styles.title}>
+                  {response.result ? "Bienvenue !" : "Oups !"}
+                </h2>
+                <p className={styles.subtitle}>{response.message}</p>
+              </div>
+              <div className={styles.form}>
+                <button
+                  className={styles.btn}
+                  onClick={() => {
+                    if (response.result) {
+                      setShowAuth(true);
+                    } else {
+                      router.push("/");
+                    }
+                  }}
+                >
+                  {response.result ? "Se connecter" : "Retour à l'accueil"}
+                </button>
+              </div>
+            </div>
           </div>
-          <div className={styles.form}>
-            {" "}
-            <button
-              className={styles.btnPrimary}
-              onClick={() => router.push("/")}
-            >
-              Retour à l&apos;accueil
-            </button>
-          </div>
-        </div>
-      </div>
+        )}
+      </Modal>
     </div>
   );
 }

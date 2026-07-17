@@ -71,8 +71,8 @@ async function getPalworldStatus(): Promise<PalworldStatus> {
   }
 
   try {
-    const res = await fetch("http://localhost:8212/v1/api/server/info");
-    const data = (await res.json()) as PalworldServerInfo;
+    const response = await fetch("http://localhost:8212/v1/api/server/info");
+    const data = (await response.json()) as PalworldServerInfo;
 
     return {
       status: "online",
