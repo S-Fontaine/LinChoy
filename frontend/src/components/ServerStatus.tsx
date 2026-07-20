@@ -11,7 +11,7 @@ export default function Home() {
     <div className={styles.container}>
         <div className={`${styles.controlBox} ${isOn}`}>
           <div className={styles.statusIndicator}></div>
-          <h3>Etat du serveur</h3>
+          <h2>Etat du serveur</h2>
           <div
             className={
               isOn === styles.isOff ? styles.backgroundOff : styles.backgroundOn

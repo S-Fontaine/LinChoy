@@ -1,16 +1,23 @@
 .container {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid var(--border);
   overflow-x: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  z-index: 1000;
 }
 
 .headerContainer {
   max-width: 1200px;
+  min-height: 75px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
 }
 
 .logo {

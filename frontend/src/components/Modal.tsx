@@ -34,7 +34,6 @@ export default function Modal({
   }, [isAuthOpen, onCloseAuth]);
 
   if (!isAuthOpen) return null;
-
   return (
     <div className={styles.overlay}>
       <div className={styles.content}>

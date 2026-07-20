@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-
+import { useAuth } from "@/context/AuthContext";
 import styles from "../styles/Header.module.css";
 import AuthCard from "./AuthCard";
 import Modal from "./Modal";
@@ -10,6 +10,7 @@ interface IHeader {
   isAuthOpen?: boolean;
   onOpenAuth?: () => void;
   onCloseAuth?: () => void;
+  isEmailButtonVisible?: boolean;
 }
 
 export default function Header({
@@ -17,9 +18,11 @@ export default function Header({
   isAuthOpen = false,
   onOpenAuth,
   onCloseAuth,
+  isEmailButtonVisible = false,
 }: IHeader) {
+  const { user, logout } = useAuth();
   const [isLogin, setIsLogin] = useState(false);
-
+  //const [isEmailButtonVisible, setIsEmailButtonVisible] = useState(false);
   const onSwitchClick = () => {
     setIsLogin(!isLogin);
   };
@@ -36,9 +39,17 @@ export default function Header({
           <span className={styles.choy}>Choy</span>
         </div>
         <div>
-          <button className={styles.btn} onClick={isUserLogin}>
-            Connexion
-          </button>
+          {!user && !isEmailButtonVisible && (
+            <button className={styles.btn} onClick={isUserLogin}>
+              Connexion
+            </button>
+          )}
+
+          {user && (
+            <button className={styles.btn} onClick={logout}>
+              Déconexion
+            </button>
+          )}
           <Modal
             isAuthOpen={isAuthOpen}
             onCloseAuth={() => {

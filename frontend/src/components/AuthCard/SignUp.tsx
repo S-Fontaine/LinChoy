@@ -30,7 +30,6 @@ export default function SignUp({
 }: ISignUp) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  //const [confirmPassword, setConfirmPassword] = useState("");
 
   return (
     <form onSubmit={handleSubmit} className={styles.form} key="form-login">

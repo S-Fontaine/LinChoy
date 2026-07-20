@@ -67,7 +67,8 @@
   margin-top: 40px;
 }
 .card {
-  background: var(--bg-surface);
+  background: var(--bg-main);
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 32px;

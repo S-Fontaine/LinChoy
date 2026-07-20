@@ -240,4 +240,10 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+router.post("/logout", (req, res) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken", { path: "/auth/refresh" });
+  return res.status(204).send();
+});
+
 export default router;

@@ -59,6 +59,7 @@ export default function AuthCard({
     error: "",
     success: "",
   });
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -105,6 +106,15 @@ export default function AuthCard({
           setUser(data.user);
           onLoginSuccess?.();
         }
+        if (data.result && !isLogin) {
+          setShowConfirmation(true);
+          setFormData({
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          });
+        }
       }
     } catch {
       setApiResponse({
@@ -114,7 +124,6 @@ export default function AuthCard({
       });
     }
   };
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
@@ -144,12 +153,14 @@ export default function AuthCard({
             apiResponse={apiResponse}
           />
         ) : (
-          <SignUp
-            handleSubmit={handleSubmit}
-            handleInputChange={handleInputChange}
-            formData={formData}
-            apiResponse={apiResponse}
-          />
+          !showConfirmation && (
+            <SignUp
+              handleSubmit={handleSubmit}
+              handleInputChange={handleInputChange}
+              formData={formData}
+              apiResponse={apiResponse}
+            />
+          )
         )}
 
         <div className={styles.footerContainer}>

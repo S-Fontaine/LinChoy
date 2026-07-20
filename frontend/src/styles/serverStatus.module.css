@@ -4,32 +4,6 @@
   padding: 0 20px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
-}
-
-.card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 40px;
-  transition: var(--transition-smooth);
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  border-color: var(--choy-green);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.card h2 {
-  color: var(--text-high);
-  margin: 0 0 15px 0;
-  font-size: 1.6rem;
-}
-
 .badge {
   display: inline-block;
   padding: 6px 16px;
@@ -105,6 +79,7 @@
 .isOn .statusLabel {
   color: var(--choy-green);
 }
+
 .isOff .statusLabel {
   color: var(--text-low);
 }
@@ -135,7 +110,6 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Animation du bouton quand ON */
 .isOn .toggleBtn {
   background-color: var(--choy-green);
 }
@@ -145,10 +119,9 @@
   box-shadow: 0 0 10px white;
 }
 
-/* Animation du bouton quand OFF */
-.isOff .toggleBtn {
+/* .isOff .toggleBtn {
   background-color: var(
     --lin-orange
-  ); /* Rappel de l'orange feu quand activable */
+  ); 
   opacity: 0.6;
-}
+}*/

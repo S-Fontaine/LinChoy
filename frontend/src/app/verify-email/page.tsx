@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Modal from "@/components/Modal";
 import AuthCard from "@/components/AuthCard";
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 interface IResponse {
   result: boolean;
   message: string;
@@ -17,8 +19,10 @@ interface IVerifyEmailPage {
   onSwitchClick?: () => void;
 }
 export default function VerifyEmailPage({ onSwitchClick }: IVerifyEmailPage) {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const token = searchParams.get("token");
   const [response, setResponse] = useState<IResponse>({
     result: false,
     message: "",
@@ -27,7 +31,11 @@ export default function VerifyEmailPage({ onSwitchClick }: IVerifyEmailPage) {
   const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
-    const token = searchParams.get("token");
+    if (user) {
+      router.push("/");
+      return;
+    }
+    if (!token) return;
     async function verifyEmail() {
       try {
         const response = await fetch(
@@ -45,7 +53,7 @@ export default function VerifyEmailPage({ onSwitchClick }: IVerifyEmailPage) {
     }
 
     verifyEmail();
-  }, [searchParams]);
+  }, [token, user, router]);
 
   const closeAuth = () => {
     setIsAuthOpen(false);
@@ -54,7 +62,7 @@ export default function VerifyEmailPage({ onSwitchClick }: IVerifyEmailPage) {
 
   return (
     <div>
-      <Header />
+      <Header isEmailButtonVisible={true} />
 
       <Modal isAuthOpen={isAuthOpen} onCloseAuth={closeAuth}>
         {showAuth ? (
