@@ -1,127 +1,67 @@
-.container {
-  max-width: 1200px;
-  margin: 0 auto 80px;
-  padding: 0 20px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 30px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  margin-bottom: 20px;
-  background: var(--choy-green-glow);
-  color: var(--choy-green);
-}
-
-/* --- BOXE DE CONTRÔLE --- */
-.controlBox {
-  border: 2px solid var(--border);
-  border-radius: 24px;
-  padding: 60px 40px;
-  text-align: center;
-  transition: var(--transition-smooth);
+.mainContent {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 0 24px;
   position: relative;
-  max-width: 450px;
-  margin: 100px auto;
-}
-/* ÉTAT OFF (Par défaut) */
-.controlBox.isOff {
-  border-color: #333;
-  box-shadow: none;
-}
-.backgroundOff {
-  min-width: 300px;
-  min-height: 200px;
-  background-image: url("../../public/plaworld.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: grayscale(100%);
-}
-.backgroundOn {
-  min-width: 300px;
-  min-height: 200px;
-  background-image: url("../../public/plaworld.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  z-index: 10;
 }
 
-/* ÉTAT ON (Effet de lueur verte électrique) */
-.controlBox.isOn {
-  border-color: var(--choy-green);
-  box-shadow:
-    0 0 30px var(--choy-green-glow),
-    inset 0 0 15px var(--choy-green-glow);
+.server {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 580px), 1fr));
+  gap: 24px;
+  margin-top: 32px;
 }
-/* Indicateur lumineux */
+
+.game {
+  margin: 0 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card {
+  background-color: rgba(20, 20, 20, 0.75);
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.3s ease;
+  overflow: hidden;
+}
+
+.serverInfo {
+  border-top: 1px solid var(--border);
+  margin: 0 24px;
+  color: var(--text-high);
+}
+
 .statusIndicator {
   width: 12px;
   height: 12px;
+  margin-bottom: 24px;
   border-radius: 50%;
   background: #444;
-  margin: 0 auto 15px;
   transition: var(--transition-smooth);
 }
 
-.isOn .statusIndicator {
-  background: var(--choy-green);
+.card.isOn {
+  border-color: var(--choy-green);
   box-shadow: 0 0 10px var(--choy-green);
 }
 
-.statusLabel {
-  font-weight: bold;
-  transition: var(--transition-smooth);
-}
-
-.isOn .statusLabel {
-  color: var(--choy-green);
-}
-
-.isOff .statusLabel {
-  color: var(--text-low);
-}
-
-/* --- LE BOUTON TOGGLE --- */
-.toggleBtn {
-  width: 70px;
-  height: 35px;
-  background-color: #333;
-  border-radius: 20px;
-  position: relative;
-  cursor: pointer;
-  border: none;
-  margin-top: 40px;
-  transition: var(--transition-smooth);
-  padding: 0;
-}
-
-.switch {
-  width: 27px;
-  height: 27px;
-  background-color: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  transition: var(--transition-smooth);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-.isOn .toggleBtn {
+.statusIndicator.isOn {
   background-color: var(--choy-green);
+  box-shadow: 0 0 10px var(--choy-green);
 }
 
-.isOn .switch {
-  left: 39px;
-  box-shadow: 0 0 10px white;
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
 }
-
-/* .isOff .toggleBtn {
-  background-color: var(
-    --lin-orange
-  ); 
-  opacity: 0.6;
-}*/
+.image {
+  border: 24px solid;
+  object-fit: cover;
+}

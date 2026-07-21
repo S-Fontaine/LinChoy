@@ -8,7 +8,7 @@ import {
   verifyRefreshToken,
 } from "../../src/utils/jwt.js";
 
-describe("Génération et vérification des tokens JWT", () => {
+describe("Test utilitaire: Génération et vérification des tokens JWT", () => {
   const payload = { userId: "abc123" };
 
   describe("generateAccessToken / verifyAccessToken", () => {

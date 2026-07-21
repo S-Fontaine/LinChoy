@@ -47,7 +47,7 @@ export default function Header({
 
           {user && (
             <button className={styles.btn} onClick={logout}>
-              Déconexion
+              Déconnexion
             </button>
           )}
           <Modal

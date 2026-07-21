@@ -1,8 +1,9 @@
-import { describe, it, expect, jest } from "@jest/globals";
+import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
 import { mailer } from "../../../src/utils/mailer.js";
+import { emailValidator } from "../../../src/utils/validateEmailDomain.js";
 const BASE_URL = "/auth/signup";
 
 describe("Test route: POST /auth/signup", () => {
@@ -11,6 +12,10 @@ describe("Test route: POST /auth/signup", () => {
     email: "fake@linchoy.com",
     password: "adminLinchoyTest!",
   };
+  beforeEach(() => {
+    jest.spyOn(emailValidator, "domainHasMailServer").mockResolvedValue(true);
+  });
+
   it("Crée un utilisateur avec des données valides", async () => {
     const res = await request(app).post(BASE_URL).send({
       username: payload.username,
@@ -121,5 +126,19 @@ describe("Test route: POST /auth/signup", () => {
     expect(res.body.message).toContain(
       "email de vérification n'a pas pu être envoyé",
     );
+  });
+  it("Refuse un email dont le domaine n'a pas de serveur mail", async () => {
+    jest
+      .spyOn(emailValidator, "domainHasMailServer")
+      .mockResolvedValueOnce(false);
+
+    const res = await request(app).post(BASE_URL).send({
+      username: payload.username,
+      email: "test@domaine-inexistant-xyz.com",
+      password: payload.password,
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toContain("domaine introuvable");
   });
 });

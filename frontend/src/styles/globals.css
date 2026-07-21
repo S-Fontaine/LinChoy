@@ -42,6 +42,11 @@ body {
   overflow-x: hidden;
   scrollbar-width: thin;
 }
+ul {
+  list-style-type: none;
+  padding: 24px 0;
+  margin: 0;
+}
 
 ::-webkit-scrollbar {
   width: 8px;
