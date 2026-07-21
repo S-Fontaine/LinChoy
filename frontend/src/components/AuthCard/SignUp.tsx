@@ -1,6 +1,6 @@
 "use client";
 import styles from "@/styles/Sign.module.css";
-import { eyeOff, eyeOn } from "../AuthCard";
+import { eyeOff, eyeOn } from "../icons/Icons";
 import { useState } from "react";
 
 interface IFormData {

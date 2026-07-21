@@ -4,9 +4,7 @@
   position: relative;
 }
 .card {
-  width: 100%;
-  min-width: 375px;
-  max-width: 460px;
+  width: 375px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -17,7 +15,9 @@
 }
 .header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
 }
 .title {
   font-size: 1.75rem;
@@ -70,4 +70,19 @@
 }
 .switchBtn:hover {
   color: var(--text-high) !important;
+}
+
+.infoBox {
+  font-size: 0.8rem;
+  color: var(--text-low);
+  padding: 16px 0 0 0;
+  margin: 0;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--text-high);
+  text-align: center;
 }

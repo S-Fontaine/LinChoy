@@ -13,7 +13,6 @@ ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 
 RUN yarn build
 
-# --- Étape finale ---
 FROM node:24-alpine
 
 WORKDIR /app

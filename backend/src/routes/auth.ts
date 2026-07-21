@@ -12,12 +12,16 @@ import {
 import { mailer } from "../utils/mailer.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import {
+  authLimiter,
+  resendVerificationLimiter,
+} from "../middlewares/rateLimit.js";
+import {
   accessTokenCookieOptions,
   refreshTokenCookieOptions,
 } from "../utils/cookieOptions.js";
 const router = Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", authLimiter, async (req, res) => {
   const { username, email, password } = req.body;
   if (!email?.trim() || !username?.trim() || !password) {
     return res.status(400).json({ result: false, message: "Champs manquants" });
@@ -74,7 +78,7 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   const { email, password } = req.body;
   if (!email?.trim() || !password) {
     return res.status(400).json({ result: false, message: "Champs requis" });
@@ -148,45 +152,53 @@ router.get("/email/verify", async (req, res) => {
   }
 });
 
-router.post("/email/resend-verification", async (req, res) => {
-  const { email } = req.body;
-  if (!email?.trim()) {
-    return res.status(400).json({ result: false, message: "Champs requis" });
-  }
-  let user;
-  try {
-    user = await User.findOne({ email });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ result: false, message: "Utilisateur introuvable" });
+router.post(
+  "/email/resend-verification",
+  resendVerificationLimiter,
+  async (req, res) => {
+    const { email } = req.body;
+    if (!email?.trim()) {
+      return res.status(400).json({ result: false, message: "Champs requis" });
+    }
+    let user;
+    try {
+      user = await User.findOne({ email });
+      if (!user) {
+        return res
+          .status(404)
+          .json({ result: false, message: "Utilisateur introuvable" });
+      }
+
+      if (user.isVerified) {
+        return res
+          .status(400)
+          .json({ result: false, message: "Utilisateur déjà vérifié" });
+      }
+    } catch (err) {
+      console.error("[DB Resend]: Erreur recherche utilisateur", err);
+      return res.status(500).json({ result: false, message: "Erreur serveur" });
+    }
+    try {
+      const verifyToken = generateVerifyToken({ userId: user._id.toString() });
+      await mailer.sendVerificationEmail(
+        user.email,
+        verifyToken,
+        user.username,
+      );
+    } catch (err) {
+      console.error("[Mail Resend]: Échec de l'envoi de l'email", err);
+      return res.status(500).json({
+        result: false,
+        message:
+          "Impossible d'envoyer l'email pour le moment. Réessayez plus tard.",
+      });
     }
 
-    if (user.isVerified) {
-      return res
-        .status(400)
-        .json({ result: false, message: "Utilisateur déjà vérifié" });
-    }
-  } catch (err) {
-    console.error("[DB Resend]: Erreur recherche utilisateur", err);
-    return res.status(500).json({ result: false, message: "Erreur serveur" });
-  }
-  try {
-    const verifyToken = generateVerifyToken({ userId: user._id.toString() });
-    await mailer.sendVerificationEmail(user.email, verifyToken, user.username);
-  } catch (err) {
-    console.error("[Mail Resend]: Échec de l'envoi de l'email", err);
-    return res.status(500).json({
-      result: false,
-      message:
-        "Impossible d'envoyer l'email pour le moment. Réessayez plus tard.",
-    });
-  }
-
-  return res
-    .status(200)
-    .json({ result: true, message: "Email de vérification renvoyé" });
-});
+    return res
+      .status(200)
+      .json({ result: true, message: "Email de vérification renvoyé" });
+  },
+);
 
 router.post("/refresh", (req, res) => {
   const refreshToken = req.cookies.refreshToken;
