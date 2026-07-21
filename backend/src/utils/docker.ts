@@ -3,7 +3,11 @@ import Docker from "dockerode";
 
 const docker = new Docker();
 
-function isServerOnline(host: string, port: number, timeout = 3000): Promise<boolean> {
+function isServerOnline(
+  host: string,
+  port: number,
+  timeout = 3000,
+): Promise<boolean> {
   return new Promise((resolve) => {
     const socket = new net.Socket();
 
@@ -24,11 +28,13 @@ const online = await isServerOnline("localhost", 8211);
 interface ContainerStatus {
   running: boolean;
   startedAt: string;
-  ram: number;
-  cpu: number;
+  ram: number | undefined;
+  cpu: number | undefined;
 }
 
-async function getServerStatus(containerName: string): Promise<ContainerStatus> {
+async function getServerStatus(
+  containerName: string,
+): Promise<ContainerStatus> {
   const container = docker.getContainer(containerName);
   const info = await container.inspect();
 
@@ -60,7 +66,9 @@ type PalworldStatus =
       version: string;
     };
 
-async function getContainerState(containerName: string): Promise<ContainerStatus> {
+async function getContainerState(
+  containerName: string,
+): Promise<ContainerStatus> {
   return getServerStatus(containerName);
 }
 
