@@ -37,7 +37,7 @@ describe("POST /auth/refresh", () => {
     const res = await request(app).post(BASE_URL);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("Refresh token manquant");
+    expect(res.body.message).toBe("Refresh token manquant");
   });
 
   it("Refuse un refreshToken invalide", async () => {
@@ -46,7 +46,7 @@ describe("POST /auth/refresh", () => {
       .set("Cookie", "refreshToken=token.invalide.bidon");
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("Refresh token invalide ou expiré");
+    expect(res.body.message).toBe("Refresh token invalide ou expiré");
   });
 
   it("Refuse un refreshToken expiré", async () => {
@@ -60,7 +60,7 @@ describe("POST /auth/refresh", () => {
       .set("Cookie", `refreshToken=${expiredRefreshToken}`);
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toBe("Refresh token invalide ou expiré");
+    expect(res.body.message).toBe("Refresh token invalide ou expiré");
   });
 
   it("Refuse un accessToken utilisé à la place d'un refreshToken", async () => {

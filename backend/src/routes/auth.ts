@@ -11,7 +11,10 @@ import {
 } from "../utils/jwt.js";
 import { mailer } from "../utils/mailer.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
-
+import {
+  accessTokenCookieOptions,
+  refreshTokenCookieOptions,
+} from "../utils/cookieOptions.js";
 const router = Router();
 
 router.post("/signup", async (req, res) => {
@@ -100,20 +103,9 @@ router.post("/login", async (req, res) => {
     const payload = { userId: String(user._id) };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
-    });
+    res.cookie("accessToken", accessToken, accessTokenCookieOptions);
+    res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/auth/refresh",
-    });
     return res.status(200).json({
       result: true,
       user: { id: user._id, username: user.username, email: user.email },
@@ -200,23 +192,22 @@ router.post("/refresh", (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
-    return res.status(401).json({ error: "Refresh token manquant" });
+    return res
+      .status(401)
+      .json({ result: false, message: "Refresh token manquant" });
   }
 
   try {
     const payload = verifyRefreshToken(refreshToken);
-    const newAccessToken = generateAccessToken({ userId: payload.userId });
+    const accessToken = generateAccessToken({ userId: payload.userId });
 
-    res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
-    });
+    res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
     return res.status(200).json({ result: true });
   } catch {
-    return res.status(401).json({ error: "Refresh token invalide ou expiré" });
+    return res
+      .status(401)
+      .json({ result: false, message: "Refresh token invalide ou expiré" });
   }
 });
 
@@ -241,8 +232,8 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken", { path: "/auth/refresh" });
+  res.clearCookie("accessToken", accessTokenCookieOptions);
+  res.clearCookie("refreshToken", refreshTokenCookieOptions);
   return res.status(204).send();
 });
 

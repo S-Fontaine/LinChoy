@@ -1,0 +1,43 @@
+name: Tests Backend
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Activer Yarn
+        run: corepack enable
+
+      - name: Installer les dépendances
+        working-directory: ./backend
+        run: yarn install --frozen-lockfile
+
+      - name: Vérifier les types
+        working-directory: ./backend
+        run: yarn typecheck
+
+      - name: Lancer les tests
+        working-directory: ./backend
+        run: yarn test
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          JWT_VERIFY_SECRET: ${{ secrets.JWT_VERIFY_SECRET }}
+          JWT_EXPIRES_IN: 15m
+          JWT_REFRESH_EXPIRES_IN: 7d
+          JWT_VERIFY_EXPIRES_IN: 1d
+          NODE_ENV: test
