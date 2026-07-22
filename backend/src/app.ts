@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import serverStatusRouter from "./routes/serverStatus.js";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
+import palworldRouter from "./routes/palworld.js";
 
 const app = express();
 
@@ -24,9 +25,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "../public")));
 
 // Route
-app.use("/server", serverStatusRouter)
+app.use("/server", serverStatusRouter);
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
+app.use("/palworld", palworldRouter);
 
 // Check
 app.use((req, res) => {
@@ -34,10 +36,15 @@ app.use((req, res) => {
 });
 
 app.use(
-  (err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  (
+    err: Error,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
     console.error(err);
     res.status(500).json({ result: false, message: "Internal server error" });
-  }
+  },
 );
 
 export default app;
