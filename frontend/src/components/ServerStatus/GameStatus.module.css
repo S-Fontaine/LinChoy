@@ -1,16 +1,11 @@
-.mainContent {
-  max-width: 1250px;
-  margin: 0 auto;
-  padding: 0 24px;
-  position: relative;
-  z-index: 10;
-}
-
-.server {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 580px), 1fr));
-  gap: 24px;
-  margin-top: 32px;
+.card {
+  max-width: 580px;
+  background-color: rgba(20, 20, 20, 0.75);
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.3s ease;
+  overflow: hidden;
 }
 
 .game {
@@ -21,21 +16,6 @@
   justify-content: space-between;
 }
 
-.card {
-  background-color: rgba(20, 20, 20, 0.75);
-  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  transition: border-color 0.3s ease;
-  overflow: hidden;
-}
-
-.serverInfo {
-  border-top: 1px solid var(--border);
-  margin: 0 24px;
-  color: var(--text-high);
-}
-
 .statusIndicator {
   width: 12px;
   height: 12px;
@@ -44,17 +24,19 @@
   background: #444;
   transition: var(--transition-smooth);
 }
-
-.card.isOn {
-  border-color: var(--choy-green);
-  box-shadow: 0 0 10px var(--choy-green);
-}
-
 .statusIndicator.isOn {
   background-color: var(--choy-green);
   box-shadow: 0 0 10px var(--choy-green);
 }
-
+.serverInfo {
+  border-top: 1px solid var(--border);
+  margin: 0 24px;
+  color: var(--text-high);
+}
+.card.isOn {
+  border-color: var(--choy-green);
+  box-shadow: 0 0 10px var(--choy-green);
+}
 .imageContainer {
   position: relative;
   width: 100%;

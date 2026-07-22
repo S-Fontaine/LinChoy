@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/styles/LandingPage.module.css";
+import styles from "./LandingPage.module.css";
 
 interface ILandingPage {
   openAuth: () => void;
@@ -72,9 +72,7 @@ export default function LandingPage({ openAuth }: ILandingPage) {
           {/* Box 2 : Cross-Platform */}
           <div className={styles.card}>
             <h2>Liaison Multi-Plateforme</h2>
-            <p
-              style={{ color: "var(--text-medium)", marginBottom: "24px" }}
-            >
+            <p style={{ color: "var(--text-medium)", marginBottom: "24px" }}>
               Connecte tes comptes pour synchroniser ta progression et retrouver
               tes amis en un clic.
             </p>
@@ -90,9 +88,7 @@ export default function LandingPage({ openAuth }: ILandingPage) {
           {/* Box 3 : Communauté / Chat */}
           <div className={styles.card}>
             <h2>Chat & Notes</h2>
-            <p
-              style={{ color: "var(--text-medium)", marginBottom: "20px" }}
-            >
+            <p style={{ color: "var(--text-medium)", marginBottom: "20px" }}>
               Un espace de discussion intégré directement lié à tes serveurs.
               Note et partage tes retours sur vos parties endiablées.
             </p>

@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import type { ReactNode } from "react";
-import styles from "../styles/Modal.module.css";
-import { cross } from "./icons/Icons";
+import styles from "./Modal.module.css";
+import { cross } from "../icons/Icons";
 
 interface ModalProps {
   isAuthOpen: boolean;

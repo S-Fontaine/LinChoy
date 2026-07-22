@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import LandingPage from "@/components/LandingPage";
-import Header from "@/components/Header";
-import ServerStatus from "@/components/ServerStatus";
+import LandingPage from "@/components/LandingPage/LandingPage";
+import Header from "@/components/Header/Header";
+import ServerStatus from "@/components/ServerStatus/ServerStatus";
 
 export default function Home() {
   const { user } = useAuth();

@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import styles from "../styles/Header.module.css";
-import AuthCard from "./AuthCard";
-import Modal from "./Modal";
+import styles from "./Header.module.css";
+import AuthCard from "../AuthCard/AuthCard";
+import Modal from "../ui/Modal";
 
 interface IHeader {
   onLoginSuccess?: () => void;

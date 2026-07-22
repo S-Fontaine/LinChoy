@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/styles/Sign.module.css";
+import styles from "./Sign.module.css";
 import { eyeOff, eyeOn } from "../icons/Icons";
 import { useState } from "react";
 

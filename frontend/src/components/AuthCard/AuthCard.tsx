@@ -1,9 +1,9 @@
 "use client";
-import SignIn from "./AuthCard/SignIn";
-import SignUp from "./AuthCard/SignUp";
+import SignIn from "./SignIn";
+import SignUp from "./SignUp";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import styles from "../styles/AuthCard.module.css";
+import styles from "./AuthCard.module.css";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface IAuthCard {
