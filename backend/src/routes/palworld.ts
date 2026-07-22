@@ -9,7 +9,6 @@ const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
 const authHeader =
   "Basic " + Buffer.from(`${PALWORLD_ADMIN}`).toString("base64");
 
-
 // router.get("/settings", requireAuth, async (req: AuthRequest, res) => {
 //   try {
 //     const user = await User.findById(req.user?.userId).select("-password");
@@ -67,10 +66,7 @@ router.patch("/", async (req, res) => {
     const updatedPalworld = await Palworld.findOneAndUpdate(
       { palworld: "Palworld" },
       serverData,
-      {
-        new: true,
-        upsert: true,
-      },
+      { returnDocument: "after", upsert: true },
     );
     return res.status(200).json({
       result: true,

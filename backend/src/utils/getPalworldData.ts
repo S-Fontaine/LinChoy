@@ -35,7 +35,7 @@ export async function syncPalworldData() {
     const updated = await Palworld.findOneAndUpdate(
       { palworld: "Palworld" },
       serverData,
-      { new: true, upsert: true },
+      { returnDocument: "after", upsert: true },
     );
 
     console.log(
