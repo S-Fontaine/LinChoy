@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 import serverStatusRouter from "./routes/serverStatus.js";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
-import palworldRouter from "./routes/palworld.js";
+import gameServerRouter from "./routes/gamesServer.js";
 
 const app = express();
 
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use("/server", serverStatusRouter);
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
-app.use("/palworld", palworldRouter);
+app.use("/game", gameServerRouter);
 
 // Check
 app.use((req, res) => {

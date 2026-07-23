@@ -1,33 +1,57 @@
 "use client";
 import styles from "./ServerStatus.module.css";
-
+import { useAuth } from "@/context/AuthContext";
 import { GameStatus } from "./GameStatus";
-
-const game = {
-  name: "Palworld",
-  image: "/assets/palworld.png",
-  totalPlayer: 10,
-  playerOnLine: 2,
-  serverType: "PVE Survie",
-};
+import { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function Home() {
+  const { user } = useAuth();
+  const [gameData, setGameData] = useState({
+    result: false,
+    data: {
+      name: "",
+      description: "",
+      servername: "",
+      image: "",
+      totalPlayer: 0,
+      playerOnLine: 0,
+    },
+  });
+
+  useEffect(() => {
+    if (!user) return;
+
+    async function getData() {
+      try {
+        const response = await fetchWithAuth("/game/palworld", {
+          method: "GET",
+        });
+        const data = await response.json();
+        if (data) {
+          setGameData(data);
+        }
+      } catch (err) {
+        console.error("Erreur de récupération :", err);
+      }
+    }
+
+    getData();
+    const intervalId = setInterval(getData, 30000);
+    return () => clearInterval(intervalId);
+  }, [user]);
+
   return (
     <main className={styles.mainContent}>
       <section className={styles.server}>
         <GameStatus
-          name={game.name}
-          image={game.image}
-          totalPlayer={game.totalPlayer}
-          playerOnLine={game.playerOnLine}
-          serverType={game.serverType}
-        />
-        <GameStatus
-          name={game.name}
-          image={game.image}
-          totalPlayer={game.totalPlayer}
-          playerOnLine={game.playerOnLine}
-          serverType={game.serverType}
+          isOnline={gameData.result}
+          name={gameData.data.name}
+          servername={gameData.data.servername}
+          image={gameData.data.image}
+          totalPlayer={gameData.data.totalPlayer}
+          playerOnLine={gameData.data.playerOnLine}
+          description={gameData.data.description}
         />
       </section>
     </main>

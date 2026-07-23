@@ -1,11 +1,16 @@
 .card {
   max-width: 580px;
-  background-color: rgba(20, 20, 20, 0.75);
   background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
   border: 1px solid var(--border);
   border-radius: 16px;
-  transition: border-color 0.3s ease;
   overflow: hidden;
+  color: var(--text-high);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.isOn {
+  border-color: var(--choy-green);
+  box-shadow: 0 0 15px rgba(50, 205, 50, 0.15);
 }
 
 .game {
@@ -16,34 +21,92 @@
   justify-content: space-between;
 }
 
+.gameTitle {
+  margin: 12px 0;
+}
+
+.statusContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.isOnline {
+  font-size: 12px;
+  font-weight: 800;
+  margin-right: 8px;
+}
+
 .statusIndicator {
   width: 12px;
   height: 12px;
-  margin-bottom: 24px;
   border-radius: 50%;
-  background: #444;
-  transition: var(--transition-smooth);
+  background: var(--border);
+  transition: var(--transition-smooth, background-color 0.3s ease);
 }
+
 .statusIndicator.isOn {
   background-color: var(--choy-green);
   box-shadow: 0 0 10px var(--choy-green);
 }
-.serverInfo {
-  border-top: 1px solid var(--border);
-  margin: 0 24px;
-  color: var(--text-high);
-}
-.card.isOn {
-  border-color: var(--choy-green);
-  box-shadow: 0 0 10px var(--choy-green);
-}
+
 .imageContainer {
   position: relative;
-  width: 100%;
-  height: 200px;
+  height: 240px;
+  margin: 16px;
+  border-radius: 10px;
   overflow: hidden;
 }
+
 .image {
-  border: 24px solid;
   object-fit: cover;
+}
+
+.imageOff {
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.imageOn {
+  filter: grayscale(0%);
+  transition: filter 0.3s ease;
+}
+
+.contentSection {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.serverHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.serverName {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.serverDescription {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted, #aaa);
+  margin: 0;
+}
+
+.playerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: fit-content;
 }

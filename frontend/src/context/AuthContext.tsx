@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -30,21 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function checkAuth() {
       try {
-        let response = await fetch(`${BACKEND_URL}/auth/me`, {
-          credentials: "include",
+        const response = await fetchWithAuth("/auth/me", {
+          method: "GET",
         });
-        if (response.status === 401) {
-          const refreshRes = await fetch(`${BACKEND_URL}/auth/refresh`, {
-            method: "POST",
-            credentials: "include",
-          });
-
-          if (refreshRes.ok) {
-            response = await fetch(`${BACKEND_URL}/auth/me`, {
-              credentials: "include",
-            });
-          }
-        }
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);

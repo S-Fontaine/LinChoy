@@ -2,10 +2,11 @@ import Palworld, { type IPalworldPlayer } from "../models/Palworld.js";
 
 const PALWORLD_API = process.env.PALWORLD_API;
 const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
+
 const authHeader =
   "Basic " + Buffer.from(`${PALWORLD_ADMIN}`).toString("base64");
 
-export async function syncPalworldData() {
+export async function syncGameServerData() {
   try {
     const [infoRes, playersRes, metricsRes] = await Promise.all([
       fetch(`${PALWORLD_API}/info`, { headers: { Authorization: authHeader } }),

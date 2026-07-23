@@ -1,6 +1,6 @@
 import app from "./app.js";
 import { connectDB, disconnectDB } from "./models/connection.js";
-import { syncPalworldData } from "./utils/getPalworldData.js";
+import { syncGameServerData } from "./utils/getPalworldData.js";
 
 const PORT = Number(process.env.PORT) || 5000;
 
@@ -11,9 +11,9 @@ async function startServer() {
     const server = app.listen(PORT, () => {
       console.log(`[server]: Serveur démarré sur http://localhost:${PORT}`);
     });
-    syncPalworldData();
+    syncGameServerData();
     const palworldInterval = setInterval(() => {
-      syncPalworldData();
+      syncGameServerData();
     }, 30000);
     server.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE") {

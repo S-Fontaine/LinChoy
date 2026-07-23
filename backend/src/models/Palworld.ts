@@ -30,7 +30,7 @@ export interface IPalworldPlayer {
 }
 
 export interface IPalworld extends Document {
-  palworld: string;
+  name: string;
   info: IPalworldInfo;
   metrics: IPalworldMetrics;
   players: IPalworldPlayer[];
@@ -49,11 +49,24 @@ const playerSchema = new Schema<IPalworldPlayer>(
     level: Number,
     building_count: Number,
   },
-  { _id: false },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    _id: false,
+  },
 );
+playerSchema.virtual("mapY").get(function () {
+  if (this.location_x == null) return null;
+  return Math.round((this.location_x + 123888) / 459);
+});
+
+playerSchema.virtual("mapX").get(function () {
+  if (this.location_y == null) return null;
+  return Math.round((this.location_y - 158000) / 459);
+});
 
 const PalworldSchema = new Schema<IPalworld>({
-  palworld: { type: String, default: "Palworld" },
+  name: { type: String, default: "Palworld" },
   info: {
     version: String,
     servername: String,
