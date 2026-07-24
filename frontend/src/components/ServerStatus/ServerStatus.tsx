@@ -23,7 +23,7 @@ export default function Home() {
 
     async function getData() {
       try {
-        const response = await fetchWithAuth("/game/palworld", {
+        const response = await fetchWithAuth("/games/palworld", {
           method: "GET",
         });
         const data = await response.json();

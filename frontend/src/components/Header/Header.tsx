@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import styles from "./Header.module.css";
 import AuthCard from "../AuthCard/AuthCard";
 import Modal from "../ui/Modal";
+import { useRouter } from "next/navigation";
 
 interface IHeader {
   onLoginSuccess?: () => void;
@@ -22,7 +23,7 @@ export default function Header({
 }: IHeader) {
   const { user, logout } = useAuth();
   const [isLogin, setIsLogin] = useState(false);
-  //const [isEmailButtonVisible, setIsEmailButtonVisible] = useState(false);
+  const router = useRouter();
   const onSwitchClick = () => {
     setIsLogin(!isLogin);
   };
@@ -34,7 +35,7 @@ export default function Header({
   return (
     <div className={styles.container}>
       <header className={styles.headerContainer}>
-        <div className={styles.logo}>
+        <div className={styles.logo} onClick={() => router.push("/")}>
           <span className={styles.lin}>Lin</span>
           <span className={styles.choy}>Choy</span>
         </div>

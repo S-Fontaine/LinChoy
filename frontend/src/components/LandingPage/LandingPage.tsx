@@ -1,20 +1,40 @@
 "use client";
 import styles from "./LandingPage.module.css";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 interface ILandingPage {
   openAuth: () => void;
 }
 export default function LandingPage({ openAuth }: ILandingPage) {
-  const games = [
-    { name: "Minecraft", icon: "⛏️", status: "Disponible" },
-    { name: "Palworld", icon: "🦊", status: "Disponible" },
-    { name: "Valheim", icon: "🛡️", status: "Disponible" },
-    { name: "V Rising", icon: "🧛", status: "Disponible" },
-    { name: "Et bien d'autres...", icon: "+", status: "En approche" },
-  ];
+  const { user } = useAuth();
+  const [gamesList, setGamesList] = useState([]);
+  useEffect(() => {
+    if (user) return;
+    async function getData() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/games`, {
+          method: "GET",
+        });
+        const data = await response.json();
+        if (data) {
+          setGamesList(data.gamesList);
+        }
+      } catch (err) {
+        console.error("Erreur de récupération :", err);
+      }
+    }
+    getData();
+  }, [user]);
 
+  const scrollToSection = () => {
+    const section = document.getElementById("server-status");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   const platforms = ["Steam", "Xbox Live", "Epic Games", "PlayStation Network"];
-
   return (
     <div className={styles.container}>
       <main className={styles.mainContent}>
@@ -33,42 +53,50 @@ export default function LandingPage({ openAuth }: ILandingPage) {
             <button className={styles.btn} onClick={openAuth}>
               Inscription
             </button>
-            <button className={styles.btn}>
+            <button className={styles.btn} onClick={scrollToSection}>
               Voir l&apos;état des serveurs
             </button>
           </div>
         </section>
-        <section className={styles.grid}>
+        <section id="server-status" className={styles.grid}>
           {/* Box 1 : Les Serveurs (Large) */}
           <div className={`${styles.card} ${styles.cardLarge}`}>
             <h2>Nos Serveurs Actifs</h2>
             <div className={styles.gameList}>
-              {games.map((game, idx) => (
+              {gamesList.map((game, idx) => (
                 <div key={idx} className={styles.gameItem}>
                   <div className={styles.gameInfo}>
-                    <span className={styles.gameIcon}>{game.icon}</span>
-                    <span className={styles.gameName}>{game.name}</span>
+                    <span className={styles.gameName}>{game}</span>
                   </div>
                   <span
                     className={styles.statusTag}
                     style={{
-                      color:
-                        game.status === "Disponible"
-                          ? "var(--choy-green-light)"
-                          : "var(--text-low)",
-                      borderColor:
-                        game.status === "Disponible"
-                          ? "rgba(50, 205, 50, 0.2)"
-                          : "var(--border)",
+                      color: "var(--choy-green)",
+                      borderColor: "var(--choy-green-glow)",
                     }}
                   >
-                    {game.status}
+                    Disponible
                   </span>
                 </div>
               ))}
+              <div className={styles.gameItem}>
+                <div className={styles.gameInfo}>
+                  <span className={styles.gameName}>
+                    Et bien d&apos;autres...
+                  </span>
+                </div>
+                <span
+                  className={styles.statusTag}
+                  style={{
+                    color: "var(--text-low)",
+                    borderColor: "var(--border)",
+                  }}
+                >
+                  Disponible
+                </span>
+              </div>
             </div>
           </div>
-
           {/* Box 2 : Cross-Platform */}
           <div className={styles.card}>
             <h2>Liaison Multi-Plateforme</h2>
@@ -84,7 +112,6 @@ export default function LandingPage({ openAuth }: ILandingPage) {
               ))}
             </div>
           </div>
-
           {/* Box 3 : Communauté / Chat */}
           <div className={styles.card}>
             <h2>Chat & Notes</h2>

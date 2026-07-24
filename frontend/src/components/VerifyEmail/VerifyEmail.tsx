@@ -8,13 +8,13 @@ import AuthCard from "@/components/AuthCard/AuthCard";
 import styles from "./verify-email.module.css";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
-  
   const [response, setResponse] = useState({ result: false, message: "" });
   const [isAuthOpen, setIsAuthOpen] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
@@ -29,8 +29,8 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
     async function verifyEmail() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/email/verify?token=${token}`,
-          { method: "GET", credentials: "include" }
+          `${BACKEND_URL}/auth/email/verify?token=${token}`,
+          { method: "GET", credentials: "include" },
         );
         const data = await response.json();
         setResponse(data);
@@ -84,4 +84,4 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
       </Modal>
     </>
   );
-}   
+}
