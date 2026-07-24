@@ -29,7 +29,7 @@ export interface IPalworldPlayer {
   building_count: number;
 }
 
-export interface IPalWorldSetting {
+export interface IPalWorldSettings {
   Difficulty: string;
   DayTimeSpeedRate: number;
   NightTimeSpeedRate: number;
@@ -104,7 +104,7 @@ export interface IPalworld extends Document {
   info: IPalworldInfo;
   metrics: IPalworldMetrics;
   players: IPalworldPlayer[];
-  setting: IPalWorldSetting;
+  settings: IPalWorldSettings;
 }
 
 const playerSchema = new Schema<IPalworldPlayer>(
@@ -156,7 +156,7 @@ const PalworldSchema = new Schema<IPalworld>(
       days: Number,
     },
     players: [playerSchema],
-    setting: {
+    settings: {
       Difficulty: String,
       DayTimeSpeedRate: Number,
       NightTimeSpeedRate: Number,

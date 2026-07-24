@@ -39,7 +39,7 @@ export async function syncGameServerData() {
 
     const updated = await GameServer.findOneAndUpdate(
       { name: "Palworld" },
-      palworldData,
+      { palworldData },
       { returnDocument: "after", upsert: true },
     );
 
