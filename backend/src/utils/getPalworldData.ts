@@ -1,6 +1,7 @@
-import Palworld, { type IPalworldPlayer } from "../models/Palworld.js";
+import GameServer from "../models/GameServer.js";
+import { type IPalworldPlayer } from "../models/subdocuments/palworld.schema.js";
 
-const PALWORLD_API = process.env.PALWORLD_API;
+const PALWORLD_API = `http://${process.env.PALWORLD_API_ADDRESS}:${process.env.PALWORLD_API_PORT}/v1/api`;
 const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
 
 const authHeader =
@@ -8,12 +9,15 @@ const authHeader =
 
 export async function syncGameServerData() {
   try {
-    const [infoRes, playersRes, metricsRes] = await Promise.all([
+    const [infoRes, playersRes, metricsRes, settingsRes] = await Promise.all([
       fetch(`${PALWORLD_API}/info`, { headers: { Authorization: authHeader } }),
       fetch(`${PALWORLD_API}/players`, {
         headers: { Authorization: authHeader },
       }),
       fetch(`${PALWORLD_API}/metrics`, {
+        headers: { Authorization: authHeader },
+      }),
+      fetch(`${PALWORLD_API}/settings`, {
         headers: { Authorization: authHeader },
       }),
     ]);
@@ -26,16 +30,16 @@ export async function syncGameServerData() {
       playersData = Array.isArray(json) ? json : json.players || [];
     }
 
-    const serverData = {
-      palworld: "Palworld",
+    const palworldData = {
       info: infoRes.ok ? await infoRes.json() : {},
       players: playersData,
       metrics: metricsRes.ok ? await metricsRes.json() : {},
+      settings: settingsRes.ok ? await settingsRes.json() : {},
     };
 
-    const updated = await Palworld.findOneAndUpdate(
-      { palworld: "Palworld" },
-      serverData,
+    const updated = await GameServer.findOneAndUpdate(
+      { name: "Palworld" },
+      palworldData,
       { returnDocument: "after", upsert: true },
     );
 

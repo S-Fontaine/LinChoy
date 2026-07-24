@@ -18,7 +18,6 @@ export async function fetchWithAuth(path: string, options: RequestInit = {}) {
         credentials: "include",
       });
     } else {
-      window.location.href = "/";
       return res;
     }
   }

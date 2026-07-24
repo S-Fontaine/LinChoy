@@ -2,43 +2,39 @@ import { Router } from "express";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { isServerOnline } from "../utils/docker.js";
 import User from "../models/User.js";
-import Palworld from "../models/Palworld.js";
+import GameServer from "../models/GameServer.js";
+
 const router = Router();
+const PALWORLD_ADDRESS = `${process.env.PALWORLD_API_ADDRESS}`;
+const PALWORLD_PORT = Number(process.env.PALWORLD_API_PORT);
 
 router.get("/palworld", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const online = await isServerOnline("host.docker.internal", 8212);
+    const online = await isServerOnline(PALWORLD_ADDRESS, PALWORLD_PORT);
     const user = await User.findById(req.user?.userId).select("-password");
     if (!user) {
       return res
         .status(404)
         .json({ result: false, message: "Utilisateur introuvable" });
     }
-    const data = await Palworld.find();
+    const data = await GameServer.findOne({ name: "Palwolrd" });
+    const palwordData = {
+      name: data?.name,
+      servername: data?.palworldData?.info.servername,
+      description: data?.palworldData?.info.description,
+      totalPlayer: data?.palworldData?.metrics.maxplayernum,
+      playerOnLine: data?.palworldData?.metrics.currentplayernum,
+    };
     if (!online) {
       return res.status(530).json({
         result: false,
-        data: {
-          name: data[0]?.name,
-          image: `/assets/${data[0]?.name.toLowerCase()}.png`,
-          servername: data[0]?.info.servername,
-          description: data[0]?.info.description,
-          totalPlayer: data[0]?.metrics.currentplayernum,
-          playerOnLine: data[0]?.players.length,
-        },
+        data: palwordData,
       });
     }
 
     return res.status(200).json({
       result: true,
-      data: {
-        name: data[0]?.name,
-        image: `/assets/${data[0]?.name.toLowerCase()}.png`,
-        servername: data[0]?.info.servername,
-        description: data[0]?.info.description,
-        totalPlayer: data[0]?.metrics.currentplayernum,
-        playerOnLine: data[0]?.players.length,
-      },
+      data: palwordData,
     });
   } catch (err) {
     console.error(err);

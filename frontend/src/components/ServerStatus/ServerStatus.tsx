@@ -13,7 +13,6 @@ export default function Home() {
       name: "",
       description: "",
       servername: "",
-      image: "",
       totalPlayer: 0,
       playerOnLine: 0,
     },
@@ -48,7 +47,7 @@ export default function Home() {
           isOnline={gameData.result}
           name={gameData.data.name}
           servername={gameData.data.servername}
-          image={gameData.data.image}
+          image={`/assets/${gameData.data.name}.png`}
           totalPlayer={gameData.data.totalPlayer}
           playerOnLine={gameData.data.playerOnLine}
           description={gameData.data.description}
