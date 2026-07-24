@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use("/server", serverStatusRouter);
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
-app.use("/game", gameServerRouter);
+app.use("/games", gameServerRouter);
 
 // Check
 app.use((req, res) => {

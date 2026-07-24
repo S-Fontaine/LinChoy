@@ -37,25 +37,24 @@ export function isServerOnline(
   });
 }
 
-// async function getServerStatus(
-//   containerName: string,
-// ): Promise<ContainerStatus> {
-//   const container = docker.getContainer(containerName);
-//   const info = await container.inspect();
+async function getServerStatus(
+  containerName: string,
+): Promise<ContainerStatus> {
+  const container = docker.getContainer(containerName);
+  const info = await container.inspect();
+  return {
+    running: info.State.Running,
+    startedAt: info.State.StartedAt,
+    ram: info.HostConfig.Memory,
+    cpu: info.HostConfig.NanoCpus,
+  };
+}
 
-//   return {
-//     running: info.State.Running,
-//     startedAt: info.State.StartedAt,
-//     ram: info.HostConfig.Memory,
-//     cpu: info.HostConfig.NanoCpus,
-//   };
-// }
-
-// async function getContainerState(
-//   containerName: string,
-// ): Promise<ContainerStatus> {
-//   return getServerStatus(containerName);
-// }
+async function getContainerState(
+  containerName: string,
+): Promise<ContainerStatus> {
+  return getServerStatus(containerName);
+}
 
 // async function getPalworldStatus() {
 //   const container = await getContainerState("palworld");
@@ -66,4 +65,4 @@ export function isServerOnline(
 //   } catch {
 //     return { status: "starting" };
 //   }
-// }
+//}

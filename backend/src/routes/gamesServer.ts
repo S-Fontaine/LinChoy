@@ -8,6 +8,24 @@ const router = Router();
 const PALWORLD_ADDRESS = `${process.env.PALWORLD_API_ADDRESS}`;
 const PALWORLD_PORT = Number(process.env.PALWORLD_API_PORT);
 
+router.get("/", async (req, res) => {
+  try {
+    const data = await GameServer.distinct("name");
+    if (!data) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Serveur introuvable" });
+    }
+    return res.status(200).json({
+      result: true,
+      gamesList: data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ result: false, message: "Erreur serveur" });
+  }
+});
+
 router.get("/palworld", requireAuth, async (req: AuthRequest, res) => {
   try {
     const online = await isServerOnline(PALWORLD_ADDRESS, PALWORLD_PORT);
@@ -17,7 +35,12 @@ router.get("/palworld", requireAuth, async (req: AuthRequest, res) => {
         .status(404)
         .json({ result: false, message: "Utilisateur introuvable" });
     }
-    const data = await GameServer.findOne({ name: "Palwolrd" });
+    const data = await GameServer.findOne({ name: "Palworld" });
+    if (!data) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Serveur introuvable" });
+    }
     const palwordData = {
       name: data?.name,
       servername: data?.palworldData?.info.servername,
