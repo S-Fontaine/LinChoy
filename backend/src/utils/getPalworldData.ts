@@ -1,5 +1,10 @@
 import GameServer from "../models/GameServer.js";
-import { type IPalworldPlayer } from "../models/subdocuments/palworld.schema.js";
+import {
+  type IPalworldPlayer,
+  type IPalworldInfo,
+  type IPalworldMetrics,
+  type IPalWorldSettings,
+} from "../models/subdocuments/palworld.schema.js";
 
 const PALWORLD_API = `http://${process.env.PALWORLD_API_ADDRESS}:${process.env.PALWORLD_API_PORT}/v1/api`;
 const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
@@ -30,17 +35,33 @@ export async function syncGameServerData() {
       playersData = Array.isArray(json) ? json : json.players || [];
     }
 
-    const palworldData = {
-      info: infoRes.ok ? await infoRes.json() : {},
-      players: playersData,
-      metrics: metricsRes.ok ? await metricsRes.json() : {},
-      settings: settingsRes.ok ? await settingsRes.json() : {},
-    };
+const palworldData = {
+  info: infoRes.ok
+    ? ((await infoRes.json()) as IPalworldInfo)
+    : ({} as IPalworldInfo),
+  players: playersData,
+  metrics: metricsRes.ok
+    ? ((await metricsRes.json()) as IPalworldMetrics)
+    : ({} as IPalworldMetrics),
+  settings: settingsRes.ok
+    ? ((await settingsRes.json()) as IPalWorldSettings)
+    : ({} as IPalWorldSettings),
+};
 
     const updated = await GameServer.findOneAndUpdate(
       { name: "Palworld" },
-      { palworldData },
-      { returnDocument: "after", upsert: true },
+      {
+        $set: {
+          palworldData,
+          "status.online": true,
+          "status.playerCount": palworldData.metrics?.currentplayernum ?? 0,
+          "status.maxPlayers": palworldData.metrics?.maxplayernum,
+          "status.displayName": palworldData.info?.servername,
+          "status.description": palworldData.info?.description,
+          "status.lastChecked": new Date(),
+        },
+      },
+      { upsert: true, returnDocument: "after" },
     );
 
     console.log(
