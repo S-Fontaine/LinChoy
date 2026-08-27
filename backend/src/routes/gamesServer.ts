@@ -1,5 +1,5 @@
 import { Router } from "express";
-import GameServer from "../models/GameServer.js";
+import GameServer, { type GameServerType } from "../models/GameServer.js";
 
 const router = Router();
 
@@ -16,9 +16,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:name", async (req, res) => {
+router.get("/:type", async (req, res) => {
   try {
-    const server = await GameServer.findOne({ name: req.params.name });
+    const server = await GameServer.findOne({
+      type: req.params.type as GameServerType,
+    });
     if (!server) {
       return res
         .status(404)
@@ -35,6 +37,7 @@ router.get("/:name", async (req, res) => {
         playerOnLine: server.status.playerCount,
         online: server.status.online,
         comingSoon: server.comingSoon,
+        image: server.image,
       },
     });
   } catch (err) {
