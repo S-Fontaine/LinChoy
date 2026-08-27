@@ -19,6 +19,7 @@ interface SingleGameData {
     playerOnLine: number;
     description: string;
     image: string;
+    online: boolean;
   };
 }
 
@@ -53,7 +54,6 @@ export default function ServerStatus({ gamesList }: IHome) {
     const intervalId = setInterval(getData, 30000);
     return () => clearInterval(intervalId);
   }, [user, gamesList]);
-  console.log("gamesDataMap:", gamesDataMap);
   return (
     <main className={styles.mainContent}>
       {gamesList.map((game) => {
@@ -64,7 +64,7 @@ export default function ServerStatus({ gamesList }: IHome) {
         return (
           <section className={styles.server} key={game.type}>
             <GameStatus
-              isOnline={gameData.result}
+              isOnline={gameData.data.online}
               name={gameData.data.name}
               servername={gameData.data.servername}
               image={gameData.data.image}
