@@ -1,33 +1,12 @@
 "use client";
 import styles from "./LandingPage.module.css";
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { type IGamesList } from "@/app/page";
 interface ILandingPage {
   openAuth: () => void;
+  gamesList: IGamesList[];
 }
-export default function LandingPage({ openAuth }: ILandingPage) {
-  const { user } = useAuth();
-  const [gamesList, setGamesList] = useState([]);
-  useEffect(() => {
-    if (user) return;
-    async function getData() {
-      try {
-        const response = await fetch(`${BACKEND_URL}/games`, {
-          method: "GET",
-        });
-        const data = await response.json();
-        if (data) {
-          setGamesList(data.gamesList);
-        }
-      } catch (err) {
-        console.error("Erreur de récupération :", err);
-      }
-    }
-    getData();
-  }, [user]);
 
+export default function LandingPage({ openAuth, gamesList }: ILandingPage) {
   const scrollToSection = () => {
     const section = document.getElementById("server-status");
     if (section) {
@@ -66,7 +45,7 @@ export default function LandingPage({ openAuth }: ILandingPage) {
               {gamesList.map((game, idx) => (
                 <div key={idx} className={styles.gameItem}>
                   <div className={styles.gameInfo}>
-                    <span className={styles.gameName}>{game}</span>
+                    <span className={styles.gameName}>{game.name}</span>
                   </div>
                   <span
                     className={styles.statusTag}
