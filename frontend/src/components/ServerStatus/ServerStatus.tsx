@@ -37,11 +37,11 @@ export default function ServerStatus({ gamesList }: IHome) {
         const newMap: Record<string, SingleGameData> = {};
 
         for (const game of gamesList) {
-          const response = await fetchWithAuth(`/games/${game.type}`, {
+          const response = await fetchWithAuth(`/games/${game.slug}`, {
             method: "GET",
           });
           const resultData: SingleGameData = await response.json();
-          newMap[game.type] = resultData;
+          newMap[game.slug] = resultData;
         }
 
         setGamesDataMap(newMap);
@@ -57,12 +57,12 @@ export default function ServerStatus({ gamesList }: IHome) {
   return (
     <main className={styles.mainContent}>
       {gamesList.map((game) => {
-        const gameData = gamesDataMap[game.type];
+        const gameData = gamesDataMap[game.slug];
         if (!gameData)
-          return <div key={game.type}>Chargement de {game.name}...</div>;
+          return <div key={game.slug}>Chargement de {game.name}...</div>;
 
         return (
-          <section className={styles.server} key={game.type}>
+          <section className={styles.server} key={game.slug}>
             <GameStatus
               isOnline={gameData.data.online}
               name={gameData.data.name}

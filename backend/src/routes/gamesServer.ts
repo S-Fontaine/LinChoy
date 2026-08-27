@@ -1,12 +1,12 @@
 import { Router } from "express";
-import GameServer, { type GameServerType } from "../models/GameServer.js";
+import GameServer from "../models/GameServer.js";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
     const servers = await GameServer.find().select(
-      "name type image status comingSoon",
+      "name slug type image status comingSoon",
     );
 
     return res.status(200).json({ result: true, servers });
@@ -16,11 +16,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:type", async (req, res) => {
+router.get("/:slug", async (req, res) => {
   try {
-    const server = await GameServer.findOne({
-      type: req.params.type as GameServerType,
-    });
+    const server = await GameServer.findOne({ slug: req.params.slug });
     if (!server) {
       return res
         .status(404)

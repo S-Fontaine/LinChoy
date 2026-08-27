@@ -50,7 +50,7 @@ async function getServerStatus(
   };
 }
 
-async function getContainerState(
+export async function getContainerState(
   containerName: string,
 ): Promise<ContainerStatus> {
   return getServerStatus(containerName);

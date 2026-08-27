@@ -11,6 +11,7 @@ export interface IGamesList {
   comingSoon: boolean;
   image: string;
   type: string;
+  slug: string;
   status: {
     online: boolean;
     playerCount: number;

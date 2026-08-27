@@ -16,7 +16,9 @@ export interface IGameServerStatus {
 
 export interface IGameServer {
   name: string;
+  slug: string;
   type: GameServerType;
+  containerName: string;
   image: string;
   address?: string;
   port?: number;
@@ -27,11 +29,13 @@ export interface IGameServer {
 
 const GameServerSchema = new Schema<IGameServer>({
   name: { type: String, required: true, unique: true },
+  slug: { type: String, required: true, unique: true },
   type: {
     type: String,
     enum: ["palworld", "minecraft", "vrising", "valheim"],
     required: true,
   },
+  containerName: { type: String, required: true },
   image: { type: String, default: "" },
   address: String,
   port: Number,
