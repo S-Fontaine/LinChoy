@@ -22,5 +22,4 @@ RUN yarn install --frozen-lockfile --production
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 4000
-
-CMD ["node", "dist/server.js"]
+ENTRYPOINT ["./entrypoint.sh"]
