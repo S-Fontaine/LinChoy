@@ -1,7 +1,10 @@
 import net from "net";
 import Docker from "dockerode";
 
-const docker = new Docker();
+const docker = new Docker({
+  host: process.env.DOCKER_PROXY_HOST || "localhost",
+  port: Number(process.env.DOCKER_PROXY_PORT) || 2375,
+});
 
 interface ContainerStatus {
   running: boolean;
@@ -55,14 +58,3 @@ export async function getContainerState(
 ): Promise<ContainerStatus> {
   return getServerStatus(containerName);
 }
-
-// async function getPalworldStatus() {
-//   const container = await getContainerState("palworld");
-//   if (!container.running) {
-//     return { status: "offline" };
-//   }
-//   try {
-//   } catch {
-//     return { status: "starting" };
-//   }
-//}

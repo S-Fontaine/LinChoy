@@ -22,10 +22,33 @@ services:
     env_file:
       - ./frontend/.env
 
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy
+    restart: unless-stopped
+    environment:
+      CONTAINERS: 1
+      POST: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - docker-proxy-net
+
   backend:
     build: ./backend
     restart: unless-stopped
     env_file:
       - ./backend/.env
+    environment:
+      DOCKER_PROXY_HOST: docker-proxy
+      DOCKER_PROXY_PORT: 2375
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - docker-proxy
+    networks:
+      - default
+      - docker-proxy-net
+
+networks:
+  docker-proxy-net:
+    internal: true
