@@ -2,7 +2,6 @@
   position: sticky;
   top: 0;
   border-bottom: 1px solid var(--border);
-  overflow-x: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
   z-index: 1000;
@@ -17,7 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
+  
 }
 
 .logo {
@@ -25,6 +24,7 @@
   font-weight: 800;
   letter-spacing: -0.5px;
   color: var(--text-high);
+  cursor: pointer;
 }
 
 .lin {
@@ -34,14 +34,71 @@
   color: var(--choy-green);
 }
 
-.btn {
+.userMenuContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.userAvatarBtn {
   background: var(--bg-surface);
   color: var(--text-high);
   border: 1px solid var(--border);
-  padding: 14px 28px;
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   font-weight: 600;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.userAvatarBtn:hover {
+  border-color: var(--lin-orange, #ff7a00);
+}
+
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  z-index: 9999;
+}
+
+.dropdownItem {
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  text-align: left;
   font-size: 0.95rem;
+  color: var(--text-high);
   cursor: pointer;
   transition: var(--transition-smooth);
+}
+
+.dropdownItem:hover {
+  background-color: color-mix(in srgb, var(--text-high) 10%, transparent);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background-color: var(--border);
+  margin: 4px 0;
+}
+
+.dangerItem {
+  color: #ff4d4d;
+}
+
+.dangerItem:hover {
+  background-color: rgba(255, 77, 77, 0.1);
 }

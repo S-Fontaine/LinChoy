@@ -87,6 +87,7 @@ export async function syncGameServerData() {
           "status.displayName": palworldData.info?.servername,
           "status.description": palworldData.info?.description,
           "status.lastChecked": new Date(),
+          "status.players": palworldData.players.map((player) => player.name),
         },
       },
       { upsert: true, returnDocument: "after" },

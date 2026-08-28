@@ -99,9 +99,6 @@
   align-items: center;
   gap: 12px;
 }
-.gameIcon {
-  font-size: 1.3rem;
-}
 .gameName {
   color: var(--text-high);
   font-weight: 500;
@@ -112,36 +109,6 @@
   border-radius: 6px;
   border: 1px solid;
   font-weight: 600;
-}
-.platformGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.platformBadge {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  padding: 12px;
-  border-radius: 100px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--text-high);
-  font-weight: 500;
-}
-.fakeChat {
-  background: var(--bg-input);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-family: monospace;
-  font-size: 0.85rem;
-}
-.chatMessage {
-  line-height: 1.4;
-  color: var(--text-high);
 }
 
 .cardSoon {

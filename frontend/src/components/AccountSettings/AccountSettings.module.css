@@ -1,0 +1,202 @@
+.layout {
+  display: flex;
+  position: relative;
+  top: 0;
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  gap: 32px;
+  min-width: 800px;
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 40px 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  border-right: 1px solid var(--border);
+  padding-right: 16px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: var(--text-medium);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+}
+.navItem:hover:not(:disabled) {
+  background: var(--bg-input);
+  color: var(--text-high);
+}
+.navItemActive {
+  background: var(--bg-input);
+  color: var(--choy-green);
+  font-weight: 600;
+}
+.navItemDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.navItemDanger {
+  margin-top: auto;
+  color: #e04b4b;
+}
+.navItemDanger:hover {
+  background: rgba(224, 75, 75, 0.1);
+}
+
+.soonTag {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  color: var(--text-low);
+  text-transform: uppercase;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentTitle {
+  font-size: 1.2rem;
+  color: var(--text-high);
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rowLabel {
+  font-size: 0.85rem;
+  color: var(--text-low);
+}
+
+.rowValueContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rowValue {
+  color: var(--text-high);
+  font-size: 1rem;
+}
+
+.modifyBtn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-high);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: var(--transition-smooth);
+}
+.modifyBtn:hover {
+  border-color: var(--choy-green);
+  color: var(--choy-green);
+}
+
+.rowEditContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rowInput {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-high);
+  font-size: 0.95rem;
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-medium);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.saveBtn {
+  background: var(--choy-green);
+  border: none;
+  color: var(--bg-main);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.saveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.passwordEditWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hintText {
+  font-size: 0.8rem;
+  color: var(--lin-orange);
+}
+
+.errorText {
+  color: #e04b4b;
+  font-size: 0.85rem;
+}
+
+.successText {
+  color: var(--choy-green);
+  font-size: 0.85rem;
+}
+
+.dangerText {
+  color: var(--text-medium);
+  font-size: 0.9rem;
+}
+
+.dangerBtn {
+  background: #e04b4b;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dangerBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
