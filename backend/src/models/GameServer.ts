@@ -22,6 +22,7 @@ export interface IGameServer {
   image: string;
   address?: string;
   port?: number;
+  queryPort?: number;
   status: IGameServerStatus;
   comingSoon: boolean;
   palworldData?: IPalworld;
@@ -39,6 +40,7 @@ const GameServerSchema = new Schema<IGameServer>({
   image: { type: String, default: "" },
   address: String,
   port: Number,
+  queryPort: Number,
   status: {
     online: { type: Boolean, default: false },
     playerCount: { type: Number, default: 0 },

@@ -19,7 +19,7 @@ const servers = [
     containerName: "minecraft-solocorp",
     image: "/assets/minecraft.png",
     address: process.env.MINECRAFT_ADDRESS,
-    port: Number(process.env.MINECRAFT_PORT) || 25565,
+    port: Number(process.env.MINECRAFT_PORT),
   },
   {
     name: "V Rising",
@@ -29,6 +29,7 @@ const servers = [
     image: "/assets/vrising.png",
     address: process.env.VRISING_ADDRESS,
     port: Number(process.env.VRISING_PORT),
+    queryPort: Number(process.env.VRISING_QUERY_PORT),
   },
   {
     name: "Valheim",
@@ -38,6 +39,7 @@ const servers = [
     image: "/assets/valheim.png",
     address: process.env.VALHEIM_ADDRESS,
     port: Number(process.env.VALHEIM_PORT),
+    queryPort: Number(process.env.VALHEIM_QUERY_PORT),
     comingSoon: true,
   },
 ];

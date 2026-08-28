@@ -47,7 +47,10 @@ export async function syncGameServers() {
     const status =
       server.type === "minecraft"
         ? await getMinecraftStatus(server.address, server.port)
-        : await getSourceQueryStatus(server.address, server.port);
+        : await getSourceQueryStatus(
+            server.address,
+            server.queryPort ?? server.port + 1,
+          );
 
     await GameServer.updateOne(
       { _id: server._id },
