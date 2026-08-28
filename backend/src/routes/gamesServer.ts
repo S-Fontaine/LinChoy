@@ -34,6 +34,7 @@ router.get("/:slug", async (req, res) => {
         totalPlayer: server.status.maxPlayers ?? 0,
         playerOnLine: server.status.playerCount,
         players: server.status.players || [],
+        state: server.status.state,
         online: server.status.online,
         comingSoon: server.comingSoon,
         image: server.image,

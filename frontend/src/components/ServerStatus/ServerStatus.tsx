@@ -21,6 +21,7 @@ interface SingleGameData {
     description: string;
     image: string;
     online: boolean;
+    state: "offline" | "starting" | "online";
   };
 }
 
@@ -72,17 +73,26 @@ export default function ServerStatus({ gamesList }: IHome) {
           }
 
           return (
-            <GameStatus
-              key={game.slug}
-              isOnline={gameData.data.online}
-              name={gameData.data.name}
-              servername={gameData.data.servername}
-              image={gameData.data.image}
-              totalPlayer={gameData.data.totalPlayer}
-              playerOnLine={gameData.data.playerOnLine}
-              players={gameData.data.players}
-              description={gameData.data.description}
-            />
+            <div key={game.slug} className={styles.cardWrapper}>
+              <GameStatus
+                state={gameData.data.state}
+                isOnline={gameData.data.online}
+                name={gameData.data.name}
+                servername={gameData.data.servername}
+                image={gameData.data.image}
+                totalPlayer={gameData.data.totalPlayer}
+                playerOnLine={gameData.data.playerOnLine}
+                players={gameData.data.players}
+                description={gameData.data.description}
+              />
+              {game.comingSoon && (
+                <div className={styles.comingSoonOverlay}>
+                  <span className={styles.comingSoonBadge}>
+                    Bientôt disponible
+                  </span>
+                </div>
+              )}
+            </div>
           );
         })}
       </div>

@@ -4,8 +4,10 @@ import PalworldSchema, {
 } from "./subdocuments/palworld.schema.js";
 
 export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
+export type GameServerState = "offline" | "starting" | "online";
 
 export interface IGameServerStatus {
+  state: GameServerState;
   online: boolean;
   playerCount: number;
   maxPlayers?: number;
@@ -45,6 +47,11 @@ const GameServerSchema = new Schema<IGameServer>({
   queryPort: Number,
   status: {
     version: String,
+    state: {
+      type: String,
+      enum: ["offline", "starting", "online"],
+      default: "offline",
+    },
     online: { type: Boolean, default: false },
     playerCount: { type: Number, default: 0 },
     maxPlayers: Number,

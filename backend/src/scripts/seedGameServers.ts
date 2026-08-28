@@ -20,6 +20,7 @@ const servers = [
     image: "/assets/minecraft.png",
     address: process.env.MINECRAFT_ADDRESS,
     port: Number(process.env.MINECRAFT_PORT),
+    queryPort: Number(process.env.MINECRAFT_QUERY_PORT),
   },
   {
     name: "V Rising",

@@ -32,6 +32,7 @@ export async function syncGameServers() {
         { _id: server._id },
         {
           $set: {
+            "status.state": "offline",
             "status.online": false,
             "status.playerCount": 0,
             "status.lastChecked": new Date(),
@@ -51,7 +52,7 @@ export async function syncGameServers() {
       { _id: server._id },
       {
         $set: {
-          "status.online": status.online,
+          "status.state": status.online ? "online" : "starting",
           "status.version": status.version,
           "status.playerCount": status.playerCount,
           "status.maxPlayers": status.maxPlayers,

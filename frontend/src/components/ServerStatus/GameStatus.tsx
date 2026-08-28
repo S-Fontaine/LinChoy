@@ -4,6 +4,7 @@ import styles from "./GameStatus.module.css";
 import Image from "next/image";
 
 interface IGame {
+  state: "offline" | "starting" | "online";
   isOnline: boolean;
   name: string;
   servername: string;
@@ -19,6 +20,12 @@ export function GameStatus(game: IGame) {
   const hasOnlinePlayers = game.playerOnLine > 0 && game.players.length > 0;
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const badgeRef = useRef<HTMLDivElement>(null);
+  const statusLabel =
+    game.state === "online"
+      ? "En ligne"
+      : game.state === "starting"
+        ? "Démarrage..."
+        : "Hors ligne";
 
   useEffect(() => {
     if (!isTooltipOpen) return;
@@ -41,15 +48,13 @@ export function GameStatus(game: IGame) {
   }, [isTooltipOpen]);
 
   return (
-    <div className={`${styles.card} ${isServerOn ? styles.isOn : ""}`}>
+    <div className={`${styles.card} ${styles[game.state]}`}>
       <div className={styles.game}>
         <h2 className={styles.gameTitle}>{game.name}</h2>
         <div className={styles.statusContainer}>
-          <p className={styles.isOnline}>
-            {isServerOn ? "En ligne" : "Hors ligne"}
-          </p>
+          <p className={styles.isOnline}>{statusLabel}</p>
           <div
-            className={`${styles.statusIndicator} ${isServerOn ? styles.isOn : ""}`}
+            className={`${styles.statusIndicator} ${styles[game.state]}`}
           ></div>
         </div>
       </div>

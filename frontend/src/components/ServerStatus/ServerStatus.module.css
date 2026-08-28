@@ -52,3 +52,32 @@
     background-position: -200% 0;
   }
 }
+
+.cardWrapper {
+  position: relative;
+}
+
+.comingSoonOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-main) 70%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comingSoonBadge {
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--bg-main);
+  color: var(--text-high);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

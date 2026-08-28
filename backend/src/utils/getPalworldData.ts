@@ -5,6 +5,7 @@ import {
   type IPalworldMetrics,
   type IPalWorldSettings,
 } from "../models/subdocuments/palworld.schema.js";
+import { getContainerState } from "./docker.js";
 
 const PALWORLD_API = `http://${process.env.PALWORLD_API_ADDRESS}:${process.env.PALWORLD_API_PORT}/v1/api`;
 const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
@@ -13,6 +14,28 @@ const authHeader =
   "Basic " + Buffer.from(`${PALWORLD_ADMIN}`).toString("base64");
 
 export async function syncGameServerData() {
+  let containerRunning = false;
+  try {
+    const container = await getContainerState("palworld-server");
+    containerRunning = container.running;
+  } catch {
+    containerRunning = false;
+  }
+
+  if (!containerRunning) {
+    await GameServer.updateOne(
+      { name: "Palworld" },
+      {
+        $set: {
+          "status.state": "offline",
+          "status.online": false,
+          "status.playerCount": 0,
+          "status.lastChecked": new Date(),
+        },
+      },
+    );
+    return;
+  }
   try {
     const [infoRes, playersRes, metricsRes, settingsRes] = await Promise.all([
       fetch(`${PALWORLD_API}/info`, { headers: { Authorization: authHeader } }),
@@ -55,6 +78,7 @@ export async function syncGameServerData() {
       {
         $set: {
           palworldData,
+          "status.state": isOnline ? "online" : "starting",
           "status.online": isOnline,
           "status.playerCount": isOnline
             ? (palworldData.metrics?.currentplayernum ?? 0)
@@ -79,7 +103,7 @@ export async function syncGameServerData() {
       `[${new Date().toLocaleTimeString()}] Erreur synchro Palworld:`,
       err,
     );
-    
+
     await GameServer.updateOne(
       { name: "Palworld" },
       {
@@ -89,7 +113,10 @@ export async function syncGameServerData() {
         },
       },
     ).catch((updateErr) => {
-      console.error("[Palworld] Échec de la mise à jour du statut :", updateErr);
+      console.error(
+        "[Palworld] Échec de la mise à jour du statut :",
+        updateErr,
+      );
     });
   }
 }
