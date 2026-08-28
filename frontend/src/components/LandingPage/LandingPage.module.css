@@ -143,3 +143,21 @@
   line-height: 1.4;
   color: var(--text-high);
 }
+
+.cardSoon {
+  position: relative;
+  opacity: 0.6;
+}
+.soonBadge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  color: var(--text-low);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

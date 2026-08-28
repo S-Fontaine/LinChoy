@@ -9,6 +9,8 @@ export interface IGameServerStatus {
   online: boolean;
   playerCount: number;
   maxPlayers?: number;
+  version: string;
+  players?: Array<string>;
   lastChecked?: Date;
   displayName?: string;
   description?: string;
@@ -42,9 +44,11 @@ const GameServerSchema = new Schema<IGameServer>({
   port: Number,
   queryPort: Number,
   status: {
+    version: String,
     online: { type: Boolean, default: false },
     playerCount: { type: Number, default: 0 },
     maxPlayers: Number,
+    players: [String],
     lastChecked: Date,
     displayName: String,
     description: String,

@@ -33,6 +33,7 @@ router.get("/:slug", async (req, res) => {
         description: server.status.description || "",
         totalPlayer: server.status.maxPlayers ?? 0,
         playerOnLine: server.status.playerCount,
+        players: server.status.players || [],
         online: server.status.online,
         comingSoon: server.comingSoon,
         image: server.image,

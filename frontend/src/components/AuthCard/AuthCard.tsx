@@ -2,7 +2,7 @@
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./AuthCard.module.css";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -34,6 +34,25 @@ export default function AuthCard({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState<number | undefined>(
+    undefined,
+  );
+  const transitionKey = `${isLogin ? "login" : "signup"}-${showConfirmation}`;
+
+  useEffect(() => {
+    const node = contentRef.current;
+    if (!node) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContentHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [transitionKey]);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -170,22 +189,38 @@ export default function AuthCard({
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>
-            {!showConfirmation ? currentAuth.title : "Presque prêt !"}
-          </h2>
-          <p className={styles.subtitle}>
-            {!showConfirmation ? currentAuth.description : "Juste une dernière étape"}
-          </p>
+        <div
+          className={styles.heightAnimator}
+          style={{
+            height: contentHeight !== undefined ? `${contentHeight}px` : "auto",
+          }}
+        >
+          <div
+            ref={contentRef}
+            key={transitionKey}
+            className={styles.animatedContent}
+          >
+            <div className={styles.header}>
+              <h2 className={styles.title}>
+                {!showConfirmation ? currentAuth.title : "Presque prêt !"}
+              </h2>
+              <p className={styles.subtitle}>
+                {!showConfirmation
+                  ? currentAuth.description
+                  : "Juste une dernière étape"}
+              </p>
+            </div>
+
+            {apiResponse.error && (
+              <div className={styles.errorBox}>{apiResponse.error}</div>
+            )}
+            {apiResponse.success && (
+              <div className={styles.successBox}>{apiResponse.success}</div>
+            )}
+            {currentAuth.card}
+          </div>
         </div>
 
-        {apiResponse.error && (
-          <div className={styles.errorBox}>{apiResponse.error}</div>
-        )}
-        {apiResponse.success && (
-          <div className={styles.successBox}>{apiResponse.success}</div>
-        )}
-        {currentAuth.card}
         <div className={styles.footerContainer}>
           {!showConfirmation ? (
             <button

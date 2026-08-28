@@ -18,12 +18,14 @@ FROM node:24-alpine
 WORKDIR /app
 
 RUN corepack enable
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production
 
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
+COPY --from=builder --chown=appuser:appgroup /app/.next ./.next
+COPY --from=builder --chown=appuser:appgroup /app/public ./public
+USER appuser
 
 EXPOSE 3000
 

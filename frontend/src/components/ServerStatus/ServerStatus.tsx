@@ -17,6 +17,7 @@ interface SingleGameData {
     servername: string;
     totalPlayer: number;
     playerOnLine: number;
+    players: string[];
     description: string;
     image: string;
     online: boolean;
@@ -56,25 +57,35 @@ export default function ServerStatus({ gamesList }: IHome) {
   }, [user, gamesList]);
   return (
     <main className={styles.mainContent}>
-      {gamesList.map((game) => {
-        const gameData = gamesDataMap[game.slug];
-        if (!gameData)
-          return <div key={game.slug}>Chargement de {game.name}...</div>;
+      <div className={styles.serverGrid}>
+        {gamesList.map((game) => {
+          const gameData = gamesDataMap[game.slug];
 
-        return (
-          <section className={styles.server} key={game.slug}>
+          if (!gameData) {
+            return (
+              <div key={game.slug} className={styles.cardSkeleton}>
+                <div className={styles.skeletonImage} />
+                <div className={styles.skeletonLine} style={{ width: "60%" }} />
+                <div className={styles.skeletonLine} style={{ width: "40%" }} />
+              </div>
+            );
+          }
+
+          return (
             <GameStatus
+              key={game.slug}
               isOnline={gameData.data.online}
               name={gameData.data.name}
               servername={gameData.data.servername}
               image={gameData.data.image}
               totalPlayer={gameData.data.totalPlayer}
               playerOnLine={gameData.data.playerOnLine}
+              players={gameData.data.players}
               description={gameData.data.description}
             />
-          </section>
-        );
-      })}
+          );
+        })}
+      </div>
     </main>
   );
 }

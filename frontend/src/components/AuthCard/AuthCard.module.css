@@ -86,3 +86,26 @@
   color: var(--text-high);
   text-align: center;
 }
+
+.animatedContent {
+  animation: authFade 0.5s ease backwards;
+}
+
+@keyframes authFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animatedContent {
+    animation: none;
+  }
+}
+.heightAnimator {
+  transition: height 0.5s ease;
+  overflow: hidden;
+}

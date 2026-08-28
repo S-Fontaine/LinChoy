@@ -1,26 +1,12 @@
 import { GameDig } from "gamedig";
-import { status as mcStatus } from "minecraft-server-util";
 
 export interface IGameStatusResult {
   online: boolean;
   playerCount: number;
   maxPlayers?: number;
-}
-
-export async function getMinecraftStatus(
-  address: string,
-  port: number,
-): Promise<IGameStatusResult> {
-  try {
-    const result = await mcStatus(address, port, { timeout: 5000 });
-    return {
-      online: true,
-      playerCount: result.players.online,
-      maxPlayers: result.players.max,
-    };
-  } catch {
-    return { online: false, playerCount: 0 };
-  }
+  version?: string;
+  players?: Array<string>;
+  displayName?: string;
 }
 
 export async function getSourceQueryStatus(
@@ -39,6 +25,9 @@ export async function getSourceQueryStatus(
       online: true,
       playerCount: result.players.length,
       maxPlayers: result.maxplayers,
+      version: result.version,
+      players: result.players.map((p) => p.name!),
+      displayName: result.name,
     };
   } catch {
     return { online: false, playerCount: 0 };

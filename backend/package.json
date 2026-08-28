@@ -15,7 +15,6 @@
     "gamedig": "^5.3.3",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.3",
-    "minecraft-server-util": "^5.4.4",
     "mongoose": "^9.6.3",
     "nodemailer": "^9.0.3"
   },

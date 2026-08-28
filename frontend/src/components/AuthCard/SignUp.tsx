@@ -22,6 +22,15 @@ interface ISignUp {
   apiResponse: IApiResponse;
 }
 
+const PASSWORD_RULES = [
+  { label: "Au moins 12 caractères", test: (pwd: string) => pwd.length >= 12 },
+  { label: "Une majuscule", test: (pwd: string) => /[A-Z]/.test(pwd) },
+  {
+    label: "Un caractère spécial",
+    test: (pwd: string) => /[^A-Za-z0-9]/.test(pwd),
+  },
+];
+
 export default function SignUp({
   handleSubmit,
   handleInputChange,
@@ -30,6 +39,24 @@ export default function SignUp({
 }: ISignUp) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const validCount = PASSWORD_RULES.filter((rule) =>
+    rule.test(formData.password),
+  ).length;
+  const isPasswordValid = validCount === PASSWORD_RULES.length;
+  const strengthPercent = (validCount / PASSWORD_RULES.length) * 100;
+  const strengthColor =
+    validCount === 0
+      ? "var(--border)"
+      : isPasswordValid
+        ? "var(--choy-green)"
+        : validCount === 2
+          ? "var(--lin-orange)"
+          : "#e04b4b";
+
+  const passwordsMatch =
+    formData.confirmPassword.length === 0 ||
+    formData.confirmPassword === formData.password;
 
   return (
     <form onSubmit={handleSubmit} className={styles.form} key="form-login">
@@ -85,6 +112,40 @@ export default function SignUp({
             {showPassword ? eyeOff : eyeOn}
           </button>
         </div>
+
+        <div
+          className={`${styles.passwordFeedback} ${
+            formData.password.length > 0 ? styles.visible : ""
+          }`}
+        >
+          <div className={styles.passwordFeedbackInner}>
+            <div className={styles.strengthBar}>
+              <div
+                className={styles.strengthBarFill}
+                style={{
+                  width: `${strengthPercent}%`,
+                  backgroundColor: strengthColor,
+                }}
+              />
+            </div>
+            <ul className={styles.passwordRules}>
+              {PASSWORD_RULES.map((rule) => {
+                const isValid = rule.test(formData.password);
+                return (
+                  <li
+                    key={rule.label}
+                    className={`${styles.ruleItem} ${isValid ? styles.valid : ""}`}
+                  >
+                    <span className={styles.ruleIcon}>
+                      {isValid ? "✓" : "•"}
+                    </span>
+                    {rule.label}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
       </div>
 
       <div className={styles.inputGroup}>
@@ -102,11 +163,9 @@ export default function SignUp({
             style={{
               width: "100%",
               paddingRight: "45px",
-              borderColor:
-                formData.confirmPassword.length > 0 &&
-                formData.confirmPassword !== formData.password
-                  ? "var(--lin-orange)"
-                  : "var(--border)",
+              borderColor: !passwordsMatch
+                ? "var(--lin-orange)"
+                : "var(--border)",
             }}
           />
           <button
@@ -122,7 +181,7 @@ export default function SignUp({
 
       <button
         type="submit"
-        disabled={apiResponse.loading}
+        disabled={apiResponse.loading || !isPasswordValid || !passwordsMatch}
         className={styles.btn}
       >
         {apiResponse.loading ? "Patientez..." : "S'inscrire"}

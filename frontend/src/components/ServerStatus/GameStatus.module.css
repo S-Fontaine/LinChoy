@@ -5,7 +5,14 @@
   border-radius: 16px;
   overflow: hidden;
   color: var(--text-high);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
 }
 
 .card.isOn {
@@ -99,6 +106,7 @@
 }
 
 .playerBadge {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -109,4 +117,63 @@
   font-size: 0.85rem;
   font-weight: 600;
   width: fit-content;
+  cursor: default;
+}
+
+.playerBadge.clickable {
+  cursor: pointer;
+}
+
+.playerTooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  max-width: 220px;
+  background: var(--bg-main, #1a1a1a);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  z-index: 20;
+}
+
+@media (hover: hover) {
+  .playerBadge.clickable:hover .playerTooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+.playerTooltipOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.playerTooltipTitle {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #aaa);
+  margin: 0 0 6px 0;
+  font-weight: 700;
+}
+
+.playerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  max-height: 160px;
+  overflow-y: auto;
 }

@@ -5,9 +5,50 @@
   position: relative;
   z-index: 10;
 }
-.server {
+
+.serverGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 580px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 24px;
   margin-top: 32px;
+}
+
+.cardSkeleton {
+  max-width: 580px;
+  min-height: 360px;
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeletonImage {
+  height: 200px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    color-mix(in srgb, var(--border) 60%, transparent) 50%,
+    var(--border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonLine {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--border);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useRef, useState } from "react";
 import styles from "./GameStatus.module.css";
 import Image from "next/image";
 
@@ -9,13 +11,37 @@ interface IGame {
   image: string;
   totalPlayer: number;
   playerOnLine: number;
+  players: string[];
 }
 
 export function GameStatus(game: IGame) {
   const isServerOn = game.isOnline;
+  const hasOnlinePlayers = game.playerOnLine > 0 && game.players.length > 0;
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const badgeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isTooltipOpen) return;
+
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (
+        badgeRef.current &&
+        !badgeRef.current.contains(event.target as Node)
+      ) {
+        setIsTooltipOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isTooltipOpen]);
 
   return (
-    <div className={`${styles.card} ${isServerOn && styles.isOn}`}>
+    <div className={`${styles.card} ${isServerOn ? styles.isOn : ""}`}>
       <div className={styles.game}>
         <h2 className={styles.gameTitle}>{game.name}</h2>
         <div className={styles.statusContainer}>
@@ -23,7 +49,7 @@ export function GameStatus(game: IGame) {
             {isServerOn ? "En ligne" : "Hors ligne"}
           </p>
           <div
-            className={`${styles.statusIndicator} ${isServerOn && styles.isOn}`}
+            className={`${styles.statusIndicator} ${isServerOn ? styles.isOn : ""}`}
           ></div>
         </div>
       </div>
@@ -39,8 +65,26 @@ export function GameStatus(game: IGame) {
       <div className={styles.contentSection}>
         <div className={styles.serverHeader}>
           <h3 className={styles.serverName}>{game.servername}</h3>
-          <div className={styles.playerBadge}>
-            {game.playerOnLine} / {game.totalPlayer} joueurs
+          <div
+            ref={badgeRef}
+            className={`${styles.playerBadge} ${hasOnlinePlayers ? styles.clickable : ""}`}
+            onClick={() => hasOnlinePlayers && setIsTooltipOpen((v) => !v)}
+          >
+            <span>
+              {game.playerOnLine} / {game.totalPlayer} joueurs
+            </span>
+            {hasOnlinePlayers && (
+              <div
+                className={`${styles.playerTooltip} ${isTooltipOpen ? styles.playerTooltipOpen : ""}`}
+              >
+                <p className={styles.playerTooltipTitle}>En ligne</p>
+                <ul className={styles.playerList}>
+                  {game.players.map((player) => (
+                    <li key={player}>{player}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
         <p className={styles.serverDescription}>{game.description}</p>

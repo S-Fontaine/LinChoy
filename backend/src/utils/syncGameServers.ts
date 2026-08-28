@@ -1,10 +1,7 @@
 import GameServer from "../models/GameServer.js";
 import { syncGameServerData } from "./getPalworldData.js";
 import { getContainerState } from "./docker.js";
-import {
-  getMinecraftStatus,
-  getSourceQueryStatus,
-} from "./gameStatusProviders.js";
+import { getSourceQueryStatus } from "./gameStatusProviders.js";
 
 export async function syncGameServers() {
   const servers = await GameServer.find({ comingSoon: { $ne: true } });
@@ -44,22 +41,22 @@ export async function syncGameServers() {
       continue;
     }
 
-    const status =
-      server.type === "minecraft"
-        ? await getMinecraftStatus(server.address, server.port)
-        : await getSourceQueryStatus(
-            server.address,
-            server.queryPort ?? server.port + 1,
-          );
+    const status = await getSourceQueryStatus(
+      server.address,
+      Number(server.queryPort),
+    );
 
     await GameServer.updateOne(
       { _id: server._id },
       {
         $set: {
           "status.online": status.online,
+          "status.version": status.version,
           "status.playerCount": status.playerCount,
           "status.maxPlayers": status.maxPlayers,
           "status.lastChecked": new Date(),
+          "status.players": status.players,
+          "status.displayName": status.displayName,
         },
       },
     );
