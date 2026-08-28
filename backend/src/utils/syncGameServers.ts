@@ -44,6 +44,7 @@ export async function syncGameServers() {
     const status = await getSourceQueryStatus(
       server.address,
       Number(server.queryPort),
+      server.type,
     );
 
     await GameServer.updateOne(

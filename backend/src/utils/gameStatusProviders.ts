@@ -12,10 +12,11 @@ export interface IGameStatusResult {
 export async function getSourceQueryStatus(
   address: string,
   port: number,
+  type: string,
 ): Promise<IGameStatusResult> {
   try {
     const result = await GameDig.query({
-      type: "protocol-valve",
+      type: type,
       host: address,
       port,
       maxRetries: 1,

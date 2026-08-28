@@ -35,7 +35,7 @@ const GameServerSchema = new Schema<IGameServer>({
   slug: { type: String, required: true, unique: true },
   type: {
     type: String,
-    enum: ["palworld", "minecraft", "vrising", "valheim"],
+    enum: ["palworld", "minecraft", "protocol-valve"],
     required: true,
   },
   containerName: { type: String, required: true },

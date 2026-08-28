@@ -24,7 +24,7 @@ const servers = [
   {
     name: "V Rising",
     slug: "vrising",
-    type: "vrising",
+    type: "protocol-valve",
     containerName: "vrising-server",
     image: "/assets/vrising.png",
     address: process.env.VRISING_ADDRESS,
@@ -34,7 +34,7 @@ const servers = [
   {
     name: "Valheim",
     slug: "valheim",
-    type: "valheim",
+    type: "protocol-valve",
     containerName: "valheim-server",
     image: "/assets/valheim.png",
     address: process.env.VALHEIM_ADDRESS,
