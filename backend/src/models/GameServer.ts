@@ -3,13 +3,13 @@ import PalworldSchema, {
   type IPalworld,
 } from "./subdocuments/palworld.schema.js";
 
-export type GameServerType = "palworld" | "minecraft" | "vrising" | "valheim";
+export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
 
 export interface IGameServerStatus {
   online: boolean;
   playerCount: number;
   maxPlayers?: number;
-  version: string;
+  version?: string;
   players?: Array<string>;
   lastChecked?: Date;
   displayName?: string;
