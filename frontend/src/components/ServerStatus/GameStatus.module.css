@@ -97,7 +97,6 @@
   align-items: center;
   font-size: 1.3rem;
   font-weight: 700;
-  height: 65px;
   margin: 0;
 }
 
@@ -120,7 +119,10 @@
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
-  min-width: 150px;
+  margin-left: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: default;
 }
 
@@ -202,4 +204,26 @@
   50% {
     opacity: 0.4;
   }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.favoriteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-low);
+  display: flex;
+  padding: 4px;
+  transition: var(--transition-smooth);
+}
+.favoriteBtn:hover {
+  color: var(--lin-orange);
+}
+.favoriteBtn:has(svg[fill="currentColor"]) {
+  color: var(--lin-orange);
 }

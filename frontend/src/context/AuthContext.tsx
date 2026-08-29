@@ -14,6 +14,7 @@ interface User {
   id: string;
   username: string;
   email: string;
+  favoriteServer: string | null;
 }
 
 interface AuthContextType {

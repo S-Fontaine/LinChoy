@@ -1,15 +1,42 @@
+@media (max-width: 640px) {
+  .layout {
+    flex-direction: column;
+    margin: 16px;
+    padding: 24px 16px;
+    gap: 20px;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding-right: 0;
+    padding-bottom: 12px;
+    min-width: 0;
+  }
+
+  .navItem {
+    white-space: nowrap;
+  }
+
+  .navItemDanger {
+    margin-top: 0;
+    margin-left: auto;
+  }
+}
+
 .layout {
   display: flex;
-  position: relative;
-  top: 0;
-  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
-  gap: 32px;
-  min-width: 800px;
   max-width: 900px;
+  width: 100%;
   margin: 32px auto;
   padding: 40px 20px;
   border: 1px solid var(--border);
   border-radius: 16px;
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  gap: 32px;
+  box-sizing: border-box;
 }
 
 .sidebar {

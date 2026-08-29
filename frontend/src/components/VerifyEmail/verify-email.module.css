@@ -47,3 +47,45 @@
   cursor: pointer;
   transition: var(--transition-smooth);
 }
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+.label {
+  font-size: 0.85rem;
+  color: var(--text-medium);
+}
+.input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text-high);
+  font-size: 0.95rem;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.passwordRules {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ruleItem {
+  font-size: 0.8rem;
+  color: var(--text-low);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ruleItem.valid {
+  color: var(--choy-green);
+}

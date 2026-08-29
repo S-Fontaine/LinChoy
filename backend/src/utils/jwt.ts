@@ -6,15 +6,26 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN as string;
 const JWT_VERIFY_SECRET = process.env.JWT_VERIFY_SECRET as string;
 const JWT_VERIFY_EXPIRES_IN = process.env.JWT_VERIFY_EXPIRES_IN as string;
+const JWT_RESET_SECRET = process.env.JWT_RESET_SECRET as string;
+const JWT_RESET_EXPIRES_IN = process.env.JWT_RESET_EXPIRES_IN as string;
 
-if (!JWT_SECRET || !JWT_REFRESH_SECRET || !JWT_VERIFY_SECRET) {
+if (
+  !JWT_SECRET ||
+  !JWT_REFRESH_SECRET ||
+  !JWT_VERIFY_SECRET ||
+  !JWT_RESET_SECRET
+) {
   throw new Error(
-    "JWT_SECRET ou JWT_REFRESH_SECRET ou JWT_VERIFY_SECRET manquant dans le .env",
+    "JWT_SECRET, JWT_REFRESH_SECRET, JWT_VERIFY_SECRET ou JWT_RESET_SECRET manquant dans le .env",
   );
 }
 
 export interface JwtPayload {
   userId: string;
+}
+export interface ResetTokenPayload {
+  userId: string;
+  pwd: string;
 }
 
 export function generateAccessToken(
@@ -47,6 +58,16 @@ export function generateVerifyToken(
   });
 }
 
+export function generateResetToken(
+  payload: ResetTokenPayload,
+  options?: jwt.SignOptions,
+): string {
+  return jwt.sign(payload, JWT_RESET_SECRET, {
+    expiresIn: JWT_RESET_EXPIRES_IN as SignOptions["expiresIn"],
+    ...options,
+  });
+}
+
 export function verifyAccessToken(token: string): JwtPayload {
   return jwt.verify(token, JWT_SECRET) as JwtPayload;
 }
@@ -57,4 +78,8 @@ export function verifyRefreshToken(token: string): JwtPayload {
 
 export function verifyEmailToken(token: string): JwtPayload {
   return jwt.verify(token, JWT_VERIFY_SECRET) as unknown as JwtPayload;
+}
+
+export function verifyResetToken(token: string): ResetTokenPayload {
+  return jwt.verify(token, JWT_RESET_SECRET) as unknown as ResetTokenPayload;
 }

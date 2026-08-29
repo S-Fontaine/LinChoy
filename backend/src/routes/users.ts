@@ -1,5 +1,6 @@
 import { Router } from "express";
 import User from "../models/User.js";
+import GameServer from "../models/GameServer.js";
 import { generateVerifyToken } from "../utils/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { mailer } from "../utils/mailer.js";
@@ -121,5 +122,46 @@ router.delete("/:id", requireAuth, async (req: AuthRequest, res) => {
     return handleMongooseError(err, res);
   }
 });
+
+router.patch(
+  "/:id/favorite-server",
+  requireAuth,
+  async (req: AuthRequest, res) => {
+    if (req.user?.userId !== req.params.id) {
+      return res.status(403).json({ result: false, message: "Accès refusé" });
+    }
+
+    const { slug } = req.body;
+
+    try {
+      if (slug) {
+        const server = await GameServer.findOne({ slug });
+        if (!server) {
+          return res
+            .status(404)
+            .json({ result: false, message: "Serveur introuvable" });
+        }
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.params.id,
+        { favoriteServer: slug || null },
+        { new: true },
+      );
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ result: false, message: "Utilisateur introuvable" });
+      }
+
+      return res
+        .status(200)
+        .json({ result: true, favoriteServer: user.favoriteServer });
+    } catch (err) {
+      return handleMongooseError(err, res);
+    }
+  },
+);
 
 export default router;

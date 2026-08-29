@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   authProvider: string;
   isVerified: boolean;
+  favoriteServer: string | null;
   comparePassword(userPassword: string): Promise<boolean>;
 }
 
@@ -60,6 +61,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
     default: false,
+  },
+  favoriteServer: {
+    type: String,
+    default: null,
   },
 });
 

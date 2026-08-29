@@ -14,6 +14,7 @@ export interface IGamesList {
   type: string;
   slug: string;
   status: {
+    state: "offline" | "starting" | "online";
     online: boolean;
     playerCount: number;
     lastChecked: Date;

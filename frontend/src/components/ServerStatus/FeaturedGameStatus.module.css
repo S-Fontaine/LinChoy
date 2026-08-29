@@ -1,0 +1,293 @@
+.card {
+  display: flex;
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.card.online {
+  border-color: var(--choy-green);
+}
+.card.starting {
+  border-color: var(--lin-orange);
+}
+
+.imageContainer {
+  position: relative;
+  flex: 0 0 40%;
+  min-height: 280px;
+}
+.image {
+  object-fit: cover;
+  transition: var(--transition-smooth);
+}
+.imageOff {
+  filter: grayscale(1) brightness(0.5);
+}
+
+.favoriteTag {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--bg-main) 80%, transparent);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--lin-orange);
+  color: var(--lin-orange);
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.favoriteTag svg {
+  width: 14px;
+  height: 14px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 32px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.gameLabel {
+  font-size: 0.8rem;
+  color: var(--text-low);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.serverName {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-high);
+  margin: 4px 0 0;
+}
+
+.unfavoriteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lin-orange);
+  display: flex;
+  padding: 4px;
+}
+.unfavoriteBtn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-low);
+}
+.statusIndicator.online {
+  background: var(--choy-green);
+  box-shadow: 0 0 8px var(--choy-green);
+}
+.statusIndicator.starting {
+  background: var(--lin-orange);
+  box-shadow: 0 0 8px var(--lin-orange);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.statusLabel {
+  color: var(--text-high);
+  font-weight: 600;
+}
+
+.playerCount {
+  color: var(--text-medium);
+  font-weight: 600;
+}
+
+.description {
+  color: var(--text-medium);
+  line-height: 1.5;
+}
+
+.playersSection {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.playersTitle {
+  font-size: 0.85rem;
+  color: var(--text-low);
+  margin-bottom: 10px;
+}
+
+.playersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.playerChip {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  color: var(--text-high);
+}
+
+.noPlayers {
+  color: var(--text-low);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+@media (max-width: 700px) {
+  .card {
+    flex-direction: column;
+  }
+  .imageContainer {
+    flex: none;
+    height: 200px;
+  }
+}
+
+.skeletonCard {
+  display: flex;
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.skeletonImage {
+  flex: 0 0 40%;
+  min-height: 280px;
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    color-mix(in srgb, var(--border) 60%, transparent) 50%,
+    var(--border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 32px;
+}
+
+.skeletonHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.skeletonHeaderText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeletonLine {
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    color-mix(in srgb, var(--border) 60%, transparent) 50%,
+    var(--border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonStatusRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.skeletonPlayersSection {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeletonChips {
+  display: flex;
+  gap: 8px;
+}
+
+.skeletonChip {
+  width: 90px;
+  height: 30px;
+  border-radius: 100px;
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    color-mix(in srgb, var(--border) 60%, transparent) 50%,
+    var(--border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .skeletonCard {
+    flex-direction: column;
+  }
+  .skeletonImage {
+    flex: none;
+    height: 200px;
+  }
+}

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./GameStatus.module.css";
 import Image from "next/image";
+import { starOutline, starFilled } from "../icons/Icons";
 
 interface IGame {
   state: "offline" | "starting" | "online";
@@ -13,6 +14,8 @@ interface IGame {
   totalPlayer: number;
   playerOnLine: number;
   players: string[];
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 export function GameStatus(game: IGame) {
@@ -51,11 +54,24 @@ export function GameStatus(game: IGame) {
     <div className={`${styles.card} ${styles[game.state]}`}>
       <div className={styles.game}>
         <h2 className={styles.gameTitle}>{game.name}</h2>
-        <div className={styles.statusContainer}>
-          <p className={styles.isOnline}>{statusLabel}</p>
-          <div
-            className={`${styles.statusIndicator} ${styles[game.state]}`}
-          ></div>
+        <div className={styles.headerActions}>
+          {game.onToggleFavorite && (
+            <button
+              className={styles.favoriteBtn}
+              onClick={game.onToggleFavorite}
+              aria-label={
+                game.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
+              }
+            >
+              {game.isFavorite ? starFilled : starOutline}
+            </button>
+          )}
+          <div className={styles.statusContainer}>
+            <p className={styles.isOnline}>{statusLabel}</p>
+            <div
+              className={`${styles.statusIndicator} ${styles[game.state]}`}
+            ></div>
+          </div>
         </div>
       </div>
       <div className={styles.imageContainer}>

@@ -1,35 +1,56 @@
 "use client";
+import { useState, useEffect } from "react";
 import styles from "./ServerStatus.module.css";
-import { useAuth } from "@/context/AuthContext";
 import { GameStatus } from "./GameStatus";
-import { useEffect, useState } from "react";
+import {
+  FeaturedGameStatus,
+  FeaturedGameStatusSkeleton,
+} from "./FeaturedGameStatus";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { useAuth } from "@/context/AuthContext";
 import { type IGamesList } from "@/app/page";
-
-interface IHome {
-  gamesList: IGamesList[];
-}
 
 interface SingleGameData {
   result: boolean;
   data: {
+    state: "offline" | "starting" | "online";
+    online: boolean;
     name: string;
     servername: string;
+    description: string;
+    image: string;
     totalPlayer: number;
     playerOnLine: number;
     players: string[];
-    description: string;
-    image: string;
-    online: boolean;
-    state: "offline" | "starting" | "online";
   };
 }
 
-export default function ServerStatus({ gamesList }: IHome) {
-  const { user } = useAuth();
+function getGroupOrder(game: IGamesList): number {
+  if (game.comingSoon) return 1;
+  if (game.status.state === "online" || game.status.state === "starting") {
+    return 0;
+  }
+  return 2;
+}
+
+function sortGames(games: IGamesList[]): IGamesList[] {
+  return [...games].sort((a, b) => {
+    const groupDiff = getGroupOrder(a) - getGroupOrder(b);
+    if (groupDiff !== 0) return groupDiff;
+    return a.name.localeCompare(b.name, "fr");
+  });
+}
+
+export default function ServerStatus({
+  gamesList,
+}: {
+  gamesList: IGamesList[];
+}) {
+  const { user, setUser } = useAuth();
   const [gamesDataMap, setGamesDataMap] = useState<
     Record<string, SingleGameData>
   >({});
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   useEffect(() => {
     if (!user || gamesList.length === 0) return;
@@ -37,15 +58,12 @@ export default function ServerStatus({ gamesList }: IHome) {
     async function getData() {
       try {
         const newMap: Record<string, SingleGameData> = {};
-
         for (const game of gamesList) {
           const response = await fetchWithAuth(`/games/${game.slug}`, {
             method: "GET",
           });
-          const resultData: SingleGameData = await response.json();
-          newMap[game.slug] = resultData;
+          newMap[game.slug] = await response.json();
         }
-
         setGamesDataMap(newMap);
       } catch (err) {
         console.error("Erreur de récupération :", err);
@@ -56,45 +74,104 @@ export default function ServerStatus({ gamesList }: IHome) {
     const intervalId = setInterval(getData, 30000);
     return () => clearInterval(intervalId);
   }, [user, gamesList]);
+
+  async function toggleFavorite(slug: string) {
+    if (!user || favoriteLoading) return;
+    const newFavorite = user.favoriteServer === slug ? null : slug;
+
+    setFavoriteLoading(true);
+    const previousUser = user;
+    setUser({ ...user, favoriteServer: newFavorite });
+
+    try {
+      const res = await fetchWithAuth(`/users/${user.id}/favorite-server`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: newFavorite }),
+      });
+      if (!res.ok) {
+        setUser(previousUser);
+      }
+    } catch {
+      setUser(previousUser);
+    } finally {
+      setFavoriteLoading(false);
+    }
+  }
+
+  const sorted = sortGames(gamesList);
+  const favoriteGame = sorted.find((g) => g.slug === user?.favoriteServer);
+  const otherGames = sorted.filter((g) => g.slug !== user?.favoriteServer);
+
+  function renderFavorite(game: IGamesList) {
+    const gameData = gamesDataMap[game.slug];
+
+    return (
+      <div className={styles.favoriteWrapper}>
+        {gameData ? (
+          <FeaturedGameStatus
+            state={gameData.data.state}
+            isOnline={gameData.data.online}
+            name={gameData.data.name}
+            servername={gameData.data.servername}
+            image={gameData.data.image}
+            totalPlayer={gameData.data.totalPlayer}
+            playerOnLine={gameData.data.playerOnLine}
+            players={gameData.data.players}
+            description={gameData.data.description}
+            onToggleFavorite={() => toggleFavorite(game.slug)}
+          />
+        ) : (
+          <FeaturedGameStatusSkeleton />
+        )}
+      </div>
+    );
+  }
+  function renderCard(game: IGamesList, isFavorite: boolean) {
+    const gameData = gamesDataMap[game.slug];
+
+    if (!gameData) {
+      return (
+        <div key={game.slug} className={styles.cardSkeleton}>
+          <div className={styles.skeletonImage} />
+          <div className={styles.skeletonLine} style={{ width: "60%" }} />
+          <div className={styles.skeletonLine} style={{ width: "40%" }} />
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={game.slug}
+        className={`${styles.cardWrapper} ${isFavorite ? styles.favoriteWrapper : ""}`}
+      >
+        <GameStatus
+          state={gameData.data.state}
+          isOnline={gameData.data.online}
+          name={gameData.data.name}
+          servername={gameData.data.servername}
+          image={gameData.data.image}
+          totalPlayer={gameData.data.totalPlayer}
+          playerOnLine={gameData.data.playerOnLine}
+          players={gameData.data.players}
+          description={gameData.data.description}
+          isFavorite={isFavorite}
+          onToggleFavorite={() => toggleFavorite(game.slug)}
+        />
+        {game.comingSoon && (
+          <div className={styles.comingSoonOverlay}>
+            <span className={styles.comingSoonBadge}>Bientôt disponible</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <main className={styles.mainContent}>
       <div className={styles.serverGrid}>
-        {gamesList.map((game) => {
-          const gameData = gamesDataMap[game.slug];
-
-          if (!gameData) {
-            return (
-              <div key={game.slug} className={styles.cardSkeleton}>
-                <div className={styles.skeletonImage} />
-                <div className={styles.skeletonLine} style={{ width: "60%" }} />
-                <div className={styles.skeletonLine} style={{ width: "40%" }} />
-              </div>
-            );
-          }
-
-          return (
-            <div key={game.slug} className={styles.cardWrapper}>
-              <GameStatus
-                state={gameData.data.state}
-                isOnline={gameData.data.online}
-                name={gameData.data.name}
-                servername={gameData.data.servername}
-                image={gameData.data.image}
-                totalPlayer={gameData.data.totalPlayer}
-                playerOnLine={gameData.data.playerOnLine}
-                players={gameData.data.players}
-                description={gameData.data.description}
-              />
-              {game.comingSoon && (
-                <div className={styles.comingSoonOverlay}>
-                  <span className={styles.comingSoonBadge}>
-                    Bientôt disponible
-                  </span>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {favoriteGame && renderFavorite(favoriteGame)}
+        {otherGames.map((game) => renderCard(game, false))}
       </div>
     </main>
   );

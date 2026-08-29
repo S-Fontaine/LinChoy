@@ -1,6 +1,7 @@
 "use client";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import ForgotPassword from "./ForgotPassword";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useState } from "react";
 import styles from "./AuthCard.module.css";
@@ -33,7 +34,13 @@ export default function AuthCard({
   const [resendMessage, setResendMessage] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-
+  const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotState, setForgotState] = useState({
+    loading: false,
+    error: "",
+    success: "",
+  });
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<number | undefined>(
     undefined,
@@ -57,6 +64,25 @@ export default function AuthCard({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  async function handleForgotSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setForgotState({ loading: true, error: "", success: "" });
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      setForgotState({ loading: false, error: "", success: data.message });
+    } catch {
+      setForgotState({
+        loading: false,
+        error: "Impossible de joindre le serveur.",
+        success: "",
+      });
+    }
+  }
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLogin && formData.password !== formData.confirmPassword) {
@@ -132,6 +158,7 @@ export default function AuthCard({
           handleInputChange={handleInputChange}
           formData={formData}
           apiResponse={apiResponse}
+          onForgotPassword={() => setForgotPasswordMode(true)}
         />
       ),
     },
@@ -202,27 +229,61 @@ export default function AuthCard({
           >
             <div className={styles.header}>
               <h2 className={styles.title}>
-                {!showConfirmation ? currentAuth.title : "Presque prêt !"}
+                {forgotPasswordMode
+                  ? "Mot de passe oublié"
+                  : !showConfirmation
+                    ? currentAuth.title
+                    : "Presque prêt !"}
               </h2>
               <p className={styles.subtitle}>
-                {!showConfirmation
-                  ? currentAuth.description
-                  : "Juste une dernière étape"}
+                {forgotPasswordMode
+                  ? "On t'envoie un lien pour en choisir un nouveau."
+                  : !showConfirmation
+                    ? currentAuth.description
+                    : "Juste une dernière étape"}
               </p>
             </div>
 
-            {apiResponse.error && (
-              <div className={styles.errorBox}>{apiResponse.error}</div>
+            {forgotState.error && (
+              <div className={styles.errorBox}>{forgotState.error}</div>
             )}
-            {apiResponse.success && (
-              <div className={styles.successBox}>{apiResponse.success}</div>
+            {forgotState.success && (
+              <div className={styles.successBox}>{forgotState.success}</div>
             )}
-            {currentAuth.card}
+
+            {forgotPasswordMode ? (
+              <ForgotPassword
+                email={forgotEmail}
+                onEmailChange={(e) => setForgotEmail(e.target.value)}
+                onSubmit={handleForgotSubmit}
+                loading={forgotState.loading}
+              />
+            ) : (
+              <>
+                {apiResponse.error && (
+                  <div className={styles.errorBox}>{apiResponse.error}</div>
+                )}
+                {apiResponse.success && (
+                  <div className={styles.successBox}>{apiResponse.success}</div>
+                )}
+                {currentAuth.card}
+              </>
+            )}
           </div>
         </div>
 
         <div className={styles.footerContainer}>
-          {!showConfirmation ? (
+          {forgotPasswordMode ? (
+            <button
+              onClick={() => {
+                setForgotPasswordMode(false);
+                setForgotState({ loading: false, error: "", success: "" });
+              }}
+              className={styles.switchBtn}
+            >
+              Retour à la connexion
+            </button>
+          ) : !showConfirmation ? (
             <button
               onClick={() => {
                 onSwitchClick();

@@ -21,3 +21,14 @@ export const authLimiter = rateLimit({
     message: "Trop de tentatives. Réessaie plus tard.",
   },
 });
+
+export const forgotPasswordLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: isTest ? Number.MAX_SAFE_INTEGER : 3,
+  message: {
+    result: false,
+    message: "Trop de tentatives. Réessaie plus tard.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

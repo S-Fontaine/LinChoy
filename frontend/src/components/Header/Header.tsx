@@ -29,7 +29,6 @@ export default function Header({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  console.log(user);
   const onSwitchClick = () => {
     setIsLogin(!isLogin);
   };
@@ -38,6 +37,16 @@ export default function Header({
     setIsLogin(true);
     onOpenAuth?.();
   };
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsDropdownOpen(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -69,43 +78,64 @@ export default function Header({
           {user && (
             <div className={styles.userMenuContainer} ref={dropdownRef}>
               <button
+                type="button"
                 className={styles.userAvatarBtn}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                aria-haspopup="menu"
+                aria-expanded={isDropdownOpen}
+                aria-controls="user-dropdown-menu"
+                aria-label="Ouvrir le menu utilisateur"
               >
                 {user.username ? user.username.charAt(0).toUpperCase() : "U"}
               </button>
 
               {isDropdownOpen && (
-                <div className={styles.dropdownMenu}>
-                  <button
-                    className={styles.dropdownItem}
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      openServerStatus?.();
-                    }}
-                  >
-                    Statut des serveurs
-                  </button>
-                  <button
-                    className={styles.dropdownItem}
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      openAccountSettings?.();
-                    }}
-                  >
-                    Paramètres du compte
-                  </button>
-                  <div className={styles.dropdownDivider} />
-                  <button
-                    className={`${styles.dropdownItem} ${styles.dangerItem}`}
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      logout();
-                    }}
-                  >
-                    Déconnexion
-                  </button>
-                </div>
+                <ul
+                  id="user-dropdown-menu"
+                  role="menu"
+                  className={styles.dropdownMenu}
+                >
+                  <li role="none">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        openServerStatus?.();
+                      }}
+                    >
+                      Statut des serveurs
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        openAccountSettings?.();
+                      }}
+                    >
+                      Paramètres du compte
+                    </button>
+                  </li>
+                  <li className={styles.dropdownDivider} role="none" />
+                  <li role="none">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`${styles.dropdownItem} ${styles.dangerItem}`}
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        logout();
+                      }}
+                    >
+                      Déconnexion
+                    </button>
+                  </li>
+                </ul>
               )}
             </div>
           )}

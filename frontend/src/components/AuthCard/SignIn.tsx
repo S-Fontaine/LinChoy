@@ -18,6 +18,7 @@ interface ISignIn {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formData: IFormData;
   apiResponse: IApiResponse;
+  onForgotPassword: () => void;
 }
 
 export default function SignIn({
@@ -25,6 +26,7 @@ export default function SignIn({
   handleInputChange,
   formData,
   apiResponse,
+  onForgotPassword,
 }: ISignIn) {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -46,7 +48,16 @@ export default function SignIn({
       </div>
 
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Mot de passe</label>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <label className={styles.label}>Mot de passe</label>
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className={styles.forgotLink}
+          >
+            Mot de passe oublié ?
+          </button>
+        </div>
         <div style={{ position: "relative", width: "100%" }}>
           <input
             type={showPassword ? "text" : "password"}

@@ -81,3 +81,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+.favoriteWrapper {
+  grid-column: 1 / -1;
+}

@@ -6,14 +6,17 @@ import {
   generateVerifyToken,
   generateAccessToken,
   generateRefreshToken,
+  generateResetToken,
   verifyEmailToken,
   verifyRefreshToken,
+  verifyResetToken,
 } from "../utils/jwt.js";
 import { mailer } from "../utils/mailer.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import {
   authLimiter,
   resendVerificationLimiter,
+  forgotPasswordLimiter,
 } from "../middlewares/rateLimit.js";
 import {
   accessTokenCookieOptions,
@@ -124,7 +127,12 @@ router.post("/login", authLimiter, async (req, res) => {
 
     return res.status(200).json({
       result: true,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        favoriteServer: user.favoriteServer,
+      },
     });
   } catch (err) {
     console.error("[login]: Erreur serveur", err);
@@ -247,7 +255,12 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
 
     return res.status(200).json({
       result: true,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        favoriteServer: user.favoriteServer,
+      },
     });
   } catch (err) {
     console.error(err);
@@ -262,3 +275,111 @@ router.post("/logout", (req, res) => {
 });
 
 export default router;
+
+router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
+  const { email } = req.body;
+  if (!email?.trim()) {
+    return res.status(400).json({ result: false, message: "Email requis" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (user && user.authProvider === "local" && user.password) {
+      const resetToken = generateResetToken({
+        userId: user._id.toString(),
+        pwd: user.password,
+      });
+      try {
+        await mailer.sendPasswordResetEmail(
+          user.email,
+          resetToken,
+          user.username,
+        );
+      } catch (err) {
+        console.error("[mail]: Échec d'envoi (forgot-password)", err);
+      }
+    }
+  } catch (err) {
+    console.error("[forgot-password]: Erreur serveur", err);
+  }
+
+  return res.status(200).json({
+    result: true,
+    message:
+      "Si un compte existe avec cette adresse, un email de réinitialisation a été envoyé.",
+  });
+});
+
+router.post("/reset-password", authLimiter, async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) {
+    return res.status(400).json({ result: false, message: "Champs manquants" });
+  }
+
+  let payload;
+  try {
+    payload = verifyResetToken(token);
+  } catch {
+    return res
+      .status(400)
+      .json({ result: false, message: "Lien invalide ou expiré" });
+  }
+
+  try {
+    const user = await User.findById(payload.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Utilisateur introuvable" });
+    }
+
+    if (user.password !== payload.pwd) {
+      return res
+        .status(400)
+        .json({ result: false, message: "Ce lien a déjà été utilisé" });
+    }
+
+    user.password = password;
+    await user.save();
+
+    return res.status(200).json({
+      result: true,
+      message: "Mot de passe réinitialisé avec succès.",
+    });
+  } catch (err) {
+    return handleMongooseError(err, res);
+  }
+});
+
+router.get("/reset-password/verify", async (req, res) => {
+  const { token } = req.query;
+  if (!token || typeof token !== "string") {
+    return res.status(400).json({ result: false, message: "Lien invalide" });
+  }
+
+  let payload;
+  try {
+    payload = verifyResetToken(token);
+  } catch {
+    return res
+      .status(400)
+      .json({
+        result: false,
+        message: "Ce lien a expiré, redemande une réinitialisation.",
+      });
+  }
+
+  try {
+    const user = await User.findById(payload.userId);
+    if (!user || user.password !== payload.pwd) {
+      return res.status(400).json({
+        result: false,
+        message: "Ce lien a déjà été utilisé ou n'est plus valide.",
+      });
+    }
+    return res.status(200).json({ result: true, message: "Lien valide" });
+  } catch (err) {
+    return handleMongooseError(err, res);
+  }
+});

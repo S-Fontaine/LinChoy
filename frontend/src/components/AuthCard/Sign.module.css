@@ -40,7 +40,6 @@
   -webkit-appearance: none;
 }
 
-
 .btn {
   background: var(--bg-surface);
   color: var(--text-high);
@@ -96,7 +95,9 @@
 .strengthBarFill {
   height: 100%;
   border-radius: 2px;
-  transition: width 0.25s ease, background-color 0.25s ease;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .passwordRules {
@@ -132,4 +133,16 @@
   font-size: 10px;
   line-height: 1;
   flex-shrink: 0;
+}
+
+.forgotLink {
+  background: none;
+  border: none;
+  color: var(--text-low);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.forgotLink:hover {
+  color: var(--choy-green);
 }
