@@ -1,13 +1,14 @@
 "use client";
 import styles from "./LandingPage.module.css";
 import { type IGamesList } from "@/app/page";
+import { useAppUI } from "@/context/AppUIContext";
 
 interface ILandingPage {
-  openAuth: () => void;
   gamesList: IGamesList[];
 }
 
-export default function LandingPage({ openAuth, gamesList }: ILandingPage) {
+export default function LandingPage({ gamesList }: ILandingPage) {
+  const { openAuth } = useAppUI();
   const scrollToSection = () => {
     const section = document.getElementById("server-status");
     if (section) {
@@ -74,9 +75,8 @@ export default function LandingPage({ openAuth, gamesList }: ILandingPage) {
             <span className={styles.soonBadge}>Bientôt disponible</span>
             <h2>Liaison Multi-Plateforme</h2>
             <p style={{ color: "var(--text-medium)", marginBottom: "24px" }}>
-              Connecte tes comptes pour synchroniser ta progression et
-              retrouver tes amis en un clic. Une fonctionnalité en cours de
-              développement.
+              Connecte tes comptes pour synchroniser ta progression et retrouver
+              tes amis en un clic. Une fonctionnalité en cours de développement.
             </p>
           </div>
 

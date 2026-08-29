@@ -1,41 +1,29 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useAppUI } from "@/context/AppUIContext";
 import styles from "./Header.module.css";
 import AuthCard from "../AuthCard/AuthCard";
 import Modal from "../ui/Modal";
 
-interface IHeader {
-  onLoginSuccess?: () => void;
-  isAuthOpen?: boolean;
-  onOpenAuth?: () => void;
-  onCloseAuth?: () => void;
-  isEmailButtonVisible?: boolean;
-  openAccountSettings?: () => void;
-  openServerStatus?: () => void;
-}
-
-export default function Header({
-  onLoginSuccess,
-  isAuthOpen = false,
-  onOpenAuth,
-  onCloseAuth,
-  isEmailButtonVisible = false,
-  openAccountSettings,
-  openServerStatus,
-}: IHeader) {
+export default function Header() {
   const { user, logout } = useAuth();
+  const {
+    isAuthOpen,
+    openAuth,
+    closeAuth,
+    openServerStatus,
+    openAccountSettings,
+  } = useAppUI();
   const [isLogin, setIsLogin] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const onSwitchClick = () => {
-    setIsLogin(!isLogin);
-  };
+  const onSwitchClick = () => setIsLogin(!isLogin);
 
   const isUserLogin = () => {
     setIsLogin(true);
-    onOpenAuth?.();
+    openAuth();
   };
 
   useEffect(() => {
@@ -69,7 +57,7 @@ export default function Header({
           <span className={styles.choy}>Choy</span>
         </div>
         <div>
-          {!user && !isEmailButtonVisible && (
+          {!user && (
             <button className={styles.btn} onClick={isUserLogin}>
               Connexion
             </button>
@@ -144,11 +132,11 @@ export default function Header({
             isAuthOpen={isAuthOpen}
             onCloseAuth={() => {
               setIsLogin(false);
-              onCloseAuth?.();
+              closeAuth();
             }}
           >
             <AuthCard
-              onLoginSuccess={onLoginSuccess}
+              onLoginSuccess={closeAuth}
               isLogin={isLogin}
               onSwitchClick={onSwitchClick}
             />

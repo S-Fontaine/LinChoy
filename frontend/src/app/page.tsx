@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useAppUI } from "@/context/AppUIContext";
 import LandingPage from "@/components/LandingPage/LandingPage";
-import Header from "@/components/Header/Header";
 import ServerStatus from "@/components/ServerStatus/ServerStatus";
 import AccountSettings from "@/components/AccountSettings/AccountSettings";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 export interface IGamesList {
   name: string;
   comingSoon: boolean;
@@ -23,13 +22,8 @@ export interface IGamesList {
 
 export default function Home() {
   const { user } = useAuth();
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [page, setPage] = useState<"ServerStatus" | "AccountSettings">(
-    "ServerStatus",
-  );
+  const { activeView } = useAppUI();
   const [gamesList, setGamesList] = useState<IGamesList[]>([]);
-  const openAuth = () => setIsAuthOpen(true);
-  const closeAuth = () => setIsAuthOpen(false);
 
   useEffect(() => {
     async function getData() {
@@ -50,19 +44,11 @@ export default function Home() {
 
   return (
     <div>
-      <Header
-        isAuthOpen={isAuthOpen}
-        onOpenAuth={openAuth}
-        onCloseAuth={closeAuth}
-        onLoginSuccess={closeAuth}
-        openServerStatus={() => setPage("ServerStatus")}
-        openAccountSettings={() => setPage("AccountSettings")}
-      />
-      {!user && <LandingPage openAuth={openAuth} gamesList={gamesList} />}
-      {user && page === "ServerStatus" && (
+      {!user && <LandingPage gamesList={gamesList} />}
+      {user && activeView === "ServerStatus" && (
         <ServerStatus gamesList={gamesList} />
       )}
-      {user && page === "AccountSettings" && <AccountSettings />}
+      {user && activeView === "AccountSettings" && <AccountSettings />}
     </div>
   );
 }

@@ -1,0 +1,54 @@
+.page {
+  position: relative;
+  max-width: 780px;
+  margin: 32 auto;
+  padding: 60px 20px 80px;
+  border: 2px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--text-high);
+  margin-bottom: 8px;
+}
+
+.updated {
+  color: var(--text-low);
+  font-size: 0.85rem;
+  margin-bottom: 40px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  color: var(--text-high);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.section p,
+.section li {
+  color: var(--text-medium);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.section ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.section a {
+  color: var(--choy-green);
+}
+
+.highlight {
+  color: var(--text-high);
+  font-weight: 600;
+}

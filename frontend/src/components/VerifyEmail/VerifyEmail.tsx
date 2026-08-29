@@ -1,8 +1,6 @@
-// Dans le même fichier ou un fichier séparé
-"use client"; // Obligatoire car on utilise des hooks et du state
+"use client";
 
 import { useAuth } from "@/context/AuthContext";
-import Header from "@/components/Header/Header";
 import Modal from "@/components/ui/Modal";
 import AuthCard from "@/components/AuthCard/AuthCard";
 import styles from "./verify-email.module.css";
@@ -51,7 +49,6 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
 
   return (
     <>
-      <Header isEmailButtonVisible={true} />
       <Modal isAuthOpen={isAuthOpen} onCloseAuth={closeAuth}>
         {showAuth ? (
           <AuthCard isLogin={true} onSwitchClick={() => onSwitchClick?.()} />

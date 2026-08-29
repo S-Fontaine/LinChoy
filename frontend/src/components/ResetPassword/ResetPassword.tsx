@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Header from "@/components/Header/Header";
 import Modal from "@/components/ui/Modal";
 import styles from "../VerifyEmail/verify-email.module.css";
 
@@ -87,7 +86,6 @@ export function ResetPassword() {
 
   return (
     <>
-      <Header isEmailButtonVisible={true} />
       <Modal isAuthOpen={true} onCloseAuth={() => router.push("/")}>
         <div className={styles.wrapper}>
           <div className={styles.card}>
