@@ -4,12 +4,15 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateVerifyToken,
+  generateResetToken,
   verifyAccessToken,
   verifyRefreshToken,
+  verifyResetToken,
 } from "../../src/utils/jwt.js";
 
 describe("Test utilitaire: Génération et vérification des tokens JWT", () => {
   const payload = { userId: "abc123" };
+  const resetPayload = { userId: "abc123", pwd: "hashDuMotDePasse" };
 
   describe("generateAccessToken / verifyAccessToken", () => {
     it("Génère un token valide et décodable", () => {
@@ -89,6 +92,42 @@ describe("Test utilitaire: Génération et vérification des tokens JWT", () => 
       const refreshToken = generateRefreshToken(payload);
 
       expect(() => verifyAccessToken(refreshToken)).toThrow();
+    });
+    it("Un resetToken ne peut PAS être vérifié comme accessToken", () => {
+      const resetToken = generateResetToken(resetPayload);
+
+      expect(() => verifyAccessToken(resetToken)).toThrow();
+    });
+  });
+  describe("generateResetToken / verifyResetToken", () => {
+    const resetPayload = { userId: "abc123", pwd: "hashDuMotDePasse" };
+
+    it("Génère un token valide et décodable", () => {
+      const token = generateResetToken(resetPayload);
+      const decoded = verifyResetToken(token);
+
+      expect(decoded.userId).toBe("abc123");
+      expect(decoded.pwd).toBe("hashDuMotDePasse");
+    });
+
+    it("A une expiration de 1 heure", () => {
+      const token = generateResetToken(resetPayload);
+      const decoded = jwt.decode(token) as { iat: number; exp: number };
+      const duration = decoded.exp - decoded.iat;
+
+      expect(duration).toBe(60 * 60);
+    });
+
+    it("Rejette un token expiré", () => {
+      const expiredToken = generateResetToken(resetPayload, {
+        expiresIn: "-1s",
+      });
+
+      expect(() => verifyResetToken(expiredToken)).toThrow();
+    });
+
+    it("Rejette un token invalide", () => {
+      expect(() => verifyResetToken("token.invalide.bidon")).toThrow();
     });
   });
 });

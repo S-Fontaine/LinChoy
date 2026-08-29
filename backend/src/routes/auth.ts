@@ -274,8 +274,6 @@ router.post("/logout", (req, res) => {
   return res.status(204).send();
 });
 
-export default router;
-
 router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
   const { email } = req.body;
   if (!email?.trim()) {
@@ -383,3 +381,5 @@ router.get("/reset-password/verify", async (req, res) => {
     return handleMongooseError(err, res);
   }
 });
+
+export default router;

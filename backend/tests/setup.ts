@@ -19,9 +19,13 @@ beforeAll(async () => {
 });
 beforeEach(() => {
   jest.spyOn(mailer, "sendVerificationEmail").mockResolvedValue(undefined);
+  jest.spyOn(mailer, "sendPasswordResetEmail").mockResolvedValue(undefined);
 });
 afterEach(async () => {
-  await mongoose.connection.db!.dropDatabase();
+  const collections = mongoose.connection.collections;
+  await Promise.all(
+    Object.values(collections).map((collection) => collection.deleteMany({})),
+  );
   jest.restoreAllMocks();
 });
 

@@ -53,6 +53,7 @@ export async function syncGameServers() {
       {
         $set: {
           "status.state": status.online ? "online" : "starting",
+          "status.online": status.online,
           "status.version": status.version,
           "status.playerCount": status.playerCount,
           "status.maxPlayers": status.maxPlayers,

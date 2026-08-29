@@ -146,7 +146,7 @@ router.patch(
       const user = await User.findByIdAndUpdate(
         req.params.id,
         { favoriteServer: slug || null },
-        { new: true },
+        { returnDocument: "after" },
       );
 
       if (!user) {
