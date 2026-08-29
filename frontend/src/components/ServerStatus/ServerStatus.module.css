@@ -1,3 +1,12 @@
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .mainContent {
   max-width: 1250px;
   margin: 0 auto;
@@ -42,15 +51,6 @@
   height: 14px;
   border-radius: 4px;
   background: var(--border);
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
 }
 
 .cardWrapper {

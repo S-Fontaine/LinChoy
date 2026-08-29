@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./AccountSettings.module.css";
 import signStyles from "../AuthCard/Sign.module.css";
 import { useAuth } from "@/context/AuthContext";
@@ -28,7 +28,32 @@ export default function AccountSettings() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteState, setDeleteState] = useState({ loading: false, error: "" });
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      if (
+        mobileNavRef.current &&
+        !mobileNavRef.current.contains(e.target as Node)
+      ) {
+        setIsMobileNavOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsMobileNavOpen(false);
+    }
 
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const activeItem = NAV_ITEMS.find((item) => item.key === activeSection);
   if (!user) return null;
 
   async function patchUser(payload: Record<string, string>) {
@@ -83,6 +108,59 @@ export default function AccountSettings() {
 
   return (
     <div className={styles.layout}>
+      <div className={styles.mobileNav} ref={mobileNavRef}>
+        <button
+          type="button"
+          className={styles.mobileNavTrigger}
+          onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+          aria-haspopup="menu"
+          aria-expanded={isMobileNavOpen}
+        >
+          {activeItem?.label}
+          <span
+            className={`${styles.chevron} ${isMobileNavOpen ? styles.chevronOpen : ""}`}
+          >
+            ▾
+          </span>
+        </button>
+
+        {isMobileNavOpen && (
+          <ul role="menu" className={styles.mobileNavList}>
+            {NAV_ITEMS.map((item) => (
+              <li key={item.key} role="none">
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={styles.mobileNavItem}
+                  disabled={item.comingSoon}
+                  onClick={() => {
+                    setActiveSection(item.key);
+                    setIsMobileNavOpen(false);
+                  }}
+                >
+                  {item.label}
+                  {item.comingSoon && (
+                    <span className={styles.soonTag}>Bientôt</span>
+                  )}
+                </button>
+              </li>
+            ))}
+            <li role="none">
+              <button
+                type="button"
+                role="menuitem"
+                className={styles.mobileNavItemDanger}
+                onClick={() => {
+                  setIsMobileNavOpen(false);
+                  setIsDeleteOpen(true);
+                }}
+              >
+                Supprimer le compte
+              </button>
+            </li>
+          </ul>
+        )}
+      </div>
       <nav className={styles.sidebar}>
         {NAV_ITEMS.map((item) => (
           <button

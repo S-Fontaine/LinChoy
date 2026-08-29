@@ -1,3 +1,12 @@
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
 .card {
   max-width: 580px;
   background-color: color-mix(in srgb, var(--bg-main) 75%, transparent);
@@ -15,7 +24,7 @@
   transform: translateY(-4px);
 }
 
-.card.isOn {
+.card.online {
   border-color: var(--choy-green);
   box-shadow: 0 0 15px rgba(50, 205, 50, 0.15);
 }
@@ -52,7 +61,7 @@
   transition: var(--transition-smooth, background-color 0.3s ease);
 }
 
-.statusIndicator.isOn {
+.statusIndicator.online {
   background-color: var(--choy-green);
   box-shadow: 0 0 10px var(--choy-green);
 }
@@ -81,6 +90,7 @@
 
 .contentSection {
   padding: 0 20px 20px 20px;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -89,13 +99,13 @@
 .serverHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
 }
 
 .serverName {
   display: flex;
   align-items: center;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   margin: 0;
 }
@@ -151,14 +161,6 @@
   z-index: 20;
 }
 
-@media (hover: hover) {
-  .playerBadge.clickable:hover .playerTooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-}
-
 .playerTooltipOpen {
   opacity: 1;
   visibility: visible;
@@ -196,15 +198,6 @@
   box-shadow: 0 0 10px var(--lin-orange);
   animation: pulse 1.5s ease-in-out infinite;
 }
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
 
 .headerActions {
   display: flex;
@@ -226,4 +219,12 @@
 }
 .favoriteBtn:has(svg[fill="currentColor"]) {
   color: var(--lin-orange);
+}
+
+@media (hover: hover) {
+  .playerBadge.clickable:hover .playerTooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
 }
