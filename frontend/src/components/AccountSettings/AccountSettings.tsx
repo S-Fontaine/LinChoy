@@ -50,6 +50,7 @@ export default function AccountSettings() {
       id: result.data.id,
       username: result.data.username,
       email: result.data.email,
+      favoriteServer: user!.favoriteServer,
     });
     return { success: true, message: result.message };
   }
