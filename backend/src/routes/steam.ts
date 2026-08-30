@@ -4,6 +4,7 @@ import { verifyAccessToken } from "../utils/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { getSteamRedirectUrl, verifySteamOpenId } from "../utils/steamAuth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
+import crypto from "crypto";
 import type { Response } from "express";
 
 const router = Router();
@@ -16,11 +17,18 @@ function sendSteamPopupResponse(
     | { success: true; steamId: string }
     | { success: false; error: string },
 ) {
+  const nonce = crypto.randomBytes(16).toString("base64");
+
+  res.setHeader(
+    "Content-Security-Policy",
+    `default-src 'none'; script-src 'nonce-${nonce}'`,
+  );
   res.set("Content-Type", "text/html");
+
   return res.send(`<!DOCTYPE html>
 <html>
 <body>
-<script>
+<script nonce="${nonce}">
   if (window.opener) {
     window.opener.postMessage(
       ${JSON.stringify({ type: "steam-link", ...payload })},

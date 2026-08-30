@@ -281,7 +281,7 @@ export default function AccountSettings() {
               <div className={styles.rowLabel}>Compte Steam</div>
               <div className={styles.rowValueContainer}>
                 <span className={styles.rowValue}>
-                  {user.steamId ? `Lié (${user.steamId})` : "Non lié"}
+                  {user.steamId ? user.steamId : "Non lié"}
                 </span>
                 {user.steamId ? (
                   <button
