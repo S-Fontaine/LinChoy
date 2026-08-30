@@ -6,36 +6,36 @@ import styles from "./Modal.module.css";
 import { cross } from "../icons/Icons";
 
 interface ModalProps {
-  isAuthOpen: boolean;
-  onCloseAuth: () => void;
+  isOpen: boolean;
+  onClose: () => void;
   children: ReactNode;
 }
 
 export default function Modal({
-  isAuthOpen,
-  onCloseAuth,
+  isOpen,
+  onClose,
   children,
 }: ModalProps) {
   useEffect(() => {
-    if (!isAuthOpen) return;
+    if (!isOpen) return;
     document.body.style.overflow = "hidden";
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseAuth();
+      if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleEscape);
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [isAuthOpen, onCloseAuth]);
+  }, [isOpen, onClose]);
 
-  if (!isAuthOpen) return null;
+  if (!isOpen) return null;
   return (
     <div className={styles.overlay}>
       <div className={styles.content}>
         <button
           className={styles.closeBtn}
-          onClick={onCloseAuth}
+          onClick={onClose}
           aria-label="Fermer"
         >
           {cross}

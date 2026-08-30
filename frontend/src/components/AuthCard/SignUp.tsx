@@ -59,7 +59,7 @@ export default function SignUp({
     formData.confirmPassword === formData.password;
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form} key="form-login">
+    <form onSubmit={handleSubmit} className={styles.form} key="form-register">
       <div className={styles.inputGroup}>
         <label className={styles.label}>Nom d&apos;utilisateur</label>
         <input

@@ -1,5 +1,5 @@
-import os from "os"
-import express from 'express';
+import os from "os";
+import express from "express";
 
 const router = express.Router();
 
@@ -14,10 +14,10 @@ function formatRAM(totalRAM: number, FreeRAM: number): string {
   const RAM = (totalRAM / 1024 ** 3).toFixed(2);
   const usedRAM = ((totalRAM - FreeRAM) / 1024 ** 3).toFixed(2);
   const freeRAM = (FreeRAM / 1024 ** 3).toFixed(2);
- return `Mémoire utilisée : ${usedRAM} GB sur ${RAM} GB (Il reste ${freeRAM} GB libres)`;
+  return `Mémoire utilisée : ${usedRAM} GB sur ${RAM} GB (Il reste ${freeRAM} GB libres)`;
 }
 
-router.get("/status", (req, res) => {
+router.get("/status", (_req, res) => {
   const [load1, load5, load15] = os.loadavg() as [number, number, number];
   res.json({
     status: "Serveur allumé depuis " + formatUptime(os.uptime()),

@@ -14,7 +14,7 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
   const router = useRouter();
   const token = searchParams.get("token");
   const [response, setResponse] = useState({ result: false, message: "" });
-  const [isAuthOpen, setIsAuthOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
@@ -43,42 +43,40 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
   }, [token, user, router]);
 
   const closeAuth = () => {
-    setIsAuthOpen(false);
+    setIsOpen(false);
     router.push("/");
   };
 
   return (
-    <>
-      <Modal isAuthOpen={isAuthOpen} onCloseAuth={closeAuth}>
-        {showAuth ? (
-          <AuthCard isLogin={true} onSwitchClick={() => onSwitchClick?.()} />
-        ) : (
-          <div className={styles.wrapper}>
-            <div className={styles.card}>
-              <div className={styles.header}>
-                <h2 className={styles.title}>
-                  {response.result ? "Bienvenue !" : "Oups !"}
-                </h2>
-                <p className={styles.subtitle}>{response.message}</p>
-              </div>
-              <div className={styles.form}>
-                <button
-                  className={styles.btn}
-                  onClick={() => {
-                    if (response.result) {
-                      setShowAuth(true);
-                    } else {
-                      router.push("/");
-                    }
-                  }}
-                >
-                  {response.result ? "Se connecter" : "Retour à l'accueil"}
-                </button>
-              </div>
+    <Modal isOpen={isOpen} onClose={closeAuth}>
+      {showAuth ? (
+        <AuthCard isLogin={true} onSwitchClick={() => onSwitchClick?.()} />
+      ) : (
+        <div className={styles.wrapper}>
+          <div className={styles.card}>
+            <div className={styles.header}>
+              <h2 className={styles.title}>
+                {response.result ? "Bienvenue !" : "Oups !"}
+              </h2>
+              <p className={styles.subtitle}>{response.message}</p>
+            </div>
+            <div className={styles.form}>
+              <button
+                className={styles.btn}
+                onClick={() => {
+                  if (response.result) {
+                    setShowAuth(true);
+                  } else {
+                    router.push("/");
+                  }
+                }}
+              >
+                {response.result ? "Se connecter" : "Retour à l'accueil"}
+              </button>
             </div>
           </div>
-        )}
-      </Modal>
-    </>
+        </div>
+      )}
+    </Modal>
   );
 }

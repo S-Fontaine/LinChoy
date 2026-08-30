@@ -27,7 +27,9 @@ export async function getSourceQueryStatus(
       playerCount: result.players.length,
       maxPlayers: result.maxplayers,
       version: result.version,
-      players: result.players.map((p) => p.name!),
+      players: result.players
+        .map((p) => p.name)
+        .filter((name): name is string => Boolean(name)),
       displayName: result.name,
     };
   } catch {

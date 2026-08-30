@@ -1,11 +1,10 @@
-import { Router } from "express";
+import { Router, type Response } from "express";
 import User from "../models/User.js";
 import { verifyAccessToken } from "../utils/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { getSteamRedirectUrl, verifySteamOpenId } from "../utils/steamAuth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
 import crypto from "crypto";
-import type { Response } from "express";
 
 const router = Router();
 const BACKEND_URL = process.env.BACKEND_URL as string;
@@ -41,7 +40,7 @@ function sendSteamPopupResponse(
 </html>`);
 }
 
-router.get("/link", requireAuth, (req: AuthRequest, res) => {
+router.get("/link", requireAuth, (_req: AuthRequest, res) => {
   const returnUrl = `${BACKEND_URL}/steam/link/callback`;
   const redirectUrl = getSteamRedirectUrl(returnUrl, BACKEND_URL);
   return res.redirect(redirectUrl);

@@ -270,7 +270,7 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", (_req, res) => {
   res.clearCookie("accessToken", accessTokenCookieOptions);
   res.clearCookie("refreshToken", refreshTokenCookieOptions);
   return res.status(204).send();

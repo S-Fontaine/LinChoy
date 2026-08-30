@@ -21,7 +21,7 @@ export async function syncGameServers() {
     try {
       const container = await getContainerState(server.containerName);
       containerRunning = container.running;
-    } catch (err) {
+    } catch {
       console.warn(
         `[sync] ${server.name} : container "${server.containerName}" introuvable`,
       );

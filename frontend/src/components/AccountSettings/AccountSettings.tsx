@@ -325,8 +325,8 @@ export default function AccountSettings() {
       </div>
 
       <Modal
-        isAuthOpen={isDeleteOpen}
-        onCloseAuth={() => setIsDeleteOpen(false)}
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
       >
         <form onSubmit={handleDelete} className={signStyles.form}>
           <h2 className={styles.contentTitle}>Confirmer la suppression</h2>

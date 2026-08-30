@@ -30,7 +30,7 @@ export default function SignIn({
 }: ISignIn) {
   const [showPassword, setShowPassword] = useState(false);
   return (
-    <form onSubmit={handleSubmit} className={styles.form} key="form-register">
+    <form onSubmit={handleSubmit} className={styles.form} key="form-login">
       <div className={styles.inputGroup}>
         <label className={styles.label}>Adresse Email</label>
         <input

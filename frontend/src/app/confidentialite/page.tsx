@@ -8,7 +8,7 @@ export default function ConfidentialitePage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Politique de confidentialité</h1>
-      <p className={styles.updated}>Dernière mise à jour : {new Date().toLocaleDateString("fr-FR")}</p>
+      <p className={styles.updated}>Dernière mise à jour : 29/08/2026</p>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Responsable du traitement</h2>

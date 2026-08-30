@@ -40,7 +40,7 @@ export default function Home() {
       }
     }
     getData();
-  }, [user]);
+  }, []);
 
   return (
     <div>

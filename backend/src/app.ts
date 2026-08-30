@@ -33,16 +33,16 @@ app.use("/games", gameServerRouter);
 app.use("/steam", steamRouter);
 
 // Check
-app.use((req, res) => {
+app.use((_req, res) => {
   res.status(404).json({ result: false, message: "Not found" });
 });
 
 app.use(
   (
     err: Error,
-    req: express.Request,
+    _req: express.Request,
     res: express.Response,
-    next: express.NextFunction,
+    _next: express.NextFunction,
   ) => {
     console.error(err);
     res.status(500).json({ result: false, message: "Internal server error" });

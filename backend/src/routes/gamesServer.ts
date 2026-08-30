@@ -3,7 +3,7 @@ import GameServer from "../models/GameServer.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   try {
     const servers = await GameServer.find().select(
       "name slug type image status comingSoon",

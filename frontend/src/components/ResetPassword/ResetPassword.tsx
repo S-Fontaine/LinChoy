@@ -85,122 +85,117 @@ export function ResetPassword() {
   }
 
   return (
-    <>
-      <Modal isAuthOpen={true} onCloseAuth={() => router.push("/")}>
-        <div className={styles.wrapper}>
-          <div className={styles.card}>
-            {view === "checking" && (
+    <Modal isOpen={true} onClose={() => router.push("/")}>
+      <div className={styles.wrapper}>
+        <div className={styles.card}>
+          {view === "checking" && (
+            <div className={styles.header}>
+              <h2 className={styles.title}>Vérification...</h2>
+              <p className={styles.subtitle}>
+                Un instant, on vérifie ton lien.
+              </p>
+            </div>
+          )}
+
+          {view === "invalid" && (
+            <>
               <div className={styles.header}>
-                <h2 className={styles.title}>Vérification...</h2>
+                <h2 className={styles.title}>Oups !</h2>
+                <p className={styles.subtitle}>{message}</p>
+              </div>
+              <div className={styles.form}>
+                <button className={styles.btn} onClick={() => router.push("/")}>
+                  Retour à l&apos;accueil
+                </button>
+              </div>
+            </>
+          )}
+
+          {view === "success" && (
+            <div className={styles.header}>
+              <h2 className={styles.title}>C&apos;est fait !</h2>
+              <p className={styles.subtitle}>
+                Ton mot de passe a été réinitialisé. Redirection en cours...
+              </p>
+            </div>
+          )}
+
+          {view === "form" && (
+            <>
+              <div className={styles.header}>
+                <h2 className={styles.title}>Nouveau mot de passe</h2>
                 <p className={styles.subtitle}>
-                  Un instant, on vérifie ton lien.
+                  Choisis un mot de passe sécurisé.
                 </p>
               </div>
-            )}
 
-            {view === "invalid" && (
-              <>
-                <div className={styles.header}>
-                  <h2 className={styles.title}>Oups !</h2>
-                  <p className={styles.subtitle}>{message}</p>
+              <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Nouveau mot de passe</label>
+                  <input
+                    type="password"
+                    required
+                    className={styles.input}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoFocus
+                  />
+                  <ul className={styles.passwordRules}>
+                    {PASSWORD_RULES.map((rule) => {
+                      const isValid = rule.test(password);
+                      return (
+                        <li
+                          key={rule.label}
+                          className={`${styles.ruleItem} ${isValid ? styles.valid : ""}`}
+                        >
+                          <span>{isValid ? "✓" : "•"}</span>
+                          {rule.label}
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
-                <div className={styles.form}>
-                  <button
-                    className={styles.btn}
-                    onClick={() => router.push("/")}
-                  >
-                    Retour à l&apos;accueil
-                  </button>
+
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>
+                    Confirmer le mot de passe
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    className={styles.input}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{
+                      borderColor: !passwordsMatch
+                        ? "var(--lin-orange)"
+                        : "var(--border)",
+                    }}
+                  />
                 </div>
-              </>
-            )}
 
-            {view === "success" && (
-              <div className={styles.header}>
-                <h2 className={styles.title}>C&apos;est fait !</h2>
-                <p className={styles.subtitle}>
-                  Ton mot de passe a été réinitialisé. Redirection en cours...
-                </p>
-              </div>
-            )}
-
-            {view === "form" && (
-              <>
-                <div className={styles.header}>
-                  <h2 className={styles.title}>Nouveau mot de passe</h2>
-                  <p className={styles.subtitle}>
-                    Choisis un mot de passe sécurisé.
+                {submitState.error && (
+                  <p style={{ color: "#e04b4b", fontSize: "0.85rem" }}>
+                    {submitState.error}
                   </p>
-                </div>
+                )}
 
-                <form onSubmit={handleSubmit} className={styles.form}>
-                  <div className={styles.inputGroup}>
-                    <label className={styles.label}>Nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      required
-                      className={styles.input}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoFocus
-                    />
-                    <ul className={styles.passwordRules}>
-                      {PASSWORD_RULES.map((rule) => {
-                        const isValid = rule.test(password);
-                        return (
-                          <li
-                            key={rule.label}
-                            className={`${styles.ruleItem} ${isValid ? styles.valid : ""}`}
-                          >
-                            <span>{isValid ? "✓" : "•"}</span>
-                            {rule.label}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-
-                  <div className={styles.inputGroup}>
-                    <label className={styles.label}>
-                      Confirmer le mot de passe
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      className={styles.input}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      style={{
-                        borderColor: !passwordsMatch
-                          ? "var(--lin-orange)"
-                          : "var(--border)",
-                      }}
-                    />
-                  </div>
-
-                  {submitState.error && (
-                    <p style={{ color: "#e04b4b", fontSize: "0.85rem" }}>
-                      {submitState.error}
-                    </p>
-                  )}
-
-                  <button
-                    type="submit"
-                    className={styles.btn}
-                    disabled={
-                      submitState.loading || !isPasswordValid || !passwordsMatch
-                    }
-                  >
-                    {submitState.loading
-                      ? "Patientez..."
-                      : "Réinitialiser le mot de passe"}
-                  </button>
-                </form>
-              </>
-            )}
-          </div>
+                <button
+                  type="submit"
+                  className={styles.btn}
+                  disabled={
+                    submitState.loading || !isPasswordValid || !passwordsMatch
+                  }
+                >
+                  {submitState.loading
+                    ? "Patientez..."
+                    : "Réinitialiser le mot de passe"}
+                </button>
+              </form>
+            </>
+          )}
         </div>
-      </Modal>
-    </>
+      </div>
+    </Modal>
   );
 }

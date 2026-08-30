@@ -9,7 +9,7 @@ import Modal from "../ui/Modal";
 export default function Header() {
   const { user, logout } = useAuth();
   const {
-    isAuthOpen,
+    isOpen,
     openAuth,
     closeAuth,
     openServerStatus,
@@ -129,8 +129,8 @@ export default function Header() {
           )}
 
           <Modal
-            isAuthOpen={isAuthOpen}
-            onCloseAuth={() => {
+            isOpen={isOpen}
+            onClose={() => {
               setIsLogin(false);
               closeAuth();
             }}

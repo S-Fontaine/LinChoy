@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 type View = "ServerStatus" | "AccountSettings";
 
 interface AppUIContextValue {
-  isAuthOpen: boolean;
+  isOpen: boolean;
   openAuth: () => void;
   closeAuth: () => void;
   activeView: View;
@@ -18,7 +18,7 @@ const AppUIContext = createContext<AppUIContextValue | undefined>(undefined);
 export function AppUIProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [activeView, setActiveView] = useState<View>("ServerStatus");
 
   function goHomeAnd(view: View) {
@@ -29,9 +29,9 @@ export function AppUIProvider({ children }: { children: ReactNode }) {
   return (
     <AppUIContext.Provider
       value={{
-        isAuthOpen,
-        openAuth: () => setIsAuthOpen(true),
-        closeAuth: () => setIsAuthOpen(false),
+        isOpen,
+        openAuth: () => setIsOpen(true),
+        closeAuth: () => setIsOpen(false),
         activeView,
         openServerStatus: () => goHomeAnd("ServerStatus"),
         openAccountSettings: () => goHomeAnd("AccountSettings"),
