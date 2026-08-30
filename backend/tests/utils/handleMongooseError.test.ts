@@ -2,6 +2,7 @@ import { describe, it, expect, jest } from "@jest/globals";
 import mongoose from "mongoose";
 import type { Response } from "express";
 import { handleMongooseError } from "../../src/utils/handleMongooseError.js";
+import { MongoServerError } from "mongodb";
 
 function createMockRes(): Response {
   const res = {} as Response;
@@ -63,7 +64,7 @@ describe("Test utilitaire: handleMongooseError", () => {
   });
   it("renvoie un message spécifique pour un doublon d'email", () => {
     const res = createMockRes();
-    const err = new Error("duplicate key") as any;
+    const err = new Error("duplicate key") as Partial<MongoServerError>;
     err.code = 11000;
     err.keyPattern = { email: 1 };
 
@@ -78,7 +79,7 @@ describe("Test utilitaire: handleMongooseError", () => {
 
   it("renvoie un message spécifique pour un doublon de username", () => {
     const res = createMockRes();
-    const err = new Error("duplicate key") as any;
+    const err = new Error("duplicate key") as Partial<MongoServerError>;
     err.code = 11000;
     err.keyPattern = { username: 1 };
 

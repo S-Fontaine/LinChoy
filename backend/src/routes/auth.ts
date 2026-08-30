@@ -132,6 +132,7 @@ router.post("/login", authLimiter, async (req, res) => {
         username: user.username,
         email: user.email,
         favoriteServer: user.favoriteServer,
+        steamId: user.steamId,
       },
     });
   } catch (err) {
@@ -260,6 +261,7 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
         username: user.username,
         email: user.email,
         favoriteServer: user.favoriteServer,
+        steamId: user.steamId,
       },
     });
   } catch (err) {
@@ -360,12 +362,10 @@ router.get("/reset-password/verify", async (req, res) => {
   try {
     payload = verifyResetToken(token);
   } catch {
-    return res
-      .status(400)
-      .json({
-        result: false,
-        message: "Ce lien a expiré, redemande une réinitialisation.",
-      });
+    return res.status(400).json({
+      result: false,
+      message: "Ce lien a expiré, redemande une réinitialisation.",
+    });
   }
 
   try {

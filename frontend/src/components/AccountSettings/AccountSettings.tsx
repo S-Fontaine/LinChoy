@@ -24,12 +24,18 @@ const NAV_ITEMS = [
 
 export default function AccountSettings() {
   const { user, setUser, logout } = useAuth();
+  const mobileNavRef = useRef<HTMLDivElement>(null);
   const [activeSection, setActiveSection] = useState("compte");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteState, setDeleteState] = useState({ loading: false, error: "" });
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const mobileNavRef = useRef<HTMLDivElement>(null);
+  const [steamMessage, setSteamMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [unlinkLoading, setUnlinkLoading] = useState(false);
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent | TouchEvent) {
       if (
@@ -76,6 +82,7 @@ export default function AccountSettings() {
       username: result.data.username,
       email: result.data.email,
       favoriteServer: user!.favoriteServer,
+      steamId: user!.steamId,
     });
     return { success: true, message: result.message };
   }
@@ -106,6 +113,66 @@ export default function AccountSettings() {
     }
   }
 
+  async function handleUnlinkSteam() {
+    setUnlinkLoading(true);
+    try {
+      const res = await fetchWithAuth(`/steam/link`, { method: "DELETE" });
+      if (res.ok) {
+        setUser({ ...user!, steamId: null });
+      }
+    } finally {
+      setUnlinkLoading(false);
+    }
+  }
+  function handleLinkSteam() {
+    const width = 500;
+    const height = 650;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    const popup = window.open(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/steam/link`,
+      "steamLink",
+      `width=${width},height=${height},left=${left},top=${top}`,
+    );
+
+    if (!popup) {
+      setSteamMessage({
+        type: "error",
+        text: "Ton navigateur a bloqué la fenêtre. Autorise les popups pour ce site.",
+      });
+      return;
+    }
+
+    function handleMessage(event: MessageEvent) {
+      if (event.origin !== process.env.NEXT_PUBLIC_BACKEND_URL) return;
+      if (event.data?.type !== "steam-link") return;
+
+      if (event.data.success) {
+        setUser({ ...user!, steamId: event.data.steamId });
+        setSteamMessage({
+          type: "success",
+          text: "Compte Steam lié avec succès !",
+        });
+      } else {
+        const errorMessages: Record<string, string> = {
+          session_expired:
+            "Ta session a expiré pendant la vérification, réessaie.",
+          already_linked:
+            "Ce compte Steam est déjà lié à un autre utilisateur.",
+          invalid: "La vérification Steam a échoué, réessaie.",
+        };
+        setSteamMessage({
+          type: "error",
+          text: errorMessages[event.data.error] || "Une erreur est survenue.",
+        });
+      }
+
+      window.removeEventListener("message", handleMessage);
+    }
+
+    window.addEventListener("message", handleMessage);
+  }
   return (
     <div className={styles.layout}>
       <div className={styles.mobileNav} ref={mobileNavRef}>
@@ -210,6 +277,49 @@ export default function AccountSettings() {
                 <PasswordEditField value={value} setValue={setValue} />
               )}
             />
+            <div className={styles.row}>
+              <div className={styles.rowLabel}>Compte Steam</div>
+              <div className={styles.rowValueContainer}>
+                <span className={styles.rowValue}>
+                  {user.steamId ? `Lié (${user.steamId})` : "Non lié"}
+                </span>
+                {user.steamId ? (
+                  <button
+                    className={styles.modifyBtn}
+                    onClick={handleUnlinkSteam}
+                    disabled={unlinkLoading}
+                  >
+                    {unlinkLoading ? "..." : "Délier"}
+                  </button>
+                ) : (
+                  <button
+                    className={styles.modifyBtn}
+                    onClick={handleLinkSteam}
+                  >
+                    Lier mon compte Steam
+                  </button>
+                )}
+              </div>
+              {steamMessage && (
+                <div
+                  className={
+                    steamMessage.type === "success"
+                      ? styles.successBox
+                      : styles.errorBox
+                  }
+                >
+                  <span>{steamMessage.text}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSteamMessage(null)}
+                    aria-label="Fermer le message"
+                    className={styles.closeMessageBtn}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>

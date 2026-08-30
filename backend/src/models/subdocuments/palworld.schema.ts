@@ -139,7 +139,7 @@ playerSchema.virtual("mapX").get(function () {
 const PalworldSchema = new Schema<IPalworld>(
   {
     name: { type: String, default: "Palworld" },
-    image: { type: String, default: "/assets/palworld.png" },
+    image: { type: String, default: "/assets/palworld.webp" },
     info: {
       version: String,
       servername: String,

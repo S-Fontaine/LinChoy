@@ -10,6 +10,7 @@ import serverStatusRouter from "./routes/serverStatus.js";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
 import gameServerRouter from "./routes/gamesServer.js";
+import steamRouter from "./routes/steam.js";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/server", serverStatusRouter);
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/games", gameServerRouter);
+app.use("/steam", steamRouter);
 
 // Check
 app.use((req, res) => {

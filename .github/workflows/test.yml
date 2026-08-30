@@ -38,6 +38,8 @@ jobs:
           JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
           JWT_VERIFY_SECRET: ${{ secrets.JWT_VERIFY_SECRET }}
           JWT_RESET_SECRET: ${{ secrets.JWT_RESET_SECRET }}
+          FRONTEND_URL: ${{secrets.FRONTEND_URL}}
+          BACKEND_URL: ${{secrets.BACKEND_URL}}
           JWT_EXPIRES_IN: 15m
           JWT_REFRESH_EXPIRES_IN: 7d
           JWT_VERIFY_EXPIRES_IN: 1d

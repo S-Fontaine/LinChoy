@@ -15,6 +15,7 @@ interface User {
   username: string;
   email: string;
   favoriteServer: string | null;
+  steamId: string | null;
 }
 
 interface AuthContextType {

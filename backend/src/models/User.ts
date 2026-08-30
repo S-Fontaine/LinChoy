@@ -9,6 +9,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   favoriteServer: string | null;
   comparePassword(userPassword: string): Promise<boolean>;
+  steamId: string | null;
 }
 
 const userSchema = new mongoose.Schema({
@@ -66,8 +67,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  steamId: {
+    type: String,
+    default: null,
+  },
 });
-
+userSchema.index(
+  { steamId: 1 },
+  { unique: true, partialFilterExpression: { steamId: { $type: "string" } } },
+);
 userSchema.pre("save", async function () {
   if (!this.isModified("password") || !this.password) {
     return;
