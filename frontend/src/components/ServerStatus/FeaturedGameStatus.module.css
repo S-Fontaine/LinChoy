@@ -21,6 +21,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
+  min-height: 400px;
 }
 .card.online {
   border-color: var(--choy-green);
@@ -191,6 +192,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
+  min-height: 400px;
 }
 
 .skeletonImage {

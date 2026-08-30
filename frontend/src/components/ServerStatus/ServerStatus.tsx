@@ -108,7 +108,7 @@ export default function ServerStatus({
 
     return (
       <div className={styles.favoriteWrapper}>
-        {gameData ? (
+        {(gameData) ? (
           <FeaturedGameStatus
             state={gameData.data.state}
             isOnline={gameData.data.online}

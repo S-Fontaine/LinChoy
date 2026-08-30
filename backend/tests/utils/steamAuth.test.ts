@@ -3,7 +3,7 @@ import {
   getSteamRedirectUrl,
   verifySteamOpenId,
 } from "../../src/utils/steamAuth.js";
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.BACKEND_URL as string;
 function textResponse(body: string): Response {
   return { text: async () => body } as unknown as Response;
 }
