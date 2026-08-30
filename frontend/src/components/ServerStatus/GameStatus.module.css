@@ -131,13 +131,16 @@
   font-weight: 600;
   margin-left: 8px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   cursor: default;
 }
 
 .playerBadge.clickable {
   cursor: pointer;
+}
+
+.playerBadge.clickable:hover,
+.playerBadge:has(.playerTooltipOpen) {
+  z-index: 30;
 }
 
 .playerTooltip {
@@ -158,13 +161,26 @@
     opacity 0.2s ease,
     transform 0.2s ease,
     visibility 0.2s;
-  z-index: 20;
+  z-index: 30;
+  white-space: normal;
+  color: var(--text-high, #fff);
+  pointer-events: none;
+}
+
+.playerTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
 }
 
 .playerTooltipOpen {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
 .playerTooltipTitle {
@@ -187,6 +203,14 @@
   font-weight: 500;
   max-height: 160px;
   overflow-y: auto;
+  color: var(--text-high, #fff);
+}
+
+.noPlayers {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-low, #888);
+  font-style: italic;
 }
 
 .card.starting {
@@ -226,5 +250,6 @@
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
   }
 }

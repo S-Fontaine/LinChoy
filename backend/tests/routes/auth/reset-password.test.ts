@@ -2,7 +2,10 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
-import { generateResetToken } from "../../../src/utils/jwt.js";
+import {
+  generateResetToken,
+  computePasswordFingerprint,
+} from "../../../src/utils/jwt.js";
 const BASE_URL = "/auth/reset-password";
 
 describe("Test route: POST /auth/reset-password", () => {
@@ -17,7 +20,7 @@ describe("Test route: POST /auth/reset-password", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     const res = await request(app)
@@ -37,7 +40,7 @@ describe("Test route: POST /auth/reset-password", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     await request(app)
@@ -49,13 +52,18 @@ describe("Test route: POST /auth/reset-password", () => {
       .send({ token, password: "AutreMotDePasse789!" });
 
     expect(secondAttempt.status).toBe(400);
-    expect(secondAttempt.body.message).toBe("Ce lien a déjà été utilisé");
+    expect(secondAttempt.body.message).toBe(
+      "Ce lien a déjà été utilisé ou n'est plus valide.",
+    );
   });
 
   it("Refuse un token expiré", async () => {
     const user = await User.create(payload);
     const expiredToken = generateResetToken(
-      { userId: user._id.toString(), pwd: user.password },
+      {
+        userId: user._id.toString(),
+        pwdFingerprint: computePasswordFingerprint(user.password),
+      },
       { expiresIn: "-1s" },
     );
 
@@ -88,7 +96,7 @@ describe("Test route: POST /auth/reset-password", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     const res = await request(app).post(BASE_URL).send({ token });
@@ -101,7 +109,7 @@ describe("Test route: POST /auth/reset-password", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     const res = await request(app)
@@ -115,7 +123,7 @@ describe("Test route: POST /auth/reset-password", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     await User.deleteOne({ _id: user._id });

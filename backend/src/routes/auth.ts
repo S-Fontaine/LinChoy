@@ -10,6 +10,7 @@ import {
   verifyEmailToken,
   verifyRefreshToken,
   verifyResetToken,
+  computePasswordFingerprint,
 } from "../utils/jwt.js";
 import { mailer } from "../utils/mailer.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
@@ -159,7 +160,7 @@ router.get("/email/verify", async (req, res) => {
     if (user.isVerified === true) {
       return res
         .status(409)
-        .json({ result: false, message: "Email déja verifié" });
+        .json({ result: false, message: "Email déjà verifié" });
     }
     user.isVerified = true;
     await user.save();
@@ -288,7 +289,7 @@ router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
     if (user && user.authProvider === "local" && user.password) {
       const resetToken = generateResetToken({
         userId: user._id.toString(),
-        pwd: user.password,
+        pwdFingerprint: computePasswordFingerprint(user.password),
       });
       try {
         await mailer.sendPasswordResetEmail(
@@ -334,10 +335,14 @@ router.post("/reset-password", authLimiter, async (req, res) => {
         .json({ result: false, message: "Utilisateur introuvable" });
     }
 
-    if (user.password !== payload.pwd) {
-      return res
-        .status(400)
-        .json({ result: false, message: "Ce lien a déjà été utilisé" });
+    if (
+      !user ||
+      computePasswordFingerprint(user.password) !== payload.pwdFingerprint
+    ) {
+      return res.status(400).json({
+        result: false,
+        message: "Ce lien a déjà été utilisé ou n'est plus valide.",
+      });
     }
 
     user.password = password;
@@ -370,7 +375,10 @@ router.get("/reset-password/verify", async (req, res) => {
 
   try {
     const user = await User.findById(payload.userId);
-    if (!user || user.password !== payload.pwd) {
+    if (
+      !user ||
+      computePasswordFingerprint(user.password) !== payload.pwdFingerprint
+    ) {
       return res.status(400).json({
         result: false,
         message: "Ce lien a déjà été utilisé ou n'est plus valide.",

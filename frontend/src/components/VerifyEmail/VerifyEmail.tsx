@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
+export function VerifyEmail() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -16,6 +16,7 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
   const [response, setResponse] = useState({ result: false, message: "" });
   const [isOpen, setIsOpen] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -50,7 +51,7 @@ export function VerifyEmail({ onSwitchClick }: { onSwitchClick?: () => void }) {
   return (
     <Modal isOpen={isOpen} onClose={closeAuth}>
       {showAuth ? (
-        <AuthCard isLogin={true} onSwitchClick={() => onSwitchClick?.()} />
+        <AuthCard isLogin={isLogin} onSwitchClick={() => setIsLogin(!isLogin)} />
       ) : (
         <div className={styles.wrapper}>
           <div className={styles.card}>

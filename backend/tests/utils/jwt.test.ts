@@ -12,7 +12,7 @@ import {
 
 describe("Test utilitaire: Génération et vérification des tokens JWT", () => {
   const payload = { userId: "abc123" };
-  const resetPayload = { userId: "abc123", pwd: "hashDuMotDePasse" };
+  const resetPayload = { userId: "abc123", pwdFingerprint: "hashDuMotDePasse" };
 
   describe("generateAccessToken / verifyAccessToken", () => {
     it("Génère un token valide et décodable", () => {
@@ -100,14 +100,14 @@ describe("Test utilitaire: Génération et vérification des tokens JWT", () => 
     });
   });
   describe("generateResetToken / verifyResetToken", () => {
-    const resetPayload = { userId: "abc123", pwd: "hashDuMotDePasse" };
+    const resetPayload = { userId: "abc123", pwdFingerprint: "hashDuMotDePasse" };
 
     it("Génère un token valide et décodable", () => {
       const token = generateResetToken(resetPayload);
       const decoded = verifyResetToken(token);
 
       expect(decoded.userId).toBe("abc123");
-      expect(decoded.pwd).toBe("hashDuMotDePasse");
+      expect(decoded.pwdFingerprint).toBe("hashDuMotDePasse");
     });
 
     it("A une expiration de 1 heure", () => {

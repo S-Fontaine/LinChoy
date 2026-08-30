@@ -8,9 +8,8 @@ jest.unstable_mockModule("../../src/utils/docker.js", () => ({
   isServerOnline: jest.fn<() => Promise<boolean>>(),
 }));
 
-const { syncGameServerData } = await import(
-  "../../src/utils/getPalworldData.js"
-);
+const { syncGameServerData } =
+  await import("../../src/utils/getPalworldData.js");
 
 function jsonResponse(body: unknown, ok = true): Response {
   return {
@@ -55,9 +54,13 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
 
     const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
     mockedFetch
-      .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal", description: "desc" }))
+      .mockResolvedValueOnce(
+        jsonResponse({ servername: "Mon Pal", description: "desc" }),
+      )
       .mockResolvedValueOnce(jsonResponse({ players: [{ name: "Alice" }] }))
-      .mockResolvedValueOnce(jsonResponse({ currentplayernum: 1, maxplayernum: 32 }))
+      .mockResolvedValueOnce(
+        jsonResponse({ currentplayernum: 1, maxplayernum: 32 }),
+      )
       .mockResolvedValueOnce(jsonResponse({}));
 
     await syncGameServerData();
@@ -79,7 +82,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
       containerName: "palworld-server",
     });
     getContainerStateMock.mockResolvedValue({ running: true });
-    
+
     const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
     mockedFetch.mockResolvedValue(jsonResponse({}, false));
 
@@ -100,7 +103,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
       status: { online: true, state: "online" },
     });
     getContainerStateMock.mockResolvedValue({ running: true });
-    
+
     const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
     mockedFetch.mockRejectedValue(new Error("network down"));
 
@@ -108,5 +111,20 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
 
     const updated = await GameServer.findOne({ name: "Palworld" });
     expect(updated?.status.online).toBe(false);
+  });
+  it("Ne crée rien et avertit si le document Palworld n'existe pas encore (pas de seed)", async () => {
+    getContainerStateMock.mockResolvedValue({ running: true });
+    const consoleWarnSpy = jest
+      .spyOn(console, "warn")
+      .mockImplementation(() => {});
+
+    await syncGameServerData();
+
+    const doc = await GameServer.findOne({ name: "Palworld" });
+    expect(doc).toBeNull();
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("seedGameServers"),
+    );
   });
 });

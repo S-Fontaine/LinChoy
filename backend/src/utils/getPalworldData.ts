@@ -36,6 +36,15 @@ export async function syncGameServerData() {
     );
     return;
   }
+
+  const existing = await GameServer.findOne({ name: "Palworld" });
+  if (!existing) {
+    console.warn(
+      "[sync] Document 'Palworld' introuvable",
+    );
+    return;
+  }
+
   try {
     const [infoRes, playersRes, metricsRes, settingsRes] = await Promise.all([
       fetch(`${PALWORLD_API}/info`, { headers: { Authorization: authHeader } }),
@@ -90,7 +99,7 @@ export async function syncGameServerData() {
           "status.players": palworldData.players.map((player) => player.name),
         },
       },
-      { upsert: true, returnDocument: "after" },
+      { returnDocument: "after" },
     );
 
     console.log(

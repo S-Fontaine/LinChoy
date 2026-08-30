@@ -1,5 +1,6 @@
 import os from "os";
 import express from "express";
+import { requireAuth } from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ function formatRAM(totalRAM: number, FreeRAM: number): string {
   return `Mémoire utilisée : ${usedRAM} GB sur ${RAM} GB (Il reste ${freeRAM} GB libres)`;
 }
 
-router.get("/status", (_req, res) => {
+router.get("/status", requireAuth, (_req, res) => {
   const [load1, load5, load15] = os.loadavg() as [number, number, number];
   res.json({
     status: "Serveur allumé depuis " + formatUptime(os.uptime()),

@@ -172,7 +172,7 @@ export default function SignUp({
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             className={styles.eyeButton}
-            aria-label="Confirmer le mot de passe"
+            aria-label="Afficher ou masquer le mot de passe de confirmation"
           >
             {showConfirmPassword ? eyeOff : eyeOn}
           </button>

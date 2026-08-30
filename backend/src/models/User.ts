@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         return hasMinLength && hasMaxLength;
       },
       message:
-        "Le nom d'utilisateur doit contenir un minmum de 3 caractères et un maximum de 15 caractères.",
+        "Le nom d'utilisateur doit contenir un minimum de 3 caractères et un maximum de 15 caractères.",
     },
   },
   email: {

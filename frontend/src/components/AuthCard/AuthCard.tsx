@@ -46,6 +46,16 @@ export default function AuthCard({
     undefined,
   );
   const transitionKey = `${isLogin ? "login" : "signup"}-${showConfirmation}`;
+  const resendIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    return () => {
+      if (resendIntervalRef.current) {
+        clearInterval(resendIntervalRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const node = contentRef.current;
@@ -198,10 +208,15 @@ export default function AuthCard({
       });
       setResendMessage("Email renvoyé.");
       setResendCooldown(30);
-      const interval = setInterval(() => {
+
+      if (resendIntervalRef.current) {
+        clearInterval(resendIntervalRef.current);
+      }
+
+      resendIntervalRef.current = setInterval(() => {
         setResendCooldown((prev) => {
           if (prev <= 1) {
-            clearInterval(interval);
+            clearInterval(resendIntervalRef.current);
             return 0;
           }
           return prev - 1;
@@ -295,18 +310,31 @@ export default function AuthCard({
               {currentAuth.toggleBtn}
             </button>
           ) : (
-            <p className={styles.subtitle}>
-              Pas reçu d&apos;e-mail ?
-              <button
-                onClick={handleResend}
-                disabled={resendCooldown > 0}
-                className={styles.switchBtn}
-              >
-                {resendCooldown > 0
-                  ? `Réessaie dans ${resendCooldown}s`
-                  : "Clique ici."}
-              </button>
-            </p>
+            <>
+              <p className={styles.subtitle}>
+                Pas reçu d&apos;e-mail ?
+                <button
+                  onClick={handleResend}
+                  disabled={resendCooldown > 0}
+                  className={styles.switchBtn}
+                >
+                  {resendCooldown > 0
+                    ? `Réessaie dans ${resendCooldown}s`
+                    : "Clique ici."}
+                </button>
+              </p>
+              {resendMessage && (
+                <p
+                  className={
+                    resendMessage === "Email renvoyé."
+                      ? styles.successBox
+                      : styles.errorBox
+                  }
+                >
+                  {resendMessage}
+                </p>
+              )}
+            </>
           )}
         </div>
       </div>

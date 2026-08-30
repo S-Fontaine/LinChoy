@@ -89,3 +89,7 @@
 .ruleItem.valid {
   color: var(--choy-green);
 }
+.errorText {
+  color: #e04b4b;
+  font-size: 0.85rem;
+}

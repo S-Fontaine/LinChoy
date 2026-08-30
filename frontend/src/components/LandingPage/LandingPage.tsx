@@ -86,7 +86,7 @@ export default function LandingPage({ gamesList }: ILandingPage) {
             <h2>Chat & Notes</h2>
             <p style={{ color: "var(--text-medium)" }}>
               Un espace de discussion intégré directement lié à tes serveurs,
-              pour partager tes retours sur vos parties. Arrive prochainement.
+              pour partager tes retours sur tes parties. Arrive prochainement.
             </p>
           </div>
         </section>

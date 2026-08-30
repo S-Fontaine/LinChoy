@@ -175,9 +175,7 @@ export function ResetPassword() {
                 </div>
 
                 {submitState.error && (
-                  <p style={{ color: "#e04b4b", fontSize: "0.85rem" }}>
-                    {submitState.error}
-                  </p>
+                  <p className={styles.errorText}>{submitState.error}</p>
                 )}
 
                 <button

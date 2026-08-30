@@ -1,4 +1,5 @@
 import jwt, { type SignOptions } from "jsonwebtoken";
+import crypto from "crypto";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN as string;
@@ -23,13 +24,19 @@ if (
     "JWT_SECRET, JWT_REFRESH_SECRET, JWT_VERIFY_SECRET, JWT_RESET_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN, JWT_VERIFY_EXPIRES_IN ou JWT_RESET_EXPIRES_IN manquant dans le .env",
   );
 }
+export function computePasswordFingerprint(passwordHash: string): string {
+  return crypto
+    .createHmac("sha256", JWT_RESET_SECRET)
+    .update(passwordHash)
+    .digest("hex");
+}
 
 export interface JwtPayload {
   userId: string;
 }
 export interface ResetTokenPayload {
   userId: string;
-  pwd: string;
+  pwdFingerprint: string;
 }
 
 export function generateAccessToken(

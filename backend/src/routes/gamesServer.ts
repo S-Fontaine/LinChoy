@@ -1,7 +1,25 @@
 import { Router } from "express";
-import GameServer from "../models/GameServer.js";
+import type { HydratedDocument } from "mongoose";
+import GameServer, { type IGameServer } from "../models/GameServer.js";
+import { gameServerEvents } from "../utils/gameServerEvents.js";
 
 const router = Router();
+
+function toGameData(server: HydratedDocument<IGameServer>) {
+  return {
+    slug: server.slug,
+    name: server.name,
+    servername: server.status.displayName || server.name,
+    description: server.status.description || "",
+    totalPlayer: server.status.maxPlayers ?? 0,
+    playerOnLine: server.status.playerCount,
+    online: server.status.online,
+    state: server.status.state,
+    comingSoon: server.comingSoon,
+    image: server.image,
+    players: server.status.players ?? [],
+  };
+}
 
 router.get("/", async (_req, res) => {
   try {
@@ -24,26 +42,38 @@ router.get("/:slug", async (req, res) => {
         .status(404)
         .json({ result: false, message: "Serveur introuvable" });
     }
-
-    return res.status(200).json({
-      result: true,
-      data: {
-        name: server.name,
-        servername: server.status.displayName || server.name,
-        description: server.status.description || "",
-        totalPlayer: server.status.maxPlayers ?? 0,
-        playerOnLine: server.status.playerCount,
-        players: server.status.players || [],
-        state: server.status.state,
-        online: server.status.online,
-        comingSoon: server.comingSoon,
-        image: server.image,
-      },
-    });
+    return res.status(200).json({ result: true, data: toGameData(server) });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ result: false, message: "Erreur serveur" });
   }
+});
+
+router.get("/stream", async (req, res) => {
+  res.set({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+  res.flushHeaders();
+  try {
+    const servers = await GameServer.find();
+    for (const server of servers) {
+      res.write(`data: ${JSON.stringify(toGameData(server))}\n\n`);
+      console.log("test")
+    }
+  } catch (err) {
+    console.error("[stream] Échec de l'envoi du snapshot initial :", err);
+  }
+
+  const onUpdate = (server: HydratedDocument<IGameServer>) => {
+    res.write(`data: ${JSON.stringify(toGameData(server))}\n\n`);
+  };
+  gameServerEvents.on("update", onUpdate);
+
+  req.on("close", () => {
+    gameServerEvents.off("update", onUpdate);
+  });
 });
 
 export default router;

@@ -2,67 +2,106 @@ import GameServer from "../models/GameServer.js";
 import { syncGameServerData } from "./getPalworldData.js";
 import { getContainerState } from "./docker.js";
 import { getSourceQueryStatus } from "./gameStatusProviders.js";
+import { gameServerEvents } from "./gameServerEvents.js";
 
 export async function syncGameServers() {
-  const servers = await GameServer.find({ comingSoon: { $ne: true } });
+  let servers;
+  try {
+    servers = await GameServer.find({ comingSoon: { $ne: true } });
+  } catch (err) {
+    console.error(
+      "[sync] Impossible de récupérer la liste des serveurs :",
+      err,
+    );
+    return;
+  }
 
   for (const server of servers) {
-    if (server.type === "palworld") {
-      await syncGameServerData();
-      continue;
-    }
-
-    if (!server.address || !server.port) {
-      console.warn(`[sync] ${server.name} : address/port manquant, ignoré`);
-      continue;
-    }
-
-    let containerRunning = false;
     try {
-      const container = await getContainerState(server.containerName);
-      containerRunning = container.running;
-    } catch {
-      console.warn(
-        `[sync] ${server.name} : container "${server.containerName}" introuvable`,
-      );
-    }
+      if (server.type === "palworld") {
+        await syncGameServerData();
+        continue;
+      }
 
-    if (!containerRunning) {
+      if (!server.address || !server.port) {
+        console.warn(`[sync] ${server.name} : address/port manquant, ignoré`);
+        continue;
+      }
+
+      let containerRunning = false;
+      try {
+        const container = await getContainerState(server.containerName);
+        containerRunning = container.running;
+      } catch {
+        console.warn(
+          `[sync] ${server.name} : container "${server.containerName}" introuvable`,
+        );
+      }
+
+      const before = server.toObject();
+
+      if (!containerRunning) {
+        const newState = "offline";
+        const newPlayerCount = 0;
+
+        await GameServer.updateOne(
+          { _id: server._id },
+          {
+            $set: {
+              "status.state": newState,
+              "status.online": false,
+              "status.playerCount": newPlayerCount,
+              "status.lastChecked": new Date(),
+            },
+          },
+        );
+
+        const hasChanged =
+          before.status.state !== newState ||
+          before.status.playerCount !== newPlayerCount;
+
+        if (hasChanged) {
+          const updated = await GameServer.findById(server._id);
+          gameServerEvents.emit("update", updated);
+        }
+        continue;
+      }
+
+      const status = await getSourceQueryStatus(
+        server.address,
+        Number(server.queryPort),
+        server.type,
+      );
+      const newState = status.online ? "online" : "starting";
+      const newPlayerCount = status.playerCount;
+
       await GameServer.updateOne(
         { _id: server._id },
         {
           $set: {
-            "status.state": "offline",
-            "status.online": false,
-            "status.playerCount": 0,
+            "status.state": newState,
+            "status.online": status.online,
+            "status.version": status.version,
+            "status.playerCount": newPlayerCount,
+            "status.maxPlayers": status.maxPlayers,
             "status.lastChecked": new Date(),
+            "status.players": status.players,
+            "status.displayName": status.displayName,
           },
         },
       );
-      continue;
+
+      const hasChanged =
+        before.status.state !== newState ||
+        before.status.playerCount !== newPlayerCount;
+
+      if (hasChanged) {
+        const updated = await GameServer.findById(server._id);
+        gameServerEvents.emit("update", updated);
+      }
+    } catch (err) {
+      console.error(`[sync] Échec de la synchro pour ${server.name} :`, err);
     }
-
-    const status = await getSourceQueryStatus(
-      server.address,
-      Number(server.queryPort),
-      server.type,
-    );
-
-    await GameServer.updateOne(
-      { _id: server._id },
-      {
-        $set: {
-          "status.state": status.online ? "online" : "starting",
-          "status.online": status.online,
-          "status.version": status.version,
-          "status.playerCount": status.playerCount,
-          "status.maxPlayers": status.maxPlayers,
-          "status.lastChecked": new Date(),
-          "status.players": status.players,
-          "status.displayName": status.displayName,
-        },
-      },
-    );
   }
 
   console.log(

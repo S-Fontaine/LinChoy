@@ -1,6 +1,18 @@
 import { describe, it, expect } from "@jest/globals";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 import User from "../../src/models/User.js";
+
+async function getValidationError(
+  user: InstanceType<typeof User>,
+): Promise<mongoose.Error.ValidationError | undefined> {
+  try {
+    await user.validate();
+    return undefined;
+  } catch (err) {
+    return err as mongoose.Error.ValidationError;
+  }
+}
 
 describe("Test modèle: User", () => {
   const payload = {
@@ -8,63 +20,64 @@ describe("Test modèle: User", () => {
     email: "fake@linchoy.com",
     password: "adminLinchoyTest!",
   };
-  it("Refuse un user sans username", () => {
+
+  it("Refuse un user sans username", async () => {
     const user = new User({ email: payload.email, password: payload.password });
-    const err = user.validateSync();
+    const err = await getValidationError(user);
     expect(err?.errors.username).toBeDefined();
   });
 
-  it("Refuse un user sans email", () => {
+  it("Refuse un user sans email", async () => {
     const user = new User({
       username: payload.username,
       password: payload.password,
     });
-    const err = user.validateSync();
+    const err = await getValidationError(user);
     expect(err?.errors.email).toBeDefined();
   });
 
-  it("Refuse un user sans password", () => {
+  it("Refuse un user sans password", async () => {
     const user = new User({ email: payload.email, username: payload.username });
-    const err = user.validateSync();
+    const err = await getValidationError(user);
     expect(err?.errors.password).toBeDefined();
   });
 
-  it("Refuse un password trop court", () => {
+  it("Refuse un password trop court", async () => {
     const user = new User({
       email: payload.email,
       username: payload.username,
       password: "Court1!",
     });
-    const err = user.validateSync();
+    const err = await getValidationError(user);
 
     expect(err?.errors.password).toBeDefined();
   });
 
-  it("Refuse un password sans majuscule", () => {
+  it("Refuse un password sans majuscule", async () => {
     const user = new User({
       email: payload.email,
       username: payload.username,
       password: "motdepasse123!",
     });
-    const err = user.validateSync();
+    const err = await getValidationError(user);
 
     expect(err?.errors.password).toBeDefined();
   });
 
-  it("Refuse un password sans caractère spécial", () => {
+  it("Refuse un password sans caractère spécial", async () => {
     const user = new User({
       email: payload.email,
       username: payload.username,
       password: "MotDePasse1234",
     });
-    const err = user.validateSync();
+    const err = await getValidationError(user);
 
     expect(err?.errors.password).toBeDefined();
   });
 
-  it("Accepte un password valide", () => {
+  it("Accepte un password valide", async () => {
     const user = new User(payload);
-    const err = user.validateSync();
+    const err = await getValidationError(user);
 
     expect(err).toBeUndefined();
   });
@@ -83,9 +96,9 @@ describe("Test modèle: User", () => {
     expect(match).toBe(true);
   });
 
-  it("Accepte un user avec tous les champs requis", () => {
+  it("Accepte un user avec tous les champs requis", async () => {
     const user = new User(payload);
-    const err = user.validateSync();
+    const err = await getValidationError(user);
 
     expect(err).toBeUndefined();
     expect(user.username).toBe(payload.username);

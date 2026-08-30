@@ -2,7 +2,10 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
-import { generateResetToken } from "../../../src/utils/jwt.js";
+import {
+  generateResetToken,
+  computePasswordFingerprint,
+} from "../../../src/utils/jwt.js";
 const BASE_URL = "/auth/reset-password/verify";
 
 describe("Test route: GET /auth/reset-password/verify", () => {
@@ -17,7 +20,7 @@ describe("Test route: GET /auth/reset-password/verify", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     const res = await request(app).get(`${BASE_URL}?token=${token}`);
@@ -30,7 +33,7 @@ describe("Test route: GET /auth/reset-password/verify", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     user.password = "AutreMotDePasse789!";
@@ -46,7 +49,7 @@ describe("Test route: GET /auth/reset-password/verify", () => {
     const user = await User.create(payload);
     const token = generateResetToken({
       userId: user._id.toString(),
-      pwd: user.password,
+      pwdFingerprint: computePasswordFingerprint(user.password),
     });
 
     await request(app).get(`${BASE_URL}?token=${token}`);
@@ -58,7 +61,10 @@ describe("Test route: GET /auth/reset-password/verify", () => {
   it("Refuse un token expiré", async () => {
     const user = await User.create(payload);
     const expiredToken = generateResetToken(
-      { userId: user._id.toString(), pwd: user.password },
+      {
+        userId: user._id.toString(),
+        pwdFingerprint: computePasswordFingerprint(user.password),
+      },
       { expiresIn: "-1s" },
     );
 

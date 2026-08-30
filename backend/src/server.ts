@@ -16,14 +16,20 @@ async function startServer() {
     let syncInterval: NodeJS.Timeout | undefined;
 
     if (SYNC_ENABLED) {
-      syncGameServers();
+      syncGameServers().catch((err) => {
+        console.error(
+          "[server]: Erreur inattendue lors de la synchro initiale :",
+          err,
+        );
+      });
       syncInterval = setInterval(() => {
-        syncGameServers();
+        syncGameServers().catch((err) => {
+          console.error(
+            "[server]: Erreur inattendue lors de la synchro périodique :",
+            err,
+          );
+        });
       }, 30000);
-    } else {
-      console.log(
-        "[server]: Synchro des GameServer désactivée (SYNC_GAME_SERVERS=false)",
-      );
     }
 
     const shutdown = (signal: string) => {
