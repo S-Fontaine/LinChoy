@@ -18,8 +18,20 @@ export async function syncGameServers() {
 
   for (const server of servers) {
     try {
+      const before = server.toObject();
       if (server.type === "palworld") {
         await syncGameServerData();
+        const updated = await GameServer.findById(server._id);
+
+        if (updated) {
+          const hasChanged =
+            before.status.state !== updated.status.state ||
+            before.status.playerCount !== updated.status.playerCount;
+
+          if (hasChanged) {
+            gameServerEvents.emit("update", updated);
+          }
+        }
         continue;
       }
 
@@ -37,8 +49,6 @@ export async function syncGameServers() {
           `[sync] ${server.name} : container "${server.containerName}" introuvable`,
         );
       }
-
-      const before = server.toObject();
 
       if (!containerRunning) {
         const newState = "offline";

@@ -28,8 +28,8 @@ jest.unstable_mockModule("../../src/utils/gameStatusProviders.js", () => ({
 
 const { syncGameServers } = await import("../../src/utils/syncGameServers.js");
 
-function makeServer(overrides = {}) {
-  return {
+function makeServer(overrides: Record<string, unknown> = {}) {
+  const base = {
     _id: "id1",
     name: "Minecraft",
     type: "minecraft",
@@ -37,7 +37,13 @@ function makeServer(overrides = {}) {
     address: "127.0.0.1",
     port: 25565,
     queryPort: 25566,
+    status: { state: "offline", online: false, playerCount: 0 },
     ...overrides,
+  };
+
+  return {
+    ...base,
+    toObject: () => base,
   };
 }
 

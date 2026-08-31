@@ -124,7 +124,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     expect(doc).toBeNull();
     expect(global.fetch).not.toHaveBeenCalled();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("seedGameServers"),
+      expect.stringContaining("[sync] Document 'Palworld' introuvable"),
     );
   });
 });
