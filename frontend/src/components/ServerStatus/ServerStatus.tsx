@@ -9,6 +9,7 @@ import {
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import { type IGamesList } from "@/app/page";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface SingleGameData {
   result: boolean;
@@ -53,27 +54,33 @@ export default function ServerStatus({
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   useEffect(() => {
-    if (!user || gamesList.length === 0) return;
+    if (!user) return;
 
-    async function getData() {
-      try {
-        const newMap: Record<string, SingleGameData> = {};
-        for (const game of gamesList) {
-          const response = await fetchWithAuth(`/games/${game.slug}`, {
-            method: "GET",
-          });
-          newMap[game.slug] = await response.json();
-        }
-        setGamesDataMap(newMap);
-      } catch (err) {
-        console.error("Erreur de récupération :", err);
-      }
-    }
-
-    getData();
-    const intervalId = setInterval(getData, 30000);
-    return () => clearInterval(intervalId);
-  }, [user, gamesList]);
+    const eventSource = new EventSource(`${BACKEND_URL}/games/stream`);
+    eventSource.onmessage = (event) => {
+      const serverData = JSON.parse(event.data);
+      setGamesDataMap((prev) => ({
+        ...prev,
+        [serverData.slug]: {
+          result: true,
+          data: {
+            state: serverData.state,
+            online: serverData.online,
+            name: serverData.name,
+            servername: serverData.servername,
+            description: serverData.description,
+            image: serverData.image,
+            totalPlayer: serverData.totalPlayer,
+            playerOnLine: serverData.playerOnLine,
+            players: serverData.players,
+          },
+        },
+      }));
+    };
+    return () => {
+      eventSource.close();
+    };
+  }, [user]);
 
   async function toggleFavorite(slug: string) {
     if (!user || favoriteLoading) return;
