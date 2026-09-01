@@ -40,7 +40,7 @@ export function isServerOnline(
   });
 }
 
-async function getServerStatus(
+export async function getContainerState(
   containerName: string,
 ): Promise<ContainerStatus> {
   const container = docker.getContainer(containerName);
@@ -51,10 +51,4 @@ async function getServerStatus(
     ram: info.HostConfig.Memory,
     cpu: info.HostConfig.NanoCpus,
   };
-}
-
-export async function getContainerState(
-  containerName: string,
-): Promise<ContainerStatus> {
-  return getServerStatus(containerName);
 }

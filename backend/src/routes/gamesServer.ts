@@ -54,7 +54,7 @@ router.get("/stream", async (req, res) => {
     res.write(`data: ${JSON.stringify(toGameData(server))}\n\n`);
   };
   gameServerEvents.on("update", onUpdate);
-  
+
   req.on("close", () => {
     gameServerEvents.off("update", onUpdate);
   });

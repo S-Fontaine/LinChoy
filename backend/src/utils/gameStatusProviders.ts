@@ -16,7 +16,7 @@ export async function getSourceQueryStatus(
 ): Promise<IGameStatusResult> {
   try {
     const result = await GameDig.query({
-      type: type,
+      type,
       host: address,
       port,
       maxRetries: 1,
