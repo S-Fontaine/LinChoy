@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema({
   },
   authProvider: {
     type: String,
-    enum: ["local"],
+    enum: ["local", "google", "github"],
     default: "local",
   },
   isVerified: {

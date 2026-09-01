@@ -335,10 +335,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
         .json({ result: false, message: "Utilisateur introuvable" });
     }
 
-    if (
-      !user ||
-      computePasswordFingerprint(user.password) !== payload.pwdFingerprint
-    ) {
+    if (computePasswordFingerprint(user.password) !== payload.pwdFingerprint) {
       return res.status(400).json({
         result: false,
         message: "Ce lien a déjà été utilisé ou n'est plus valide.",
