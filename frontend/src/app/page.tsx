@@ -5,6 +5,7 @@ import { useAppUI } from "@/context/AppUIContext";
 import LandingPage from "@/components/LandingPage/LandingPage";
 import ServerStatus from "@/components/ServerStatus/ServerStatus";
 import AccountSettings from "@/components/AccountSettings/AccountSettings";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export interface IGamesList {
   name: string;
@@ -21,7 +22,7 @@ export interface IGamesList {
 }
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { activeView } = useAppUI();
   const [gamesList, setGamesList] = useState<IGamesList[]>([]);
 
@@ -44,11 +45,14 @@ export default function Home() {
 
   return (
     <div>
-      {!user && <LandingPage gamesList={gamesList} />}
-      {user && activeView === "ServerStatus" && (
+      {isLoading && <LoadingScreen />}
+      {!isLoading && !user && <LandingPage gamesList={gamesList} />}
+      {!isLoading && user && activeView === "ServerStatus" && (
         <ServerStatus gamesList={gamesList} />
       )}
-      {user && activeView === "AccountSettings" && <AccountSettings />}
+      {!isLoading && user && activeView === "AccountSettings" && (
+        <AccountSettings />
+      )}
     </div>
   );
 }

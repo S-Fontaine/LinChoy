@@ -1,0 +1,40 @@
+.container {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.logo {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.lin {
+  color: var(--lin-orange);
+}
+.choy {
+  color: var(--choy-green);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--lin-orange);
+  border-right-color: var(--choy-green);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

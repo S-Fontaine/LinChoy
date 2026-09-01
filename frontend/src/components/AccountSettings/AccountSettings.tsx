@@ -324,19 +324,22 @@ export default function AccountSettings() {
         )}
       </div>
 
-      <Modal
-        isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-      >
+      <Modal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}>
         <form onSubmit={handleDelete} className={signStyles.form}>
           <h2 className={styles.contentTitle}>Confirmer la suppression</h2>
           <p className={styles.dangerText}>
             Entre ton mot de passe pour confirmer. Cette action est définitive.
           </p>
           <div className={signStyles.inputGroup}>
-            <label className={signStyles.label}>Mot de passe</label>
+            <label
+              className={signStyles.label}
+              htmlFor="account-delete-password"
+            >
+              Mot de passe
+            </label>
             <input
               type="password"
+              id="account-delete-password"
               className={signStyles.input}
               value={deletePassword}
               onChange={(e) => setDeletePassword(e.target.value)}

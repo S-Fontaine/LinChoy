@@ -61,7 +61,9 @@ export default function SignUp({
   return (
     <form onSubmit={handleSubmit} className={styles.form} key="form-register">
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Nom d&apos;utilisateur</label>
+        <label className={styles.label} htmlFor="signup-nickname">
+          Nom d&apos;utilisateur
+        </label>
         <input
           type="search"
           name="username"
@@ -76,11 +78,13 @@ export default function SignUp({
       </div>
 
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Adresse Email</label>
+        <label className={styles.label} htmlFor="signup-email">
+          Adresse Email
+        </label>
         <input
           type="email"
           name="email"
-          id="username"
+          id="signup-email"
           required
           placeholder="josephlegourmand@exemple.com"
           autoComplete="username"
@@ -91,11 +95,14 @@ export default function SignUp({
       </div>
 
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Mot de passe</label>
+        <label className={styles.label} htmlFor="signup-password">
+          Mot de passe
+        </label>
         <div style={{ position: "relative", width: "100%" }}>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
+            id="signup-password"
             required
             autoComplete="new-password"
             placeholder="••••••••"
@@ -149,11 +156,14 @@ export default function SignUp({
       </div>
 
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Confirmer le mot de passe</label>
+        <label className={styles.label} htmlFor="signup-confirm-password">
+          Confirmer le mot de passe
+        </label>
         <div style={{ position: "relative", width: "100%" }}>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
+            id="signup-confirm-password"
             required
             autoComplete="new-password"
             placeholder="••••••••"

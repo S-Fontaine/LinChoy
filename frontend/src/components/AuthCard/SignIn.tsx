@@ -32,7 +32,9 @@ export default function SignIn({
   return (
     <form onSubmit={handleSubmit} className={styles.form} key="form-login">
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Adresse Email</label>
+        <label className={styles.label} htmlFor="login-username">
+          Adresse Email
+        </label>
         <input
           type="text"
           inputMode="email"
@@ -49,7 +51,9 @@ export default function SignIn({
 
       <div className={styles.inputGroup}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <label className={styles.label}>Mot de passe</label>
+          <label className={styles.label} htmlFor="login-password">
+            Mot de passe
+          </label>
           <button
             type="button"
             onClick={onForgotPassword}

@@ -17,9 +17,12 @@ export default function ForgotPassword({
   return (
     <form onSubmit={onSubmit} className={styles.form}>
       <div className={styles.inputGroup}>
-        <label className={styles.label}>Adresse Email</label>
+        <label className={styles.label} htmlFor="forgot-password-email">
+          Adresse Email
+        </label>
         <input
           type="email"
+          id="forgot-password-email"
           required
           placeholder="JosephLeGourmand@exemple.com"
           className={styles.input}

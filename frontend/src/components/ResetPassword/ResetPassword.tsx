@@ -131,9 +131,12 @@ export function ResetPassword() {
 
               <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.inputGroup}>
-                  <label className={styles.label}>Nouveau mot de passe</label>
+                  <label className={styles.label} htmlFor="reset-password-new">
+                    Nouveau mot de passe
+                  </label>
                   <input
                     type="password"
+                    id="reset-password-new"
                     required
                     className={styles.input}
                     value={password}
@@ -157,11 +160,15 @@ export function ResetPassword() {
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label className={styles.label}>
+                  <label
+                    className={styles.label}
+                    htmlFor="reset-password-confirm"
+                  >
                     Confirmer le mot de passe
                   </label>
                   <input
                     type="password"
+                    id="reset-password-confirm"
                     required
                     className={styles.input}
                     value={confirmPassword}
