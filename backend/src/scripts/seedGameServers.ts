@@ -11,6 +11,8 @@ const servers = [
     image: "/assets/palworld.webp",
     address: process.env.PALWORLD_API_ADDRESS,
     port: Number(process.env.PALWORLD_API_PORT),
+    descritpion:
+      "Capture, élève et combat aux côtés de tes Pals dans un monde open-world qui mélange survie et créatures fantastiques. Serveur PvE, jusqu'à 4 joueurs, sans wipe régulier. Construction de base, exploration et raids de donjons au programme.",
   },
   {
     name: "Minecraft",
@@ -21,6 +23,8 @@ const servers = [
     address: process.env.MINECRAFT_ADDRESS,
     port: Number(process.env.MINECRAFT_PORT),
     queryPort: Number(process.env.MINECRAFT_QUERY_PORT),
+    descritpion:
+      "Plonge dans l'univers cubique de Minecraft, où la créativité et l'aventure se rencontrent. Serveur PvE, sans mods — difficulté hard. Explore, construis et survive dans un monde généré aléatoirement.",
   },
   {
     name: "V Rising",
@@ -31,6 +35,8 @@ const servers = [
     address: process.env.VRISING_ADDRESS,
     port: Number(process.env.VRISING_PORT),
     queryPort: Number(process.env.VRISING_QUERY_PORT),
+    descritpion:
+      "Deviens un vampire redouté, bâtis ton château dans ce monde gothique impitoyable. Serveur PvE, rates normal. Chasse, artisanat et diplomatie entre clans.",
   },
   {
     name: "Valheim",
@@ -41,6 +47,8 @@ const servers = [
     address: process.env.VALHEIM_ADDRESS,
     port: Number(process.env.VALHEIM_PORT),
     queryPort: Number(process.env.VALHEIM_QUERY_PORT),
+    descritpion:
+      "Embarque pour les terres de Valheim, où vikings et créatures légendaires s'affrontent dans un monde généré procéduralement. Serveur PvE, sans mods — difficulté standard. Idéal pour explorer, bâtir et affronter les boss en groupe.",
     comingSoon: true,
   },
 ];
