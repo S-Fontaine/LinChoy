@@ -13,6 +13,7 @@ export interface IGamesList {
   image: string;
   type: string;
   slug: string;
+  description: string;
   status: {
     state: "offline" | "starting" | "online";
     online: boolean;

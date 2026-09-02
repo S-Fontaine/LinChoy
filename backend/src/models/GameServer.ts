@@ -30,6 +30,7 @@ export interface IGameServer {
   status: IGameServerStatus;
   comingSoon: boolean;
   palworldData?: IPalworld;
+  description?: string;
 }
 
 const GameServerSchema = new Schema<IGameServer>({
@@ -42,6 +43,7 @@ const GameServerSchema = new Schema<IGameServer>({
   },
   containerName: { type: String, required: true },
   image: { type: String, default: "" },
+  description: { type: String, default: "" },
   address: String,
   port: Number,
   queryPort: Number,

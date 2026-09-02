@@ -10,7 +10,7 @@ function toGameData(server: HydratedDocument<IGameServer>) {
     slug: server.slug,
     name: server.name,
     servername: server.status.displayName || server.name,
-    description: server.status.description || "",
+    description: server.description || "",
     totalPlayer: server.status.maxPlayers ?? 0,
     playerOnLine: server.status.playerCount,
     online: server.status.online,
@@ -24,7 +24,7 @@ function toGameData(server: HydratedDocument<IGameServer>) {
 router.get("/", async (_req, res) => {
   try {
     const servers = await GameServer.find().select(
-      "name slug type image status comingSoon",
+      "name slug type image status comingSoon description",
     );
 
     return res.status(200).json({ result: true, servers });
