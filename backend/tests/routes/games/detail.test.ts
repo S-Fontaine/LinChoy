@@ -11,6 +11,7 @@ describe("Test route: GET /games/:slug", () => {
       slug: "minecraft",
       type: "minecraft",
       containerName: "minecraft-server",
+      description: "Un monde en survie",
       status: {
         state: "online",
         online: true,
