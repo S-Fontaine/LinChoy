@@ -20,6 +20,7 @@ export async function connectDB(): Promise<void> {
   });
 
   await mongoose.connect(uri);
+  await mongoose.connection.syncIndexes();
 }
 
 export async function disconnectDB(): Promise<void> {
