@@ -34,7 +34,7 @@ export default function Home() {
           method: "GET",
         });
         const data = await response.json();
-        if (data) {
+        if (data?.result && Array.isArray(data.servers)) {
           setGamesList(data.servers);
         }
       } catch (err) {

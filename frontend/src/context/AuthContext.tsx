@@ -6,7 +6,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -33,15 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const response = await fetchWithAuth("/auth/me", {
+        const response = await fetch(`${BACKEND_URL}/auth/me`, {
           method: "GET",
+          credentials: "include",
         });
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
+        const data = await response.json();
+        setUser(data.user ?? null);
       } catch {
         setUser(null);
       } finally {

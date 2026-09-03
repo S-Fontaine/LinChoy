@@ -44,7 +44,7 @@ export default function LandingPage({ gamesList }: ILandingPage) {
           <div className={`${styles.card} ${styles.cardLarge}`}>
             <h2>Nos Serveurs</h2>
             <div className={styles.gameList}>
-              {gamesList.map((game) => (
+              {gamesList?.map((game) => (
                 <div key={game.slug} className={styles.gameItem}>
                   <div className={styles.gameInfo}>
                     <span className={styles.gameName}>{game.name}</span>
