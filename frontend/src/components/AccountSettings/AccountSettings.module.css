@@ -315,3 +315,7 @@
   cursor: pointer;
   padding: 0 4px;
 }
+.formActions {
+  display: flex;
+  gap: 0.5rem;
+}

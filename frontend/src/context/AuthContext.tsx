@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -15,6 +16,9 @@ interface User {
   email: string;
   favoriteServer: string | null;
   steamId: string | null;
+  minecraftUuid: string | null;
+  minecraftUsername: string | null;
+  minecraftVerified: boolean;
 }
 
 interface AuthContextType {
@@ -32,12 +36,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const response = await fetch(`${BACKEND_URL}/auth/me`, {
+        const response = await fetchWithAuth("/auth/me", {
           method: "GET",
-          credentials: "include",
         });
-        const data = await response.json();
-        setUser(data.user ?? null);
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
       } catch {
         setUser(null);
       } finally {
@@ -49,11 +56,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function logout() {
-    await fetch(`${BACKEND_URL}/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    setUser(null);
+    try {
+      await fetch(`${BACKEND_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+    } finally {
+      setUser(null);
+    }
   }
 
   return (

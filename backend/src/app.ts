@@ -11,6 +11,7 @@ import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
 import gameServerRouter from "./routes/gamesServer.js";
 import steamRouter from "./routes/steam.js";
+import minecraftRouter from "./routes/minecraft.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/games", gameServerRouter);
 app.use("/steam", steamRouter);
+app.use("/minecraft", minecraftRouter);
 
 // Check
 app.use((_req, res) => {

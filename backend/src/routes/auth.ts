@@ -134,6 +134,9 @@ router.post("/login", authLimiter, async (req, res) => {
         email: user.email,
         favoriteServer: user.favoriteServer,
         steamId: user.steamId,
+        minecraftUuid: user.minecraftUuid,
+        minecraftUsername: user.minecraftUsername,
+        minecraftVerified: user.minecraftVerified,
       },
     });
   } catch (err) {

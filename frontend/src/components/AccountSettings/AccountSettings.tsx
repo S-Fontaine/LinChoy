@@ -35,6 +35,14 @@ export default function AccountSettings() {
     text: string;
   } | null>(null);
   const [unlinkLoading, setUnlinkLoading] = useState(false);
+  const [minecraftInput, setMinecraftInput] = useState("");
+  const [minecraftLoading, setMinecraftLoading] = useState(false);
+  const [minecraftMessage, setMinecraftMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [mcUnlinkLoading, setMcUnlinkLoading] = useState(false);
+  const [showMinecraftForm, setShowMinecraftForm] = useState(false);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent | TouchEvent) {
@@ -83,6 +91,9 @@ export default function AccountSettings() {
       email: result.data.email,
       favoriteServer: user!.favoriteServer,
       steamId: user!.steamId,
+      minecraftUuid: user!.minecraftUuid,
+      minecraftUsername: user!.minecraftUsername,
+      minecraftVerified: user!.minecraftVerified,
     });
     return { success: true, message: result.message };
   }
@@ -173,6 +184,60 @@ export default function AccountSettings() {
 
     window.addEventListener("message", handleMessage);
   }
+  async function handleLinkMinecraft(e: React.FormEvent) {
+    e.preventDefault();
+    if (!minecraftInput.trim()) return;
+    setMinecraftLoading(true);
+    setMinecraftMessage(null);
+    try {
+      const res = await fetchWithAuth(`/minecraft/link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: minecraftInput.trim() }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        setMinecraftMessage({
+          type: "error",
+          text: result.message || "Une erreur est survenue",
+        });
+        return;
+      }
+      setUser({
+        ...user!,
+        minecraftUuid: result.minecraftUuid,
+        minecraftUsername: result.minecraftUsername,
+        minecraftVerified: result.minecraftVerified,
+      });
+      setMinecraftInput("");
+      setMinecraftMessage({
+        type: "success",
+        text: "Compte Minecraft lié avec succès !",
+      });
+      setShowMinecraftForm(false);
+    } catch {
+      setMinecraftMessage({ type: "error", text: "Erreur réseau, réessaie." });
+    } finally {
+      setMinecraftLoading(false);
+    }
+  }
+  async function handleUnlinkMinecraft() {
+    setMcUnlinkLoading(true);
+    try {
+      const res = await fetchWithAuth(`/minecraft/link`, { method: "DELETE" });
+      if (res.ok) {
+        setUser({
+          ...user!,
+          minecraftUuid: null,
+          minecraftUsername: null,
+          minecraftVerified: false,
+        });
+        setShowMinecraftForm(false);
+      }
+    } finally {
+      setMcUnlinkLoading(false);
+    }
+  }
   return (
     <div className={styles.layout}>
       <div className={styles.mobileNav} ref={mobileNavRef}>
@@ -258,7 +323,11 @@ export default function AccountSettings() {
             <SettingRow
               label="Nom d'utilisateur"
               displayValue={user.username}
-              onSave={(value) => patchUser({ username: value })}
+              onSave={(value) =>
+                patchUser({
+                  username: value,
+                })
+              }
             />
 
             <SettingRow
@@ -312,6 +381,98 @@ export default function AccountSettings() {
                   <button
                     type="button"
                     onClick={() => setSteamMessage(null)}
+                    aria-label="Fermer le message"
+                    className={styles.closeMessageBtn}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className={styles.row}>
+              <div className={styles.rowLabel}>Compte Minecraft</div>
+              <div className={styles.rowValueContainer}>
+                <span className={styles.rowValue}>
+                  {user.minecraftUsername
+                    ? user.minecraftVerified
+                      ? user.minecraftUsername
+                      : `${user.minecraftUsername} (en attente de connexion)`
+                    : "Non lié"}
+                </span>
+                {user.minecraftUsername ? (
+                  <button
+                    className={styles.modifyBtn}
+                    onClick={handleUnlinkMinecraft}
+                    disabled={mcUnlinkLoading}
+                  >
+                    {mcUnlinkLoading ? "..." : "Délier"}
+                  </button>
+                ) : !showMinecraftForm ? (
+                  <button
+                    className={styles.modifyBtn}
+                    onClick={() => setShowMinecraftForm(true)}
+                    aria-expanded={showMinecraftForm}
+                  >
+                    Lier mon compte Minecraft
+                  </button>
+                ) : null}
+              </div>
+
+              {!user.minecraftUsername && showMinecraftForm && (
+                <form
+                  onSubmit={handleLinkMinecraft}
+                  className={signStyles.inputGroup}
+                >
+                  <label
+                    className={signStyles.label}
+                    htmlFor="minecraft-link-input"
+                  >
+                    Pseudo ou UUID Minecraft
+                  </label>
+                  <input
+                    type="text"
+                    id="minecraft-link-input"
+                    className={signStyles.input}
+                    value={minecraftInput}
+                    onChange={(e) => setMinecraftInput(e.target.value)}
+                    placeholder="Notch ou 069a79f4-44e9-4726-a5be-fca90e38aaf5"
+                    disabled={minecraftLoading}
+                    autoFocus
+                  />
+                  <div className={styles.formActions}>
+                    <button
+                      type="submit"
+                      className={styles.modifyBtn}
+                      disabled={minecraftLoading || !minecraftInput.trim()}
+                    >
+                      {minecraftLoading ? "..." : "Lier"}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.modifyBtn}
+                      onClick={() => {
+                        setShowMinecraftForm(false);
+                        setMinecraftInput("");
+                      }}
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {minecraftMessage && (
+                <div
+                  className={
+                    minecraftMessage.type === "success"
+                      ? styles.successBox
+                      : styles.errorBox
+                  }
+                >
+                  <span>{minecraftMessage.text}</span>
+                  <button
+                    type="button"
+                    onClick={() => setMinecraftMessage(null)}
                     aria-label="Fermer le message"
                     className={styles.closeMessageBtn}
                   >

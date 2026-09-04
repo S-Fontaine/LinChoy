@@ -10,6 +10,10 @@ export interface IUser extends Document {
   favoriteServer: string | null;
   comparePassword(userPassword: string): Promise<boolean>;
   steamId: string | null;
+  minecraftUuid: string | null;
+  minecraftUsername: string | null;
+  minecraftVerified: boolean;
+  minecraftLinkedAt: Date | null;
 }
 
 const userSchema = new mongoose.Schema({
@@ -72,10 +76,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  minecraftUuid: { type: String, default: null },
+  minecraftUsername: { type: String, default: null },
+  minecraftVerified: { type: Boolean, default: false },
+  minecraftLinkedAt: { type: Date, default: null },
 });
 userSchema.index(
   { steamId: 1 },
   { unique: true, partialFilterExpression: { steamId: { $type: "string" } } },
+);
+userSchema.index(
+  { minecraftUuid: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { minecraftUuid: { $type: "string" } },
+  },
 );
 userSchema.pre("save", async function () {
   if (!this.isModified("password") || !this.password) {
