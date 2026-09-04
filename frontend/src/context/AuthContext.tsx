@@ -19,6 +19,7 @@ interface User {
   minecraftUuid: string | null;
   minecraftUsername: string | null;
   minecraftVerified: boolean;
+  minecraftLinkExpiresAt: string | null;
 }
 
 interface AuthContextType {

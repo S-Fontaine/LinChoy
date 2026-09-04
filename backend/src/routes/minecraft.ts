@@ -7,11 +7,12 @@ import {
   removeFromServerWhitelist,
 } from "../utils/minecraftWhitelist.js";
 import { resolveMinecraftPlayer } from "../utils/minecraftAuth.js";
-
+import { getMinecraftLinkExpiresAt } from "../utils/minecraftVerification.js";
 const router = Router();
 
 router.post("/link", requireAuth, async (req: AuthRequest, res) => {
   const { input } = req.body as { input?: string };
+  const linkedAt = new Date();
 
   if (!input || typeof input !== "string" || !input.trim()) {
     return res
@@ -34,7 +35,7 @@ router.post("/link", requireAuth, async (req: AuthRequest, res) => {
       minecraftUuid: uuid,
       minecraftUsername: username,
       minecraftVerified: false,
-      minecraftLinkedAt: new Date(),
+      minecraftLinkedAt: linkedAt,
     });
 
     await addToServerWhitelist(username);
@@ -45,6 +46,7 @@ router.post("/link", requireAuth, async (req: AuthRequest, res) => {
       minecraftUuid: uuid,
       minecraftUsername: username,
       minecraftVerified: false,
+      minecraftLinkExpiresAt: getMinecraftLinkExpiresAt(linkedAt),
     });
   } catch (err) {
     if (err instanceof Error && err.message === "not_found") {

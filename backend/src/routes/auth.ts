@@ -24,6 +24,7 @@ import {
   refreshTokenCookieOptions,
 } from "../utils/cookieOptions.js";
 import { emailValidator } from "../utils/validateEmailDomain.js";
+import { getMinecraftLinkExpiresAt } from "../utils/minecraftVerification.js";
 
 const router = Router();
 
@@ -137,6 +138,9 @@ router.post("/login", authLimiter, async (req, res) => {
         minecraftUuid: user.minecraftUuid,
         minecraftUsername: user.minecraftUsername,
         minecraftVerified: user.minecraftVerified,
+        minecraftLinkExpiresAt: user.minecraftVerified
+          ? null
+          : getMinecraftLinkExpiresAt(user.minecraftLinkedAt),
       },
     });
   } catch (err) {
@@ -266,6 +270,12 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
         email: user.email,
         favoriteServer: user.favoriteServer,
         steamId: user.steamId,
+        minecraftUuid: user.minecraftUuid,
+        minecraftUsername: user.minecraftUsername,
+        minecraftVerified: user.minecraftVerified,
+        minecraftLinkExpiresAt: user.minecraftVerified
+          ? null
+          : getMinecraftLinkExpiresAt(user.minecraftLinkedAt),
       },
     });
   } catch (err) {

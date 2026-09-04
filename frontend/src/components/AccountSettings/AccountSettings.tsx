@@ -21,7 +21,40 @@ const NAV_ITEMS = [
   { key: "notifications", label: "Notifications", comingSoon: true },
   { key: "confidentialite", label: "Confidentialité", comingSoon: true },
 ];
+function MinecraftLinkCountdown({ expiresAt }: { expiresAt: string }) {
+  const [now, setNow] = useState(() => Date.now());
 
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const remainingMs = new Date(expiresAt).getTime() - now;
+
+  if (remainingMs <= 0) {
+    return (
+      <p className={styles.hintText}>
+        Le délai est écoulé, la liaison va être libérée d&apos;un instant à
+        l&apos;autre.
+      </p>
+    );
+  }
+
+  const totalMinutes = Math.floor(remainingMs / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const label =
+    hours > 0
+      ? `${hours}h${String(minutes).padStart(2, "0")}`
+      : `${minutes} min`;
+
+  return (
+    <p className={styles.hintText}>
+      Connecte-toi sur le serveur pour confirmer la liaison — expire dans{" "}
+      {label}.
+    </p>
+  );
+}
 export default function AccountSettings() {
   const { user, setUser, logout } = useAuth();
   const mobileNavRef = useRef<HTMLDivElement>(null);
@@ -94,6 +127,7 @@ export default function AccountSettings() {
       minecraftUuid: user!.minecraftUuid,
       minecraftUsername: user!.minecraftUsername,
       minecraftVerified: user!.minecraftVerified,
+      minecraftLinkExpiresAt: user!.minecraftLinkExpiresAt,
     });
     return { success: true, message: result.message };
   }
@@ -155,9 +189,18 @@ export default function AccountSettings() {
       return;
     }
 
+    let resolved = false;
+
+    function cleanup() {
+      window.removeEventListener("message", handleMessage);
+      clearInterval(pollClosed);
+    }
+
     function handleMessage(event: MessageEvent) {
       if (event.origin !== process.env.NEXT_PUBLIC_BACKEND_URL) return;
       if (event.data?.type !== "steam-link") return;
+
+      resolved = true;
 
       if (event.data.success) {
         setUser({ ...user!, steamId: event.data.steamId });
@@ -179,8 +222,27 @@ export default function AccountSettings() {
         });
       }
 
-      window.removeEventListener("message", handleMessage);
+      cleanup();
     }
+
+    const pollClosed = setInterval(async () => {
+      if (!popup || !popup.closed) return;
+      cleanup();
+      if (resolved) return;
+
+      const res = await fetchWithAuth(`/auth/me`);
+      if (res.ok) {
+        const result = await res.json();
+        const newSteamId = result.user.steamId;
+        setUser(result.user);
+        if (newSteamId && newSteamId !== user!.steamId) {
+          setSteamMessage({
+            type: "success",
+            text: "Compte Steam lié avec succès !",
+          });
+        }
+      }
+    }, 500);
 
     window.addEventListener("message", handleMessage);
   }
@@ -208,6 +270,7 @@ export default function AccountSettings() {
         minecraftUuid: result.minecraftUuid,
         minecraftUsername: result.minecraftUsername,
         minecraftVerified: result.minecraftVerified,
+        minecraftLinkExpiresAt: result.minecraftLinkExpiresAt,
       });
       setMinecraftInput("");
       setMinecraftMessage({
@@ -231,6 +294,7 @@ export default function AccountSettings() {
           minecraftUuid: null,
           minecraftUsername: null,
           minecraftVerified: false,
+          minecraftLinkExpiresAt: null,
         });
         setShowMinecraftForm(false);
       }
@@ -392,6 +456,13 @@ export default function AccountSettings() {
             <div className={styles.row}>
               <div className={styles.rowLabel}>Compte Minecraft</div>
               <div className={styles.rowValueContainer}>
+                {user.minecraftUsername &&
+                  !user.minecraftVerified &&
+                  user.minecraftLinkExpiresAt && (
+                    <MinecraftLinkCountdown
+                      expiresAt={user.minecraftLinkExpiresAt}
+                    />
+                  )}
                 <span className={styles.rowValue}>
                   {user.minecraftUsername
                     ? user.minecraftVerified
