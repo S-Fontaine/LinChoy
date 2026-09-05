@@ -2,7 +2,7 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
-import { generateAccessToken } from "../../../src/utils/jwt.js";
+import { generateAccessToken } from "../../../src/utils/auth/jwt.js";
 const BASE_URL = "/users";
 
 describe("DELETE /users/:id", () => {

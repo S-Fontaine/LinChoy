@@ -3,7 +3,7 @@ import request from "supertest";
 import User from "../../../src/models/User.js";
 import GameServer from "../../../src/models/GameServer.js";
 import app from "../../../src/app.js";
-import { generateAccessToken } from "../../../src/utils/jwt.js";
+import { generateAccessToken } from "../../../src/utils/auth/jwt.js";
 const BASE_URL = "/users";
 
 describe("Test route: PATCH /users/:id/favorite-server", () => {

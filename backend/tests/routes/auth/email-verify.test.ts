@@ -2,7 +2,7 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
-import { generateVerifyToken } from "../../../src/utils/jwt.js";
+import { generateVerifyToken } from "../../../src/utils/auth/jwt.js";
 const BASE_URL = "/auth/email/verify";
 
 describe("Test route: GET /auth/email/verify", () => {

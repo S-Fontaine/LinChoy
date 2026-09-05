@@ -1,5 +1,6 @@
 import { jest, describe, it, expect, afterEach } from "@jest/globals";
 import net from "net";
+const docker = "../../src/utils/gameServers/docker.js";
 
 describe("Test utilitaire: isServerOnline (réel, sans mock)", () => {
   let server: net.Server;
@@ -13,7 +14,7 @@ describe("Test utilitaire: isServerOnline (réel, sans mock)", () => {
   });
 
   it("Renvoie true si un service écoute sur le port", async () => {
-    const { isServerOnline } = await import("../../src/utils/docker.js");
+    const { isServerOnline } = await import(docker);
 
     server = net.createServer();
     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -25,7 +26,7 @@ describe("Test utilitaire: isServerOnline (réel, sans mock)", () => {
   });
 
   it("Renvoie false si rien n'écoute sur le port", async () => {
-    const { isServerOnline } = await import("../../src/utils/docker.js");
+    const { isServerOnline } = await import(docker);
 
     const result = await isServerOnline("127.0.0.1", 1, 500);
 
@@ -42,7 +43,7 @@ jest.unstable_mockModule("dockerode", () => ({
   })),
 }));
 
-const { getContainerState } = await import("../../src/utils/docker.js");
+const { getContainerState } = await import(docker);
 
 describe("Test utilitaire: getContainerState (dockerode mocké)", () => {
   it("Renvoie l'état du container quand il existe", async () => {

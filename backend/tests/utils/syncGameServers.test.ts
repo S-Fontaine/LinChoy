@@ -9,24 +9,24 @@ jest.unstable_mockModule("../../src/models/GameServer.js", () => ({
 
 const syncGameServerDataMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-jest.unstable_mockModule("../../src/utils/getPalworldData.js", () => ({
+jest.unstable_mockModule("../../src/utils/gameServers/getPalworldData.js", () => ({
   syncGameServerData: syncGameServerDataMock,
 }));
 
 const getContainerStateMock =
   jest.fn<(...args: unknown[]) => Promise<{ running: boolean }>>();
-jest.unstable_mockModule("../../src/utils/docker.js", () => ({
+jest.unstable_mockModule("../../src/utils/gameServers/docker.js", () => ({
   getContainerState: getContainerStateMock,
   isServerOnline: jest.fn<(...args: unknown[]) => Promise<boolean>>(),
 }));
 
 const getSourceQueryStatusMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-jest.unstable_mockModule("../../src/utils/gameStatusProviders.js", () => ({
+jest.unstable_mockModule("../../src/utils/gameServers/gameStatusProviders.js", () => ({
   getSourceQueryStatus: getSourceQueryStatusMock,
 }));
 
-const { syncGameServers } = await import("../../src/utils/syncGameServers.js");
+const { syncGameServers } = await import("../../src/utils/gameServers/syncGameServers.js");
 
 function makeServer(overrides: Record<string, unknown> = {}) {
   const base = {

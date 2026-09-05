@@ -5,7 +5,7 @@ import User from "../../../src/models/User.js";
 import {
   generateResetToken,
   computePasswordFingerprint,
-} from "../../../src/utils/jwt.js";
+} from "../../../src/utils/auth/jwt.js";
 const BASE_URL = "/auth/reset-password";
 
 describe("Test route: POST /auth/reset-password", () => {

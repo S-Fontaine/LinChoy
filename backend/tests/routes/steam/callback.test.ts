@@ -2,14 +2,14 @@ import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 
 const verifySteamOpenIdMock = jest.fn<() => Promise<string>>();
 
-jest.unstable_mockModule("../../../src/utils/steamAuth.js", () => ({
+jest.unstable_mockModule("../../../src/utils/linking/steamAuth.js", () => ({
   getSteamRedirectUrl: jest.fn<() => string>(),
   verifySteamOpenId: verifySteamOpenIdMock,
 }));
 
 const { default: app } = await import("../../../src/app.js");
 const { default: User } = await import("../../../src/models/User.js");
-const { generateAccessToken } = await import("../../../src/utils/jwt.js");
+const { generateAccessToken } = await import("../../../src/utils/auth/jwt.js");
 const request = (await import("supertest")).default;
 
 const userPayload = {

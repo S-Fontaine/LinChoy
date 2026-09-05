@@ -7,7 +7,7 @@ jest.unstable_mockModule("gamedig", () => ({
 }));
 
 const { getSourceQueryStatus } = await import(
-  "../../src/utils/gameStatusProviders.js"
+  "../../src/utils/gameServers/gameStatusProviders.js"
 );
 
 describe("Test utilitaire: getSourceQueryStatus", () => {

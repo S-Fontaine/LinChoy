@@ -1,5 +1,5 @@
 import { jest, describe, it, expect } from "@jest/globals";
-import { generateAccessToken } from "../../../src/utils/jwt.js";
+import { generateAccessToken } from "../../../src/utils/auth/jwt.js";
 import User from "../../../src/models/User.js";
 
 jest.unstable_mockModule("os", () => ({

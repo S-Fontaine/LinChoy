@@ -4,7 +4,7 @@ import app from "../../../src/app.js";
 import {
   generateRefreshToken,
   generateAccessToken,
-} from "../../../src/utils/jwt.js";
+} from "../../../src/utils/auth/jwt.js";
 const BASE_URL = "/auth/refresh";
 
 describe("POST /auth/refresh", () => {

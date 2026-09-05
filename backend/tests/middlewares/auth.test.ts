@@ -1,7 +1,7 @@
 import { describe, it, expect, jest } from "@jest/globals";
 import type { Response, NextFunction } from "express";
 import { requireAuth, type AuthRequest } from "../../src/middlewares/auth.js";
-import { generateAccessToken } from "../../src/utils/jwt.js";
+import { generateAccessToken } from "../../src/utils/auth/jwt.js";
 
 function createMockRes(): Response {
   const res = {} as Response;

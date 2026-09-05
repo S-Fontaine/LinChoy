@@ -8,7 +8,7 @@ import {
   verifyAccessToken,
   verifyRefreshToken,
   verifyResetToken,
-} from "../../src/utils/jwt.js";
+} from "../../src/utils/auth/jwt.js";
 
 describe("Test utilitaire: Génération et vérification des tokens JWT", () => {
   const payload = { userId: "abc123" };
