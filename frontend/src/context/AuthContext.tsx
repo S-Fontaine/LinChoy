@@ -4,13 +4,15 @@ import {
   useContext,
   useEffect,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-interface User {
+export interface User {
   id: string;
   username: string;
   email: string;
@@ -25,7 +27,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  setUser: (user: User | null) => void;
+  setUser: Dispatch<SetStateAction<User | null>>;
+  updateUser: (updater: (prev: User) => User) => void;
   logout: () => Promise<void>;
 }
 
@@ -56,6 +59,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
+  function updateUser(updater: (prev: User) => User) {
+    setUser((prev) => (prev ? updater(prev) : prev));
+  }
+
   async function logout() {
     try {
       await fetch(`${BACKEND_URL}/auth/logout`, {
@@ -69,7 +76,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, setUser, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, setUser, updateUser, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

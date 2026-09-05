@@ -42,6 +42,7 @@ body {
   overflow-x: hidden;
   scrollbar-width: thin;
 }
+
 ul {
   list-style-type: none;
 }
@@ -116,6 +117,7 @@ h2 {
     transform: scale(1);
   }
 }
+
 .glowWrapper {
   position: fixed;
   inset: 0;
@@ -152,4 +154,23 @@ h2 {
   animation: floatGreen 18s ease-in-out infinite;
   animation-delay: -5s;
   will-change: transform;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }

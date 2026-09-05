@@ -12,59 +12,6 @@
   box-sizing: border-box;
 }
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  min-width: 220px;
-  border-right: 1px solid var(--border);
-  padding-right: 16px;
-}
-
-.navItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: transparent;
-  border: none;
-  text-align: left;
-  padding: 12px 14px;
-  border-radius: 8px;
-  color: var(--text-medium);
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: var(--transition-smooth);
-}
-.navItem:hover:not(:disabled) {
-  background: var(--bg-input);
-  color: var(--text-high);
-}
-.navItemActive {
-  background: var(--bg-input);
-  color: var(--choy-green);
-  font-weight: 600;
-}
-.navItemDisabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-.navItemDanger {
-  margin-top: auto;
-  color: #e04b4b;
-}
-.navItemDanger:hover {
-  background: rgba(224, 75, 75, 0.1);
-}
-
-.soonTag {
-  font-size: 0.65rem;
-  padding: 2px 8px;
-  border-radius: 100px;
-  border: 1px solid var(--border);
-  color: var(--text-low);
-  text-transform: uppercase;
-}
-
 .content {
   flex: 1;
   display: flex;
@@ -111,15 +58,10 @@
   font-size: 0.85rem;
   transition: var(--transition-smooth);
 }
+
 .modifyBtn:hover {
   border-color: var(--choy-green);
   color: var(--choy-green);
-}
-
-.rowEditContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .rowInput {
@@ -131,150 +73,11 @@
   font-size: 0.95rem;
 }
 
-.rowActions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.cancelBtn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-medium);
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.saveBtn {
-  background: var(--choy-green);
-  border: none;
-  color: var(--bg-main);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.saveBtn:disabled,
-.cancelBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.passwordEditWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.hintText {
-  font-size: 0.8rem;
-  color: var(--lin-orange);
-}
-
 .errorText {
   color: #e04b4b;
   font-size: 0.85rem;
 }
 
-.successText {
-  color: var(--choy-green);
-  font-size: 0.85rem;
-}
-
-.dangerText {
-  color: var(--text-medium);
-  font-size: 0.9rem;
-}
-
-.dangerBtn {
-  background: #e04b4b;
-  border: none;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.dangerBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.mobileNav {
-  display: none;
-  position: relative;
-}
-
-.mobileNavTrigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  color: var(--text-high);
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.chevron {
-  transition: transform 0.2s ease;
-  color: var(--text-low);
-}
-.chevronOpen {
-  transform: rotate(180deg);
-}
-
-.mobileNavList {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
-  background: var(--bg-main);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 6px;
-  list-style: none;
-  margin: 0;
-  z-index: 30;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-.mobileNavItem,
-.mobileNavItemDanger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: none;
-  border: none;
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-.mobileNavItem {
-  color: var(--text-medium);
-}
-.mobileNavItem:hover:not(:disabled) {
-  background: var(--bg-input);
-  color: var(--text-high);
-}
-.mobileNavItem:disabled {
-  color: var(--text-low);
-  cursor: not-allowed;
-}
-.mobileNavItemDanger {
-  color: #e04b4b;
-}
-.mobileNavItemDanger:hover {
-  background: rgba(224, 75, 75, 0.1);
-}
 @media (max-width: 640px) {
   .layout {
     flex-direction: column;
@@ -282,40 +85,4 @@
     padding: 24px 16px;
     gap: 20px;
   }
-
-  .sidebar {
-    display: none;
-  }
-
-  .mobileNav {
-    display: block;
-  }
-
-  .navItem:not(.navItemDanger) {
-    display: none;
-  }
-
-  .navItemDanger {
-    margin-top: 0;
-  }
-}
-.successBox,
-.errorBox {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.closeMessageBtn {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 4px;
-}
-.formActions {
-  display: flex;
-  gap: 0.5rem;
 }

@@ -1,10 +1,13 @@
 "use client";
+import { useState } from "react";
+import styles from "./AuthCard.module.css";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import ForgotPassword from "./ForgotPassword";
+import SignUpConfirmation from "./SignUpConfirmation";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useRef, useState } from "react";
-import styles from "./AuthCard.module.css";
+import { useAutoHeight } from "@/hooks/useAutoHeight";
+
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface IAuthCard {
@@ -31,68 +34,16 @@ export default function AuthCard({
     success: "",
   });
   const [pendingEmail, setPendingEmail] = useState("");
-  const [resendMessage, setResendMessage] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotState, setForgotState] = useState({
-    loading: false,
-    error: "",
-    success: "",
-  });
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [contentHeight, setContentHeight] = useState<number | undefined>(
-    undefined,
-  );
-  const transitionKey = `${isLogin ? "login" : "signup"}-${showConfirmation}`;
-  const resendIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(
-    undefined,
-  );
-  useEffect(() => {
-    return () => {
-      if (resendIntervalRef.current) {
-        clearInterval(resendIntervalRef.current);
-      }
-    };
-  }, []);
 
-  useEffect(() => {
-    const node = contentRef.current;
-    if (!node) return;
+  const transitionKey = `${isLogin ? "login" : "signup"}-${showConfirmation}-${forgotPasswordMode}`;
+  const { contentRef, contentHeight } = useAutoHeight(transitionKey);
 
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContentHeight(entry.contentRect.height);
-      }
-    });
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, [transitionKey]);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  async function handleForgotSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setForgotState({ loading: true, error: "", success: "" });
-    try {
-      const res = await fetch(`${BACKEND_URL}/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
-      });
-      const data = await res.json();
-      setForgotState({ loading: false, error: "", success: data.message });
-    } catch {
-      setForgotState({
-        loading: false,
-        error: "Impossible de joindre le serveur.",
-        success: "",
-      });
-    }
-  }
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isLogin && formData.password !== formData.confirmPassword) {
@@ -126,28 +77,27 @@ export default function AuthCard({
 
       if (!data.result) {
         setApiResponse({ loading: false, error: data.message, success: "" });
+        return;
+      }
+
+      setApiResponse({
+        loading: false,
+        error: "",
+        success: isLogin ? "Connexion réussie !" : "Compte créé !",
+      });
+
+      if (isLogin) {
+        setUser(data.user);
+        onLoginSuccess?.();
       } else {
-        setApiResponse({
-          loading: false,
-          error: "",
-          success: isLogin
-            ? "Connexion réussie !"
-            : "Compte créé ! Vérifie tes emails.",
+        setPendingEmail(formData.email);
+        setShowConfirmation(true);
+        setFormData({
+          username: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
         });
-        if (data.result && isLogin) {
-          setUser(data.user);
-          onLoginSuccess?.();
-        }
-        if (data.result && !isLogin) {
-          setPendingEmail(formData.email);
-          setShowConfirmation(true);
-          setFormData({
-            username: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-        }
       }
     } catch {
       setApiResponse({
@@ -157,77 +107,23 @@ export default function AuthCard({
       });
     }
   };
-  const AUTH_TEXTS = {
-    login: {
-      title: "Bon retour !",
-      description: "Accède à tes serveurs et au chat.",
-      toggleBtn: "Pas encore de compte ? S'inscrire",
-      card: (
-        <SignIn
-          handleSubmit={handleSubmit}
-          handleInputChange={handleInputChange}
-          formData={formData}
-          apiResponse={apiResponse}
-          onForgotPassword={() => setForgotPasswordMode(true)}
-        />
-      ),
-    },
-    signUp: {
-      title: "Rejoindre le club",
-      description: "Crée un compte pour demander ton accès.",
-      toggleBtn: "Déjà inscrit ? Se connecter",
-      card: !showConfirmation ? (
-        <SignUp
-          handleSubmit={handleSubmit}
-          handleInputChange={handleInputChange}
-          formData={formData}
-          apiResponse={apiResponse}
-        />
-      ) : (
-        <div>
-          <p className={styles.label}>
-            Un lien de confirmation a été envoyé à ton adresse. Clique dessus
-            pour activer ton compte.
-          </p>
-          <p className={styles.infoBox}>
-            Pense à vérifier ton dossier spams / courriers indésirables.
-          </p>
-        </div>
-      ),
-    },
-  };
 
-  const handleResend = async () => {
-    if (resendCooldown > 0) return;
-    try {
-      await fetch(`${BACKEND_URL}/auth/email/resend-verification`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: pendingEmail }),
-      });
-      setResendMessage("Email renvoyé.");
-      setResendCooldown(30);
+  const title = forgotPasswordMode
+    ? "Mot de passe oublié"
+    : showConfirmation
+      ? "Presque prêt !"
+      : isLogin
+        ? "Bon retour !"
+        : "Rejoindre le club";
 
-      if (resendIntervalRef.current) {
-        clearInterval(resendIntervalRef.current);
-      }
+  const subtitle = forgotPasswordMode
+    ? "On t'envoie un lien pour en choisir un nouveau."
+    : showConfirmation
+      ? "Juste une dernière étape"
+      : isLogin
+        ? "Accède à tes serveurs et au chat."
+        : "Crée un compte pour demander ton accès.";
 
-      resendIntervalRef.current = setInterval(() => {
-        setResendCooldown((prev) => {
-          if (prev <= 1) {
-            clearInterval(resendIntervalRef.current);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch {
-      setResendMessage("Échec de l'envoi.");
-    }
-  };
-
-  const currentAuth = isLogin ? AUTH_TEXTS.login : AUTH_TEXTS.signUp;
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
@@ -243,46 +139,33 @@ export default function AuthCard({
             className={styles.animatedContent}
           >
             <div className={styles.header}>
-              <h2 className={styles.title}>
-                {forgotPasswordMode
-                  ? "Mot de passe oublié"
-                  : !showConfirmation
-                    ? currentAuth.title
-                    : "Presque prêt !"}
-              </h2>
-              <p className={styles.subtitle}>
-                {forgotPasswordMode
-                  ? "On t'envoie un lien pour en choisir un nouveau."
-                  : !showConfirmation
-                    ? currentAuth.description
-                    : "Juste une dernière étape"}
-              </p>
+              <h2 className={styles.title}>{title}</h2>
+              <p className={styles.subtitle}>{subtitle}</p>
             </div>
 
-            {forgotState.error && (
-              <div className={styles.errorBox}>{forgotState.error}</div>
-            )}
-            {forgotState.success && (
-              <div className={styles.successBox}>{forgotState.success}</div>
+            {apiResponse.error && (
+              <div className={styles.errorBox}>{apiResponse.error}</div>
             )}
 
             {forgotPasswordMode ? (
-              <ForgotPassword
-                email={forgotEmail}
-                onEmailChange={(e) => setForgotEmail(e.target.value)}
-                onSubmit={handleForgotSubmit}
-                loading={forgotState.loading}
+              <ForgotPassword onBack={() => setForgotPasswordMode(false)} />
+            ) : showConfirmation ? (
+              <SignUpConfirmation email={pendingEmail} />
+            ) : isLogin ? (
+              <SignIn
+                handleSubmit={handleSubmit}
+                handleInputChange={handleInputChange}
+                formData={formData}
+                apiResponse={apiResponse}
+                onForgotPassword={() => setForgotPasswordMode(true)}
               />
             ) : (
-              <>
-                {apiResponse.error && (
-                  <div className={styles.errorBox}>{apiResponse.error}</div>
-                )}
-                {apiResponse.success && (
-                  <div className={styles.successBox}>{apiResponse.success}</div>
-                )}
-                {currentAuth.card}
-              </>
+              <SignUp
+                handleSubmit={handleSubmit}
+                handleInputChange={handleInputChange}
+                formData={formData}
+                apiResponse={apiResponse}
+              />
             )}
           </div>
         </div>
@@ -290,10 +173,7 @@ export default function AuthCard({
         <div className={styles.footerContainer}>
           {forgotPasswordMode ? (
             <button
-              onClick={() => {
-                setForgotPasswordMode(false);
-                setForgotState({ loading: false, error: "", success: "" });
-              }}
+              onClick={() => setForgotPasswordMode(false)}
               className={styles.switchBtn}
             >
               Retour à la connexion
@@ -307,35 +187,11 @@ export default function AuthCard({
               }}
               className={styles.switchBtn}
             >
-              {currentAuth.toggleBtn}
+              {isLogin
+                ? "Pas encore de compte ? S'inscrire"
+                : "Déjà inscrit ? Se connecter"}
             </button>
-          ) : (
-            <>
-              <p className={styles.subtitle}>
-                Pas reçu d&apos;e-mail ?
-                <button
-                  onClick={handleResend}
-                  disabled={resendCooldown > 0}
-                  className={styles.switchBtn}
-                >
-                  {resendCooldown > 0
-                    ? `Réessaie dans ${resendCooldown}s`
-                    : "Clique ici."}
-                </button>
-              </p>
-              {resendMessage && (
-                <p
-                  className={
-                    resendMessage === "Email renvoyé."
-                      ? styles.successBox
-                      : styles.errorBox
-                  }
-                >
-                  {resendMessage}
-                </p>
-              )}
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

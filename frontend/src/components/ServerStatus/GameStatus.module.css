@@ -1,12 +1,3 @@
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
 .card {
   max-width: 580px;
   height: 100%;
@@ -221,6 +212,7 @@
   border-color: var(--lin-orange);
   box-shadow: 0 0 15px rgba(255, 165, 0, 0.15);
 }
+
 .statusIndicator.starting {
   background-color: var(--lin-orange);
   box-shadow: 0 0 10px var(--lin-orange);
@@ -242,9 +234,11 @@
   padding: 4px;
   transition: var(--transition-smooth);
 }
+
 .favoriteBtn:hover {
   color: var(--lin-orange);
 }
+
 .favoriteBtn:has(svg[fill="currentColor"]) {
   color: var(--lin-orange);
 }

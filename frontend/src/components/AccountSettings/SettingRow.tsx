@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import styles from "./AccountSettings.module.css";
+import shared from "./AccountSettings.module.css";
+import styles from "./SettingRow.module.css";
 
 interface ISettingRow {
   label: string;
@@ -24,7 +25,11 @@ export default function SettingRow({
 }: ISettingRow) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState("");
-  const [state, setState] = useState({ loading: false, error: "", success: "" });
+  const [state, setState] = useState({
+    loading: false,
+    error: "",
+    success: "",
+  });
 
   function openEdit() {
     setValue("");
@@ -44,13 +49,13 @@ export default function SettingRow({
   }
 
   return (
-    <div className={styles.row}>
-      <div className={styles.rowLabel}>{label}</div>
+    <div className={shared.row}>
+      <div className={shared.rowLabel}>{label}</div>
 
       {!isEditing ? (
-        <div className={styles.rowValueContainer}>
-          <span className={styles.rowValue}>{displayValue}</span>
-          <button className={styles.modifyBtn} onClick={openEdit}>
+        <div className={shared.rowValueContainer}>
+          <span className={shared.rowValue}>{displayValue}</span>
+          <button className={shared.modifyBtn} onClick={openEdit}>
             {editLabel}
           </button>
         </div>
@@ -61,7 +66,7 @@ export default function SettingRow({
           ) : (
             <input
               type={inputType}
-              className={styles.rowInput}
+              className={shared.rowInput}
               value={value}
               onChange={(e) => setValue(e.target.value)}
               autoFocus
@@ -83,7 +88,7 @@ export default function SettingRow({
               {state.loading ? "..." : "Enregistrer"}
             </button>
           </div>
-          {state.error && <p className={styles.errorText}>{state.error}</p>}
+          {state.error && <p className={shared.errorText}>{state.error}</p>}
         </div>
       )}
       {!isEditing && state.success && (

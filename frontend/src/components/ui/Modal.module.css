@@ -34,6 +34,7 @@
   z-index: 1001;
   transition: var(--transition-smooth);
 }
+
 @media (max-height: 700px) {
   .content {
     margin-top: 24px;

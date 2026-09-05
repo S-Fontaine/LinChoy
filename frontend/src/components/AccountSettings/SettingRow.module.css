@@ -1,0 +1,41 @@
+.rowEditContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-medium);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.saveBtn {
+  background: var(--choy-green);
+  border: none;
+  color: var(--bg-main);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.saveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.successText {
+  color: var(--choy-green);
+  font-size: 0.85rem;
+}

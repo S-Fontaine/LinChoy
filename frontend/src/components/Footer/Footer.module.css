@@ -33,6 +33,7 @@
   font-size: 0.85rem;
   text-decoration: none;
 }
+
 .link:hover {
   color: var(--choy-green);
 }

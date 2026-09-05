@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
 import styles from "../VerifyEmail/verify-email.module.css";
-import { PASSWORD_RULES } from "@/lib/passwordRules";
-
+import PasswordRulesList from "../ui/PasswordRulesList";
+import { checkPasswordStrength } from "@/lib/passwordRules";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 type View = "checking" | "invalid" | "form" | "success";
@@ -21,6 +21,7 @@ export function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitState, setSubmitState] = useState({ loading: false, error: "" });
+  const { isComplete: isPasswordValid } = checkPasswordStrength(password);
 
   useEffect(() => {
     if (!token) return;
@@ -44,8 +45,6 @@ export function ResetPassword() {
     checkToken();
   }, [token]);
 
-  const validCount = PASSWORD_RULES.filter((r) => r.test(password)).length;
-  const isPasswordValid = validCount === PASSWORD_RULES.length;
   const passwordsMatch =
     confirmPassword.length === 0 || confirmPassword === password;
 
@@ -135,59 +134,8 @@ export function ResetPassword() {
                     onChange={(e) => setPassword(e.target.value)}
                     autoFocus
                   />
-                  <ul className={styles.passwordRules}>
-                    {PASSWORD_RULES.map((rule) => {
-                      const isValid = rule.test(password);
-                      return (
-                        <li
-                          key={rule.label}
-                          className={`${styles.ruleItem} ${isValid ? styles.valid : ""}`}
-                        >
-                          <span>{isValid ? "✓" : "•"}</span>
-                          {rule.label}
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <PasswordRulesList password={password} />
                 </div>
-
-                <div className={styles.inputGroup}>
-                  <label
-                    className={styles.label}
-                    htmlFor="reset-password-confirm"
-                  >
-                    Confirmer le mot de passe
-                  </label>
-                  <input
-                    type="password"
-                    id="reset-password-confirm"
-                    required
-                    className={styles.input}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    style={{
-                      borderColor: !passwordsMatch
-                        ? "var(--lin-orange)"
-                        : "var(--border)",
-                    }}
-                  />
-                </div>
-
-                {submitState.error && (
-                  <p className={styles.errorText}>{submitState.error}</p>
-                )}
-
-                <button
-                  type="submit"
-                  className={styles.btn}
-                  disabled={
-                    submitState.loading || !isPasswordValid || !passwordsMatch
-                  }
-                >
-                  {submitState.loading
-                    ? "Patientez..."
-                    : "Réinitialiser le mot de passe"}
-                </button>
               </form>
             </>
           )}

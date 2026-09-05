@@ -1,0 +1,19 @@
+.dangerText {
+  color: var(--text-medium);
+  font-size: 0.9rem;
+}
+
+.dangerBtn {
+  background: #e04b4b;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.dangerBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

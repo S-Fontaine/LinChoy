@@ -2,7 +2,8 @@
 import styles from "./Sign.module.css";
 import { eyeOff, eyeOn } from "../icons/Icons";
 import { useState } from "react";
-import { PASSWORD_RULES } from "@/lib/passwordRules";
+import { checkPasswordStrength } from "@/lib/passwordRules";
+import PasswordRulesList from "../ui/PasswordRulesList";
 
 interface IFormData {
   username: string;
@@ -32,19 +33,9 @@ export default function SignUp({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const validCount = PASSWORD_RULES.filter((rule) =>
-    rule.test(formData.password),
-  ).length;
-  const isPasswordValid = validCount === PASSWORD_RULES.length;
-  const strengthPercent = (validCount / PASSWORD_RULES.length) * 100;
-  const strengthColor =
-    validCount === 0
-      ? "var(--border)"
-      : isPasswordValid
-        ? "var(--choy-green)"
-        : validCount === 2
-          ? "var(--lin-orange)"
-          : "#e04b4b";
+  const { isComplete: isPasswordValid } = checkPasswordStrength(
+    formData.password,
+  );
 
   const passwordsMatch =
     formData.confirmPassword.length === 0 ||
@@ -57,7 +48,7 @@ export default function SignUp({
           Nom d&apos;utilisateur
         </label>
         <input
-          type="search"
+          type="text"
           name="username"
           id="signup-nickname"
           required
@@ -112,39 +103,14 @@ export default function SignUp({
           </button>
         </div>
 
-        <div
-          className={`${styles.passwordFeedback} ${
-            formData.password.length > 0 ? styles.visible : ""
-          }`}
-        >
-          <div className={styles.passwordFeedbackInner}>
-            <div className={styles.strengthBar}>
-              <div
-                className={styles.strengthBarFill}
-                style={{
-                  width: `${strengthPercent}%`,
-                  backgroundColor: strengthColor,
-                }}
-              />
-            </div>
-            <ul className={styles.passwordRules}>
-              {PASSWORD_RULES.map((rule) => {
-                const isValid = rule.test(formData.password);
-                return (
-                  <li
-                    key={rule.label}
-                    className={`${styles.ruleItem} ${isValid ? styles.valid : ""}`}
-                  >
-                    <span className={styles.ruleIcon}>
-                      {isValid ? "✓" : "•"}
-                    </span>
-                    {rule.label}
-                  </li>
-                );
-              })}
-            </ul>
+        {formData.password.length > 0 && (
+          <div className={styles.passwordFeedback}>
+            <PasswordRulesList
+              password={formData.password}
+              showStrengthBar={true}
+            />
           </div>
-        </div>
+        )}
       </div>
 
       <div className={styles.inputGroup}>
