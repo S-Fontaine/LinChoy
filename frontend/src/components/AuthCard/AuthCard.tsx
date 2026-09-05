@@ -148,7 +148,7 @@ export default function AuthCard({
             )}
 
             {forgotPasswordMode ? (
-              <ForgotPassword onBack={() => setForgotPasswordMode(false)} />
+              <ForgotPassword />
             ) : showConfirmation ? (
               <SignUpConfirmation email={pendingEmail} />
             ) : isLogin ? (

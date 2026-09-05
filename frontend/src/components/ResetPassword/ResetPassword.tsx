@@ -136,6 +136,43 @@ export function ResetPassword() {
                   />
                   <PasswordRulesList password={password} />
                 </div>
+                <div className={styles.inputGroup}>
+                  <label
+                    className={styles.label}
+                    htmlFor="reset-password-confirm"
+                  >
+                    Confirmer le mot de passe
+                  </label>
+                  <input
+                    type="password"
+                    id="reset-password-confirm"
+                    required
+                    className={styles.input}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{
+                      borderColor: !passwordsMatch
+                        ? "var(--lin-orange)"
+                        : "var(--border)",
+                    }}
+                  />
+                </div>
+
+                {submitState.error && (
+                  <p className={styles.errorText}>{submitState.error}</p>
+                )}
+
+                <button
+                  type="submit"
+                  className={styles.btn}
+                  disabled={
+                    submitState.loading || !isPasswordValid || !passwordsMatch
+                  }
+                >
+                  {submitState.loading
+                    ? "Patientez..."
+                    : "Réinitialiser le mot de passe"}
+                </button>
               </form>
             </>
           )}

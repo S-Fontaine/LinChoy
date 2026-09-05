@@ -5,11 +5,7 @@ import cardStyles from "./AuthCard.module.css";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-interface IForgotPassword {
-  onBack?: () => void;
-}
-
-export default function ForgotPassword({ onBack }: IForgotPassword) {
+export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState({
     loading: false,
