@@ -1,7 +1,7 @@
 import { Router } from "express";
 import User from "../models/User.js";
 import GameServer from "../models/GameServer.js";
-import { generateVerifyToken } from "../utils/jwt.js";
+import { generateVerifyToken } from "../utils/auth/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { mailer } from "../utils/mailer.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";

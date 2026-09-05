@@ -1,8 +1,8 @@
 import { Router, type Response } from "express";
 import User from "../models/User.js";
-import { verifyAccessToken } from "../utils/jwt.js";
+import { verifyAccessToken } from "../utils/auth/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
-import { getSteamRedirectUrl, verifySteamOpenId } from "../utils/steamAuth.js";
+import { getSteamRedirectUrl, verifySteamOpenId } from "../utils/linking/steamAuth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
 import crypto from "crypto";
 

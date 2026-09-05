@@ -3,17 +3,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
 import styles from "../VerifyEmail/verify-email.module.css";
+import { PASSWORD_RULES } from "@/lib/passwordRules";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-const PASSWORD_RULES = [
-  { label: "Au moins 12 caractères", test: (pwd: string) => pwd.length >= 12 },
-  { label: "Une majuscule", test: (pwd: string) => /[A-Z]/.test(pwd) },
-  {
-    label: "Un caractère spécial",
-    test: (pwd: string) => /[^A-Za-z0-9]/.test(pwd),
-  },
-];
 
 type View = "checking" | "invalid" | "form" | "success";
 

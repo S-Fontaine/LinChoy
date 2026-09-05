@@ -6,15 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Modal from "../ui/Modal";
 import SettingRow from "./SettingRow";
-
-const PASSWORD_RULES = [
-  { label: "Au moins 12 caractères", test: (pwd: string) => pwd.length >= 12 },
-  { label: "Une majuscule", test: (pwd: string) => /[A-Z]/.test(pwd) },
-  {
-    label: "Un caractère spécial",
-    test: (pwd: string) => /[^A-Za-z0-9]/.test(pwd),
-  },
-];
+import { PASSWORD_RULES } from "@/lib/passwordRules";
 
 const NAV_ITEMS = [
   { key: "compte", label: "Compte et sécurité", comingSoon: false },

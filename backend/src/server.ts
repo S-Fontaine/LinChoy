@@ -1,10 +1,10 @@
 import app from "./app.js";
 import { connectDB, disconnectDB } from "./models/connection.js";
-import { syncGameServers } from "./utils/syncGameServers.js";
+import { syncGameServers } from "./utils/gameServers/syncGameServers.js";
 import {
   verifyOnlineMinecraftLinks,
   cleanupExpiredMinecraftLinks,
-} from "./utils/minecraftVerification.js";
+} from "./utils/linking/minecraftVerification.js";
 
 const PORT = Number(process.env.PORT) || 5000;
 const SYNC_ENABLED = process.env.SYNC_GAME_SERVERS !== "false";

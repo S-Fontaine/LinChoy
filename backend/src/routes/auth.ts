@@ -11,7 +11,7 @@ import {
   verifyRefreshToken,
   verifyResetToken,
   computePasswordFingerprint,
-} from "../utils/jwt.js";
+} from "../utils/auth/jwt.js";
 import { mailer } from "../utils/mailer.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import {
@@ -22,9 +22,9 @@ import {
 import {
   accessTokenCookieOptions,
   refreshTokenCookieOptions,
-} from "../utils/cookieOptions.js";
+} from "../utils/auth/cookieOptions.js";
 import { emailValidator } from "../utils/validateEmailDomain.js";
-import { getMinecraftLinkExpiresAt } from "../utils/minecraftVerification.js";
+import { getMinecraftLinkExpiresAt } from "../utils/linking/minecraftVerification.js";
 
 const router = Router();
 

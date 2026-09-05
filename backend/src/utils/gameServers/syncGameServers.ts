@@ -1,4 +1,4 @@
-import GameServer from "../models/GameServer.js";
+import GameServer from "../../models/GameServer.js";
 import { syncGameServerData } from "./getPalworldData.js";
 import { getContainerState } from "./docker.js";
 import { getSourceQueryStatus } from "./gameStatusProviders.js";

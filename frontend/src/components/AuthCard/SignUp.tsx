@@ -2,6 +2,7 @@
 import styles from "./Sign.module.css";
 import { eyeOff, eyeOn } from "../icons/Icons";
 import { useState } from "react";
+import { PASSWORD_RULES } from "@/lib/passwordRules";
 
 interface IFormData {
   username: string;
@@ -21,15 +22,6 @@ interface ISignUp {
   formData: IFormData;
   apiResponse: IApiResponse;
 }
-
-const PASSWORD_RULES = [
-  { label: "Au moins 12 caractères", test: (pwd: string) => pwd.length >= 12 },
-  { label: "Une majuscule", test: (pwd: string) => /[A-Z]/.test(pwd) },
-  {
-    label: "Un caractère spécial",
-    test: (pwd: string) => /[^A-Za-z0-9]/.test(pwd),
-  },
-];
 
 export default function SignUp({
   handleSubmit,

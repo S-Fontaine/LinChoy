@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { HydratedDocument } from "mongoose";
 import GameServer, { type IGameServer } from "../models/GameServer.js";
-import { gameServerEvents } from "../utils/gameServerEvents.js";
+import { gameServerEvents } from "../utils/gameServers/gameServerEvents.js";
 
 const router = Router();
 

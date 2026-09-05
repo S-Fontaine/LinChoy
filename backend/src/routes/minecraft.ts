@@ -5,9 +5,9 @@ import { handleMongooseError } from "../utils/handleMongooseError.js";
 import {
   addToServerWhitelist,
   removeFromServerWhitelist,
-} from "../utils/minecraftWhitelist.js";
-import { resolveMinecraftPlayer } from "../utils/minecraftAuth.js";
-import { getMinecraftLinkExpiresAt } from "../utils/minecraftVerification.js";
+} from "../utils/linking/minecraftWhitelist.js";
+import { resolveMinecraftPlayer } from "../utils/linking/minecraftAuth.js";
+import { getMinecraftLinkExpiresAt } from "../utils/linking/minecraftVerification.js";
 const router = Router();
 
 router.post("/link", requireAuth, async (req: AuthRequest, res) => {

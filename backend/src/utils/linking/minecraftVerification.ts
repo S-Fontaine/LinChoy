@@ -1,6 +1,6 @@
-import User from "../models/User.js";
-import GameServer from "../models/GameServer.js";
-import { removeFromServerWhitelist } from "./minecraftWhitelist.js";
+import User from "../../models/User.js";
+import GameServer from "../../models/GameServer.js";
+import { removeFromServerWhitelist } from "../linking/minecraftWhitelist.js";
 
 export const MINECRAFT_LINK_TTL_MS =
   (Number(process.env.MINECRAFT_LINK_TTL_HOURS) || 4) * 60 * 60 * 1000;

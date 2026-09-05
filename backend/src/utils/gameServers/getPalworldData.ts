@@ -1,10 +1,10 @@
-import GameServer from "../models/GameServer.js";
+import GameServer from "../../models/GameServer.js";
 import {
   type IPalworldPlayer,
   type IPalworldInfo,
   type IPalworldMetrics,
   type IPalWorldSettings,
-} from "../models/subdocuments/palworld.schema.js";
+} from "../../models/subdocuments/palworld.schema.js";
 import { getContainerState } from "./docker.js";
 
 const PALWORLD_API = `http://${process.env.PALWORLD_API_ADDRESS}:${process.env.PALWORLD_API_PORT}/v1/api`;
