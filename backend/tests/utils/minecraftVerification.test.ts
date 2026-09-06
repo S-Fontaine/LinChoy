@@ -14,9 +14,11 @@ describe("Test util: cleanupExpiredMinecraftLinks", () => {
   it("Révoque les whitelists Minecraft des liaisons expirées et non vérifiées", async () => {
     const server = await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
     });
     const user = await User.create({
       ...userPayload,
@@ -43,9 +45,11 @@ describe("Test util: cleanupExpiredMinecraftLinks", () => {
   it("Ne touche pas aux liaisons déjà vérifiées, même expirées", async () => {
     const server = await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
     });
     const user = await User.create({
       ...userPayload,

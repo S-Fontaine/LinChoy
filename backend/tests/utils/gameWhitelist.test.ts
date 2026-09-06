@@ -26,9 +26,8 @@ jest.unstable_mockModule("../../src/utils/linking/steamWhitelist.js", () => ({
 const { addToWhitelist, removeFromWhitelist, revokeAllWhitelistsForUser } =
   await import("../../src/utils/linking/gameWhitelist.js");
 const { default: GameServer } = await import("../../src/models/GameServer.js");
-const { default: ServerWhitelist } = await import(
-  "../../src/models/ServerWhitelist.js"
-);
+const { default: ServerWhitelist } =
+  await import("../../src/models/ServerWhitelist.js");
 
 describe("Test util: gameWhitelist", () => {
   beforeEach(() => {
@@ -107,15 +106,19 @@ describe("Test util: gameWhitelist", () => {
     it("Révoque uniquement les whitelists Minecraft et laisse les autres intactes", async () => {
       const mcServer = await GameServer.create({
         name: "Minecraft",
-        slug: "minecraft",
-        type: "minecraft",
-        containerName: "mc-server",
+        gameData: {
+          slug: "minecraft",
+          type: "minecraft",
+          containerName: "mc-server",
+        },
       });
       const steamServer = await GameServer.create({
         name: "V Rising",
-        slug: "vrising",
-        type: "protocol-valve",
-        containerName: "vrising-server",
+        gameData: {
+          slug: "vrising",
+          type: "protocol-valve",
+          containerName: "vrising-server",
+        },
       });
       const userId = new mongoose.Types.ObjectId().toString();
 
@@ -140,15 +143,19 @@ describe("Test util: gameWhitelist", () => {
     it("Révoque les whitelists Steam (palworld + protocol-valve) mais pas Minecraft", async () => {
       const mcServer = await GameServer.create({
         name: "Minecraft",
-        slug: "minecraft",
-        type: "minecraft",
-        containerName: "mc-server",
+        gameData: {
+          slug: "minecraft",
+          type: "minecraft",
+          containerName: "mc-server",
+        },
       });
       const palServer = await GameServer.create({
         name: "Palworld",
-        slug: "palworld",
-        type: "palworld",
-        containerName: "pal-server",
+        gameData: {
+          slug: "palworld",
+          type: "palworld",
+          containerName: "pal-server",
+        },
       });
       const userId = new mongoose.Types.ObjectId().toString();
 
@@ -158,11 +165,7 @@ describe("Test util: gameWhitelist", () => {
         gameServer: palServer._id,
       });
 
-      await revokeAllWhitelistsForUser(
-        userId,
-        "steam",
-        "76561198000000000",
-      );
+      await revokeAllWhitelistsForUser(userId, "steam", "76561198000000000");
 
       expect(removeSteamMock).toHaveBeenCalledWith(
         "pal-server",

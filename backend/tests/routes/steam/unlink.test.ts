@@ -39,9 +39,11 @@ describe("Test route: DELETE /steam/link", () => {
   it("Révoque les whitelists Steam existantes lors du déliement", async () => {
     const server = await GameServer.create({
       name: "V Rising",
-      slug: "vrising",
-      type: "protocol-valve",
-      containerName: "vrising-server",
+      gameData: {
+        slug: "vrising",
+        type: "protocol-valve",
+        containerName: "vrising-server",
+      },
     });
     const user = await User.create({
       ...userPayload,

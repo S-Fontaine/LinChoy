@@ -14,9 +14,11 @@ describe("Test route: PATCH /users/:id/favorite-server", () => {
   };
   const serverPayload = {
     name: "Minecraft",
-    slug: "minecraft",
-    type: "minecraft" as const,
-    containerName: "minecraft-server",
+    gameData: {
+      slug: "minecraft",
+      type: "minecraft" as const,
+      containerName: "minecraft-server",
+    },
   };
 
   it("Définit un serveur favori valide", async () => {

@@ -8,18 +8,23 @@ describe("Test route: GET /games/:slug", () => {
   it("Renvoie les détails d'un serveur existant", async () => {
     await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "minecraft-server",
-      description: "Un monde en survie",
-      status: {
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "minecraft-server",
+      },
+      serverInfo: {
+        displayName: "Serveur Survie",
+        description: "Un monde en survie",
+      },
+      statusInfo: {
         state: "online",
         online: true,
+      },
+      playerInfo: {
         playerCount: 3,
         maxPlayers: 20,
         players: ["Alice", "Bob", "Charlie"],
-        displayName: "Serveur Survie",
-        description: "Un monde en survie",
       },
     });
 
@@ -43,9 +48,11 @@ describe("Test route: GET /games/:slug", () => {
   it("Utilise le nom du serveur si displayName est absent", async () => {
     await GameServer.create({
       name: "Valheim",
-      slug: "valheim",
-      type: "protocol-valve",
-      containerName: "valheim-server",
+      gameData: {
+        slug: "valheim",
+        type: "protocol-valve",
+        containerName: "valheim-server",
+      },
     });
 
     const res = await request(app).get(`${BASE_URL}/valheim`);
@@ -57,9 +64,11 @@ describe("Test route: GET /games/:slug", () => {
   it("Renvoie une liste de joueurs vide par défaut", async () => {
     await GameServer.create({
       name: "Valheim",
-      slug: "valheim",
-      type: "protocol-valve",
-      containerName: "valheim-server",
+      gameData: {
+        slug: "valheim",
+        type: "protocol-valve",
+        containerName: "valheim-server",
+      },
     });
 
     const res = await request(app).get(`${BASE_URL}/valheim`);
@@ -77,9 +86,11 @@ describe("Test route: GET /games/:slug", () => {
   it("Ne nécessite pas d'authentification", async () => {
     await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "minecraft-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "minecraft-server",
+      },
     });
 
     const res = await request(app).get(`${BASE_URL}/minecraft`);

@@ -16,23 +16,29 @@ describe("Test route: GET /games", () => {
   it("Renvoie tous les serveurs avec les champs attendus", async () => {
     await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "minecraft-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "minecraft-server",
+      },
     });
     await GameServer.create({
       name: "Valheim",
-      slug: "valheim",
-      type: "protocol-valve",
-      containerName: "valheim-server",
-      comingSoon: true,
+      gameData: {
+        slug: "valheim",
+        type: "protocol-valve",
+        containerName: "valheim-server",
+      },
+      statusInfo: { comingSoon: true },
     });
 
     const res = await request(app).get(BASE_URL);
 
     expect(res.status).toBe(200);
     expect(res.body.servers).toHaveLength(2);
-    const minecraft = res.body.servers.find((s: { slug: string }) => s.slug === "minecraft");
+    const minecraft = res.body.servers.find(
+      (s: { slug: string }) => s.slug === "minecraft",
+    );
     expect(minecraft.name).toBe("Minecraft");
     expect(minecraft.status).toBeDefined();
     expect(minecraft.comingSoon).toBe(false);
@@ -41,9 +47,11 @@ describe("Test route: GET /games", () => {
   it("N'expose pas palworldData dans la liste (champ exclu du select)", async () => {
     await GameServer.create({
       name: "Palworld",
-      slug: "palworld",
-      type: "palworld",
-      containerName: "palworld-server",
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "palworld-server",
+      },
       palworldData: { info: { servername: "Test" } },
     });
 

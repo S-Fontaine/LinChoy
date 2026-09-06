@@ -27,10 +27,12 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
   it("Passe le serveur en offline si le container Palworld n'est pas actif", async () => {
     await GameServer.create({
       name: "Palworld",
-      slug: "palworld",
-      type: "palworld",
-      containerName: "palworld-server",
-      status: { state: "online", online: true, playerCount: 3 },
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "palworld-server",
+      },
+      statusInfo: { state: "online", online: true, playerCount: 3 },
     });
     getContainerStateMock.mockResolvedValue({ running: false });
 
@@ -46,9 +48,11 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
   it("Marque le serveur en ligne si l'API répond correctement", async () => {
     await GameServer.create({
       name: "Palworld",
-      slug: "palworld",
-      type: "palworld",
-      containerName: "palworld-server",
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "palworld-server",
+      },
     });
     getContainerStateMock.mockResolvedValue({ running: true });
 
@@ -77,9 +81,11 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
   it("Passe en 'starting' si le container tourne mais que l'API répond en erreur", async () => {
     await GameServer.create({
       name: "Palworld",
-      slug: "palworld",
-      type: "palworld",
-      containerName: "palworld-server",
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "palworld-server",
+      },
     });
     getContainerStateMock.mockResolvedValue({ running: true });
 
@@ -97,9 +103,11 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
   it("Passe le statut à offline si une exception réseau survient", async () => {
     await GameServer.create({
       name: "Palworld",
-      slug: "palworld",
-      type: "palworld",
-      containerName: "palworld-server",
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "palworld-server",
+      },
       status: { online: true, state: "online" },
     });
     getContainerStateMock.mockResolvedValue({ running: true });

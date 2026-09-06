@@ -57,9 +57,11 @@ describe("Test route: POST /games/:slug/whitelist", () => {
   it("Refuse avec linkRequired si le compte requis n'est pas lié", async () => {
     await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
     });
     const user = await User.create(userPayload);
     const token = generateAccessToken({ userId: user._id.toString() });
@@ -76,11 +78,12 @@ describe("Test route: POST /games/:slug/whitelist", () => {
   it("Whiteliste et renvoie les infos de connexion (Minecraft)", async () => {
     const server = await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
-      address: "play.linchoy.com",
-      port: 25565,
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
+      connectionInfo: { address: "play.linchoy.com", port: 25565 },
     });
     const user = await User.create({
       ...userPayload,
@@ -114,9 +117,11 @@ describe("Test route: POST /games/:slug/whitelist", () => {
   it("Whiteliste avec le steamId pour un jeu Steam", async () => {
     await GameServer.create({
       name: "V Rising",
-      slug: "vrising",
-      type: "protocol-valve",
-      containerName: "vrising-server",
+      gameData: {
+        slug: "vrising",
+        type: "protocol-valve",
+        containerName: "vrising-server",
+      },
     });
     const user = await User.create({
       ...userPayload,
@@ -139,9 +144,11 @@ describe("Test route: POST /games/:slug/whitelist", () => {
   it("Est idempotent : n'appelle pas addToWhitelist une seconde fois si déjà whitelisté", async () => {
     const server = await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
     });
     const user = await User.create({
       ...userPayload,

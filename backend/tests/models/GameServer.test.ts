@@ -4,35 +4,37 @@ import GameServer from "../../src/models/GameServer.js";
 describe("Test modèle: GameServer", () => {
   const validPayload = {
     name: "Minecraft",
-    slug: "minecraft",
-    type: "minecraft" as const,
-    containerName: "minecraft-server",
+    gameData: {
+      slug: "minecraft",
+      type: "minecraft" as const,
+      containerName: "minecraft-server",
+    },
   };
 
   it("Crée un document valide avec les valeurs par défaut attendues", async () => {
     const server = await GameServer.create(validPayload);
 
-    expect(server.status.state).toBe("offline");
-    expect(server.status.online).toBe(false);
-    expect(server.status.playerCount).toBe(0);
-    expect(server.comingSoon).toBe(false);
-    expect(server.image).toBe("");
+    expect(server.statusInfo.state).toBe("offline");
+    expect(server.statusInfo.online).toBe(false);
+    expect(server.playerInfo.playerCount).toBe(0);
+    expect(server.statusInfo.comingSoon).toBe(false);
+    expect(server.serverInfo.image).toBe("");
   });
 
   it("Refuse un type hors de l'enum autorisé", async () => {
     await expect(
       GameServer.create({
         ...validPayload,
-        type: "fortnite",
+        gameData: { type: "fortnite" },
       } as unknown as Parameters<typeof GameServer.create>[0]),
     ).rejects.toThrow();
   });
 
-  it("Refuse un status.state hors de l'enum autorisé", async () => {
+  it("Refuse un statusInfo.state hors de l'enum autorisé", async () => {
     await expect(
       GameServer.create({
         ...validPayload,
-        status: { state: "en-panne" },
+        statusInfo: { state: "en-panne" },
       } as unknown as Parameters<typeof GameServer.create>[0]),
     ).rejects.toThrow();
   });
@@ -41,7 +43,7 @@ describe("Test modèle: GameServer", () => {
     await GameServer.create(validPayload);
 
     await expect(
-      GameServer.create({ ...validPayload, slug: "minecraft-2" }),
+      GameServer.create({ ...validPayload, gameData: { slug: "minecraft-2" } }),
     ).rejects.toThrow();
   });
 
@@ -62,6 +64,6 @@ describe("Test modèle: GameServer", () => {
 
   it("Accepte un document sans palworldData (optionnel)", async () => {
     const server = await GameServer.create(validPayload);
-    expect(server.palworldData).toBeUndefined();
+    expect(server.gameData).toBeDefined();
   });
 });

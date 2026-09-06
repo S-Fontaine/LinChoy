@@ -37,9 +37,11 @@ describe("Test route: GET /games/:slug/whitelist", () => {
   it("Indique linked:false si le compte Minecraft n'est pas lié", async () => {
     await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
     });
     const { token } = await createAuthedUser();
 
@@ -59,9 +61,11 @@ describe("Test route: GET /games/:slug/whitelist", () => {
   it("Indique linked:false si le compte Steam n'est pas lié (jeu Steam)", async () => {
     await GameServer.create({
       name: "V Rising",
-      slug: "vrising",
-      type: "protocol-valve",
-      containerName: "vrising-server",
+      gameData: {
+        slug: "vrising",
+        type: "protocol-valve",
+        containerName: "vrising-server",
+      },
     });
     const { token } = await createAuthedUser();
 
@@ -75,9 +79,11 @@ describe("Test route: GET /games/:slug/whitelist", () => {
   it("Indique linked:true whitelisted:false si le compte est lié mais pas encore whitelisté", async () => {
     await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
     });
     const { token } = await createAuthedUser({
       minecraftUsername: "Notch",
@@ -98,11 +104,12 @@ describe("Test route: GET /games/:slug/whitelist", () => {
   it("Renvoie whitelisted:true et les infos de connexion si une entrée existe", async () => {
     const server = await GameServer.create({
       name: "Minecraft",
-      slug: "minecraft",
-      type: "minecraft",
-      containerName: "mc-server",
-      address: "play.linchoy.com",
-      port: 25565,
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
+      connectionInfo: { address: "play.linchoy.com", port: 25565 },
     });
     const { user, token } = await createAuthedUser({
       minecraftUsername: "Notch",
@@ -124,11 +131,12 @@ describe("Test route: GET /games/:slug/whitelist", () => {
   it("Utilise le steamId (pas le pseudo Minecraft) pour un serveur Steam", async () => {
     const server = await GameServer.create({
       name: "Palworld",
-      slug: "palworld",
-      type: "palworld",
-      containerName: "pal-server",
-      address: "play.linchoy.com",
-      port: 8211,
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "pal-server",
+      },
+      connectionInfo: { address: "play.linchoy.com", port: 8211 },
     });
     const { user, token } = await createAuthedUser({
       steamId: "76561198000000000",
