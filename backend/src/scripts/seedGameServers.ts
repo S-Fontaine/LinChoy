@@ -10,6 +10,7 @@ const servers = [
       port: Number(process.env.PALWORLD_API_PORT),
       password: process.env.PALWORLD_PASSWORD,
     },
+    playerInfo: { maxPlayers: 4 },
     serverInfo: {
       image: "/assets/palworld.webp",
       description:

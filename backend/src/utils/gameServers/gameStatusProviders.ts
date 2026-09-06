@@ -5,7 +5,7 @@ export interface IGameStatusResult {
   playerCount: number;
   maxPlayers?: number;
   version?: string;
-  players?: Array<string>;
+  players?: Array<{ name: string }>;
   displayName?: string;
 }
 
@@ -29,7 +29,8 @@ export async function getSourceQueryStatus(
       version: result.version,
       players: result.players
         .map((p) => p.name)
-        .filter((name): name is string => Boolean(name)),
+        .filter((name): name is string => Boolean(name))
+        .map((name) => ({ name })),
       displayName: result.name,
     };
   } catch {

@@ -1,11 +1,25 @@
 import GameServer from "../../models/GameServer.js";
-import {
-  type IPalworldPlayer,
-  type IPalworldInfo,
-  type IPalworldMetrics,
-  type IPalWorldSettings,
-} from "../../models/subdocuments/palworld.schema.js";
 import { getContainerState } from "./docker.js";
+
+export interface IPalworldPlayer {
+  name: string;
+  accountName: string;
+  playerId: string;
+  userId: string;
+  ip: string;
+  ping: number;
+  location_x: number;
+  location_y: number;
+  level: number;
+  building_count: number;
+}
+
+export interface IPalworldInfo {
+  version: string;
+  servername: string;
+  description: string;
+  worldguid: string;
+}
 
 const PALWORLD_API = `http://${process.env.PALWORLD_API_ADDRESS}:${process.env.PALWORLD_API_PORT}/v1/api`;
 const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
@@ -37,64 +51,39 @@ export async function syncGameServerData() {
     return;
   }
 
-  const existing = await GameServer.findOne({ name: "Palworld" });
-  if (!existing) {
-    console.warn("[sync] Document 'Palworld' introuvable");
-    return;
-  }
-
   try {
-    const [infoRes, playersRes, metricsRes, settingsRes] = await Promise.all([
+    const [infoRes, playersRes] = await Promise.all([
       fetch(`${PALWORLD_API}/info`, { headers: { Authorization: authHeader } }),
       fetch(`${PALWORLD_API}/players`, {
         headers: { Authorization: authHeader },
       }),
-      fetch(`${PALWORLD_API}/metrics`, {
-        headers: { Authorization: authHeader },
-      }),
-      fetch(`${PALWORLD_API}/settings`, {
-        headers: { Authorization: authHeader },
-      }),
     ]);
 
-    const isOnline = infoRes.ok && metricsRes.ok;
+    const isOnline = infoRes.ok;
 
-    let playersData: IPalworldPlayer[] = [];
+    let players: IPalworldPlayer[] = [];
     if (playersRes.ok) {
       const json = (await playersRes.json()) as
         | { players?: IPalworldPlayer[] }
         | IPalworldPlayer[];
-      playersData = Array.isArray(json) ? json : json.players || [];
+      players = Array.isArray(json) ? json : json.players || [];
     }
 
-    const palworldData = {
-      info: infoRes.ok
-        ? ((await infoRes.json()) as IPalworldInfo)
-        : ({} as IPalworldInfo),
-      players: playersData,
-      metrics: metricsRes.ok
-        ? ((await metricsRes.json()) as IPalworldMetrics)
-        : ({} as IPalworldMetrics),
-      settings: settingsRes.ok
-        ? ((await settingsRes.json()) as IPalWorldSettings)
-        : ({} as IPalWorldSettings),
-    };
+    const info = infoRes.ok
+      ? ((await infoRes.json()) as IPalworldInfo)
+      : ({} as IPalworldInfo);
 
     const updated = await GameServer.findOneAndUpdate(
       { name: "Palworld" },
       {
         $set: {
-          palworldData,
           "statusInfo.state": isOnline ? "online" : "starting",
           "statusInfo.online": isOnline,
-          "playerInfo.playerCount": isOnline
-            ? (palworldData.metrics?.currentplayernum ?? 0)
-            : 0,
-          "playerInfo.maxPlayers": palworldData.metrics?.maxplayernum,
-          "serverInfo.displayName": palworldData.info?.servername,
-          "serverInfo.description": palworldData.info?.description,
+          "playerInfo.playerCount": isOnline ? players.length : 0,
+          "serverInfo.displayName": info?.servername,
+          "serverInfo.version": info?.version,
           "statusInfo.lastChecked": new Date(),
-          "playerInfo.players": palworldData.players.map((player) => ({
+          "playerInfo.players": players.map((player) => ({
             id: player.userId,
             name: player.name,
           })),
@@ -106,28 +95,14 @@ export async function syncGameServerData() {
     console.log(
       isOnline
         ? `[${new Date().toLocaleTimeString()}] Données Palworld synchronisées avec succès !`
-        : `[${new Date().toLocaleTimeString()}] Palworld injoignable (réponse API en erreur)`,
+        : `[${new Date().toLocaleTimeString()}] Palworld injoignable`,
     );
     return updated;
   } catch (err) {
-    console.error(
-      `[${new Date().toLocaleTimeString()}] Erreur synchro Palworld:`,
-      err,
-    );
-
+    console.error(`[${new Date().toLocaleTimeString()}] Erreur synchro Palworld:`, err);
     await GameServer.updateOne(
       { name: "Palworld" },
-      {
-        $set: {
-          "statusInfo.online": false,
-          "statusInfo.lastChecked": new Date(),
-        },
-      },
-    ).catch((updateErr) => {
-      console.error(
-        "[Palworld] Échec de la mise à jour du statut :",
-        updateErr,
-      );
-    });
+      { $set: { "statusInfo.online": false, "statusInfo.lastChecked": new Date() } },
+    ).catch(() => {});
   }
 }

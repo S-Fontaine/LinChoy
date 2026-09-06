@@ -13,7 +13,7 @@ function toGameData(server: HydratedDocument<IGameServer>) {
     image: server.serverInfo.image,
     totalPlayer: server.playerInfo.maxPlayers ?? 0,
     playerOnLine: server.playerInfo.playerCount,
-    players: server.playerInfo.players ?? [],
+    players: (server.playerInfo.players ?? []).map((p) => p.name),
     online: server.statusInfo.online,
     state: server.statusInfo.state,
     comingSoon: server.statusInfo.comingSoon,
