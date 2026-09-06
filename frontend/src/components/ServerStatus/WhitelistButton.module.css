@@ -1,0 +1,56 @@
+.wrapper {
+  margin-top: 12px;
+}
+
+.whitelistBtn {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-high);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.whitelistBtn:hover:not(:disabled) {
+  border-color: var(--choy-green);
+  color: var(--choy-green);
+}
+.whitelistBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.linkForm {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.linkForm input {
+  flex: 1;
+  min-width: 160px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-high);
+  font-size: 0.9rem;
+}
+
+.connectionBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 16px;
+  background: rgba(50, 205, 50, 0.1);
+  border: 1px solid var(--choy-green);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--choy-green-light);
+}
+.connectionBox code {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-high);
+}

@@ -106,6 +106,13 @@
 }
 
 .serverDescription {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.description {
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--text-muted, #aaa);

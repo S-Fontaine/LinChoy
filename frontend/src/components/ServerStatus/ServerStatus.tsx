@@ -71,6 +71,8 @@ export default function ServerStatus({
       <div className={styles.favoriteWrapper}>
         {gameData ? (
           <FeaturedGameStatus
+            slug={game.slug}
+            type={game.type}
             state={gameData.data.state}
             isOnline={gameData.data.online}
             name={gameData.data.name}
@@ -108,6 +110,8 @@ export default function ServerStatus({
         className={`${styles.cardWrapper} ${isFavorite ? styles.favoriteWrapper : ""}`}
       >
         <GameStatus
+          slug={game.slug}
+          type={game.type}
           state={gameData.data.state}
           isOnline={gameData.data.online}
           name={gameData.data.name}
