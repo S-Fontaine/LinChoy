@@ -1,6 +1,6 @@
 import User from "../../models/User.js";
 import GameServer from "../../models/GameServer.js";
-import { removeFromServerWhitelist } from "../linking/minecraftWhitelist.js";
+import { revokeAllWhitelistsForUser } from "./gameWhitelist.js";
 
 export const MINECRAFT_LINK_TTL_MS =
   (Number(process.env.MINECRAFT_LINK_TTL_HOURS) || 4) * 60 * 60 * 1000;
@@ -47,7 +47,11 @@ export async function cleanupExpiredMinecraftLinks(): Promise<void> {
 
   for (const user of expiredUsers) {
     if (user.minecraftUsername) {
-      await removeFromServerWhitelist(user.minecraftUsername);
+      await revokeAllWhitelistsForUser(
+        user._id.toString(),
+        "minecraft",
+        user.minecraftUsername,
+      );
     }
     await User.findByIdAndUpdate(user._id, {
       minecraftUuid: null,

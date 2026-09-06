@@ -4,6 +4,7 @@ import { verifyAccessToken } from "../utils/auth/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { getSteamRedirectUrl, verifySteamOpenId } from "../utils/linking/steamAuth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
+import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
 import crypto from "crypto";
 
 const router = Router();
@@ -83,6 +84,10 @@ router.get("/link/callback", async (req, res) => {
 
 router.delete("/link", requireAuth, async (req: AuthRequest, res) => {
   try {
+    const user = await User.findById(req.user?.userId);
+    if (user?.steamId) {
+      await revokeAllWhitelistsForUser(req.user!.userId, "steam", user.steamId);
+    }
     await User.findByIdAndUpdate(req.user?.userId, { steamId: null });
     return res
       .status(200)

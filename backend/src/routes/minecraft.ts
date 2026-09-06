@@ -2,10 +2,7 @@ import { Router } from "express";
 import User from "../models/User.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import {
-  addToServerWhitelist,
-  removeFromServerWhitelist,
-} from "../utils/linking/minecraftWhitelist.js";
+import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
 import { resolveMinecraftPlayer } from "../utils/linking/minecraftAuth.js";
 import { getMinecraftLinkExpiresAt } from "../utils/linking/minecraftVerification.js";
 const router = Router();
@@ -38,8 +35,6 @@ router.post("/link", requireAuth, async (req: AuthRequest, res) => {
       minecraftLinkedAt: linkedAt,
     });
 
-    await addToServerWhitelist(username);
-
     return res.status(200).json({
       result: true,
       message: "Compte lié, connecte-toi sur le serveur pour confirmer",
@@ -69,7 +64,11 @@ router.delete("/link", requireAuth, async (req: AuthRequest, res) => {
   try {
     const user = await User.findById(req.user?.userId);
     if (user?.minecraftUsername) {
-      await removeFromServerWhitelist(user.minecraftUsername);
+      await revokeAllWhitelistsForUser(
+        req.user!.userId,
+        "minecraft",
+        user.minecraftUsername,
+      );
     }
     await User.findByIdAndUpdate(req.user?.userId, {
       minecraftUuid: null,
