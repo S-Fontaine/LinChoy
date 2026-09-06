@@ -3,8 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./GameStatus.module.css";
 import Image from "next/image";
 import { starOutline, starFilled } from "../icons/Icons";
+import WhitelistButton from "./WhitelistButton";
 
 interface IGame {
+  slug: string;
+  type: string;
   state: "offline" | "starting" | "online";
   isOnline: boolean;
   name: string;
@@ -108,7 +111,10 @@ export function GameStatus(game: IGame) {
             )}
           </div>
         </div>
-        <p className={styles.serverDescription}>{game.description}</p>
+        <div className={styles.serverDescription}>
+          <p className={styles.description}>{game.description}</p>
+          <WhitelistButton slug={game.slug} gameType={game.type} />
+        </div>
       </div>
     </div>
   );
