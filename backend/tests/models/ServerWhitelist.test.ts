@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 import mongoose from "mongoose";
-// import ServerWhitelist from "../../src/models/ServerWhitelist.js"
+import ServerWhitelist from "../../src/models/ServerWhitelist.js"
 
 describe("Test modèle: ServerWhitelist", () => {
   it("Crée un document valide avec whitelistedAt par défaut", async () => {
