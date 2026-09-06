@@ -53,6 +53,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
         type: "palworld",
         containerName: "palworld-server",
       },
+      playerInfo: { maxPlayers: 32 },
     });
     getContainerStateMock.mockResolvedValue({ running: true });
 
@@ -63,7 +64,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
       )
       .mockResolvedValueOnce(jsonResponse({ players: [{ name: "Alice" }] }))
       .mockResolvedValueOnce(
-        jsonResponse({ currentplayernum: 1, maxplayernum: 32 }),
+        jsonResponse({ currentplayernum: 1}),
       )
       .mockResolvedValueOnce(jsonResponse({}));
 

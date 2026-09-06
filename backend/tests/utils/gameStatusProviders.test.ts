@@ -20,7 +20,7 @@ describe("Test utilitaire: getSourceQueryStatus", () => {
       name: "Mon serveur",
       maxplayers: 20,
       version: "1.2.3",
-      players: [{ name: "Alice" }, { name: "Bob" }],
+      players: [{ id:"teesstt", name: "Alice" }, { name: "Bob" }],
     });
 
     const result = await getSourceQueryStatus("127.0.0.1", 25566, "minecraft");
@@ -30,7 +30,7 @@ describe("Test utilitaire: getSourceQueryStatus", () => {
       playerCount: 2,
       maxPlayers: 20,
       version: "1.2.3",
-      players: ["Alice", "Bob"],
+      players: [{ name: "Alice" }, { name: "Bob" }],
       displayName: "Mon serveur",
     });
     expect(queryMock).toHaveBeenCalledWith(

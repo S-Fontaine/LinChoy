@@ -51,6 +51,11 @@ export async function syncGameServerData() {
     return;
   }
 
+  const existing = await GameServer.findOne({ name: "Palworld" });
+  if (!existing) {
+    console.warn("[sync] Document 'Palworld' introuvable");
+    return;
+  }
   try {
     const [infoRes, playersRes] = await Promise.all([
       fetch(`${PALWORLD_API}/info`, { headers: { Authorization: authHeader } }),
@@ -99,10 +104,18 @@ export async function syncGameServerData() {
     );
     return updated;
   } catch (err) {
-    console.error(`[${new Date().toLocaleTimeString()}] Erreur synchro Palworld:`, err);
+    console.error(
+      `[${new Date().toLocaleTimeString()}] Erreur synchro Palworld:`,
+      err,
+    );
     await GameServer.updateOne(
       { name: "Palworld" },
-      { $set: { "statusInfo.online": false, "statusInfo.lastChecked": new Date() } },
+      {
+        $set: {
+          "statusInfo.online": false,
+          "statusInfo.lastChecked": new Date(),
+        },
+      },
     ).catch(() => {});
   }
 }

@@ -38,17 +38,7 @@ describe("Test route: GET /games/:slug", () => {
       description: "Un monde en survie",
       totalPlayer: 20,
       playerOnLine: 3,
-      players: [
-        {
-          name: "Alice",
-        },
-        {
-          name: "Bob",
-        },
-        {
-          name: "Charlie",
-        },
-      ],
+      players: ["Alice", "Bob", "Charlie"],
       state: "online",
       online: true,
       comingSoon: false,
