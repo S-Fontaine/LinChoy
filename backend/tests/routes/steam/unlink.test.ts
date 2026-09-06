@@ -2,6 +2,8 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
+import GameServer from "../../../src/models/GameServer.js";
+import ServerWhitelist from "../../../src/models/ServerWhitelist.js";
 import { generateAccessToken } from "../../../src/utils/auth/jwt.js";
 
 const userPayload = {
@@ -12,7 +14,10 @@ const userPayload = {
 
 describe("Test route: DELETE /steam/link", () => {
   it("Délie le compte Steam", async () => {
-    const user = await User.create({ ...userPayload, steamId: "76561198000000000" });
+    const user = await User.create({
+      ...userPayload,
+      steamId: "76561198000000000",
+    });
     const token = generateAccessToken({ userId: user._id.toString() });
 
     const res = await request(app)
@@ -29,5 +34,32 @@ describe("Test route: DELETE /steam/link", () => {
   it("Refuse la requête sans authentification", async () => {
     const res = await request(app).delete("/steam/link");
     expect(res.status).toBe(401);
+  });
+
+  it("Révoque les whitelists Steam existantes lors du déliement", async () => {
+    const server = await GameServer.create({
+      name: "V Rising",
+      slug: "vrising",
+      type: "protocol-valve",
+      containerName: "vrising-server",
+    });
+    const user = await User.create({
+      ...userPayload,
+      steamId: "76561198000000000",
+    });
+    await ServerWhitelist.create({ user: user._id, gameServer: server._id });
+    const token = generateAccessToken({ userId: user._id.toString() });
+
+    const res = await request(app)
+      .delete("/steam/link")
+      .set("Cookie", `accessToken=${token}`);
+
+    expect(res.status).toBe(200);
+
+    const remaining = await ServerWhitelist.findOne({
+      user: user._id,
+      gameServer: server._id,
+    });
+    expect(remaining).toBeNull();
   });
 });
