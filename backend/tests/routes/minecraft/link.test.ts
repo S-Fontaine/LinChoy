@@ -1,6 +1,6 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 
-const resolveMinecraftPlayerMock = jest.fn
+const resolveMinecraftPlayerMock = jest.fn<
   (input: string) => Promise<{ uuid: string; username: string }>
 >();
 
