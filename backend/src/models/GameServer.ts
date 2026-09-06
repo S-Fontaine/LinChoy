@@ -1,69 +1,116 @@
 import mongoose, { Schema } from "mongoose";
-import PalworldSchema, {
-  type IPalworld,
-} from "./subdocuments/palworld.schema.js";
-
 export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
 export type GameServerState = "offline" | "starting" | "online";
 
-export interface IGameServerStatus {
-  state: GameServerState;
-  online: boolean;
+export interface IConnectionInfo {
+  address: string;
+  port: number;
+  password: string;
+  queryPort: number;
+}
+
+export interface IPlayerInfo {
   playerCount: number;
-  maxPlayers?: number;
-  version?: string;
-  players?: Array<string>;
-  lastChecked?: Date;
-  displayName?: string;
-  description?: string;
+  maxPlayers: number;
+  players: Array<{ id: string; name: string }>;
+}
+
+export interface IServerInfo {
+  displayName: string;
+  version: string;
+  image: string;
+  description: string;
+}
+
+export interface IStatusInfo {
+  online: boolean;
+  comingSoon: boolean;
+  state: GameServerState;
+  lastChecked: Date;
+}
+
+export interface IGameData {
+  type: GameServerType;
+  containerName: string;
+  slug: string;
 }
 
 export interface IGameServer {
   name: string;
-  slug: string;
-  type: GameServerType;
-  containerName: string;
-  image: string;
-  address?: string;
-  port?: number;
-  queryPort?: number;
-  status: IGameServerStatus;
-  comingSoon: boolean;
-  palworldData?: IPalworld;
-  description?: string;
+  connectionInfo: IConnectionInfo;
+  playerInfo: IPlayerInfo;
+  serverInfo: IServerInfo;
+  statusInfo: IStatusInfo;
+  gameData: IGameData;
 }
 
-const GameServerSchema = new Schema<IGameServer>({
-  name: { type: String, required: true, unique: true },
-  slug: { type: String, required: true, unique: true },
-  type: {
-    type: String,
-    enum: ["palworld", "minecraft", "protocol-valve"],
-    required: true,
+// Sous-Document
+const ConnectionInfoSchema = new Schema<IConnectionInfo>(
+  {
+    address: String,
+    port: Number,
+    password: String,
+    queryPort: Number,
   },
-  containerName: { type: String, required: true },
-  image: { type: String, default: "" },
-  description: { type: String, default: "" },
-  address: String,
-  port: Number,
-  queryPort: Number,
-  status: {
+  { _id: false },
+);
+const PlayerInfoSchema = new Schema<IPlayerInfo>(
+  {
+    playerCount: { type: Number, default: 0 },
+    maxPlayers: Number,
+    players: [
+      {
+        _id: false,
+        id: { type: String, required: false },
+        name: { type: String, required: true },
+      },
+    ],
+  },
+  { _id: false },
+);
+const ServerInfoSchema = new Schema<IServerInfo>(
+  {
+    displayName: String,
     version: String,
+    image: { type: String, default: "" },
+    description: { type: String, default: "" },
+  },
+  { _id: false },
+);
+const StatusInfoSchema = new Schema<IStatusInfo>(
+  {
+    online: { type: Boolean, default: false },
+    comingSoon: { type: Boolean, default: false },
     state: {
       type: String,
       enum: ["offline", "starting", "online"],
       default: "offline",
     },
-    online: { type: Boolean, default: false },
-    playerCount: { type: Number, default: 0 },
-    maxPlayers: Number,
-    players: [String],
     lastChecked: Date,
-    displayName: String,
-    description: String,
   },
-  comingSoon: { type: Boolean, default: false },
-  palworldData: PalworldSchema,
+  { _id: false },
+);
+const GameDataSchema = new Schema<IGameData>(
+  {
+    type: {
+      type: String,
+      enum: ["palworld", "minecraft", "protocol-valve"],
+      required: true,
+    },
+    containerName: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+  },
+  { _id: false },
+);
+
+// Document
+const GameServerSchema = new Schema<IGameServer>({
+  name: { type: String, required: true, unique: true },
+  connectionInfo: { type: ConnectionInfoSchema, default: () => ({}) },
+  playerInfo: { type: PlayerInfoSchema, default: () => ({}) },
+  serverInfo: { type: ServerInfoSchema, default: () => ({}) },
+  statusInfo: { type: StatusInfoSchema, default: () => ({}) },
+  gameData: { type: GameDataSchema, default: () => ({}) },
 });
 
 export default mongoose.model<IGameServer>(

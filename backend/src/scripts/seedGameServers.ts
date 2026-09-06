@@ -5,51 +5,80 @@ import GameServer from "../models/GameServer.js";
 const servers = [
   {
     name: "Palworld",
-    slug: "palworld",
-    type: "palworld",
-    containerName: "palworld-server",
-    image: "/assets/palworld.webp",
-    address: process.env.PALWORLD_API_ADDRESS,
-    port: Number(process.env.PALWORLD_API_PORT),
-    description:
-      "Capture, élève et combat aux côtés de tes Pals dans un monde open-world qui mélange survie et créatures fantastiques. Serveur PvE, jusqu'à 4 joueurs, sans wipe régulier. Construction de base, exploration et raids de donjons au programme.",
+    connectionInfo: {
+      address: process.env.PALWORLD_API_ADDRESS,
+      port: Number(process.env.PALWORLD_API_PORT),
+      password: process.env.PALWORLD_PASSWORD,
+    },
+    serverInfo: {
+      image: "/assets/palworld.webp",
+      description:
+        "Capture, élève et combat aux côtés de tes Pals dans un monde open-world qui mélange survie et créatures fantastiques. Serveur PvE, jusqu'à 4 joueurs, sans wipe régulier. Construction de base, exploration et raids de donjons au programme.",
+    },
+    gameData: {
+      type: "palworld",
+      containerName: "palworld-server",
+      slug: "palworld",
+    },
   },
   {
     name: "Minecraft",
-    slug: "minecraft-hard",
-    type: "minecraft",
-    containerName: "minecraft-solocorp",
-    image: "/assets/minecraft.webp",
-    address: process.env.MINECRAFT_ADDRESS,
-    port: Number(process.env.MINECRAFT_PORT),
-    queryPort: Number(process.env.MINECRAFT_QUERY_PORT),
-    description:
-      "Plonge dans l'univers cubique de Minecraft, où la créativité et l'aventure se rencontrent. Serveur PvE, sans mods — difficulté hard. Explore, construis et survive dans un monde généré aléatoirement.",
+    connectionInfo: {
+      address: process.env.MINECRAFT_ADDRESS,
+      port: Number(process.env.MINECRAFT_PORT),
+      queryPort: Number(process.env.MINECRAFT_QUERY_PORT),
+    },
+    serverInfo: {
+      image: "/assets/minecraft.webp",
+      description:
+        "Plonge dans l'univers cubique de Minecraft, où la créativité et l'aventure se rencontrent. Serveur PvE, sans mods — difficulté hard. Explore, construis et survive dans un monde généré aléatoirement.",
+    },
+    gameData: {
+      type: "minecraft",
+      containerName: "minecraft-solocorp",
+      slug: "minecraft-hard",
+    },
   },
   {
-    name: "V Rising",
-    slug: "vrising",
-    type: "protocol-valve",
-    containerName: "vrising-server",
-    image: "/assets/vrising.webp",
-    address: process.env.VRISING_ADDRESS,
-    port: Number(process.env.VRISING_PORT),
-    queryPort: Number(process.env.VRISING_QUERY_PORT),
-    description:
-      "Deviens un vampire redouté, bâtis ton château dans ce monde gothique impitoyable. Serveur PvE, rates normal. Chasse, artisanat et diplomatie entre clans.",
+    name: "VRising",
+    connectionInfo: {
+      address: process.env.VRISING_ADDRESS,
+      port: Number(process.env.VRISING_PORT),
+      password: process.env.VRISING_PASSWORD,
+      queryPort: Number(process.env.VRISING_QUERY_PORT),
+    },
+    serverInfo: {
+      image: "/assets/vrising.webp",
+      description:
+        "Deviens un vampire redouté, bâtis ton château dans ce monde gothique impitoyable. Serveur PvE, rates normal. Chasse, artisanat et diplomatie entre clans.",
+    },
+    gameData: {
+      type: "protocol-valve",
+      containerName: "vrising-server",
+      slug: "vrising",
+    },
   },
   {
     name: "Valheim",
-    slug: "valheim",
-    type: "protocol-valve",
-    containerName: "valheim-server",
-    image: "/assets/valheim.webp",
-    address: process.env.VALHEIM_ADDRESS,
-    port: Number(process.env.VALHEIM_PORT),
-    queryPort: Number(process.env.VALHEIM_QUERY_PORT),
-    description:
-      "Embarque pour les terres de Valheim, où vikings et créatures légendaires s'affrontent dans un monde généré procéduralement. Serveur PvE, sans mods — difficulté standard. Idéal pour explorer, bâtir et affronter les boss en groupe.",
-    comingSoon: true,
+    connectionInfo: {
+      address: process.env.VALHEIM_ADDRESS,
+      port: Number(process.env.VALHEIM_PORT),
+      password: process.env.VALHEIM_PASSWORD,
+      queryPort: Number(process.env.VALHEIM_QUERY_PORT),
+    },
+    serverInfo: {
+      image: "/assets/valheim.webp",
+      description:
+        "Embarque pour les terres de Valheim, où vikings et créatures légendaires s'affrontent dans un monde généré procéduralement. Serveur PvE, sans mods — difficulté standard. Idéal pour explorer, bâtir et affronter les boss en groupe.",
+    },
+    gameData: {
+      type: "protocol-valve",
+      containerName: "valheim-server",
+      slug: "valheim",
+    },
+    statusInfo: {
+      comingSoon: true,
+    },
   },
 ];
 
@@ -59,12 +88,7 @@ async function seed() {
     const { name, ...config } = server;
     await GameServer.findOneAndUpdate(
       { name },
-      {
-        $set: config,
-        $setOnInsert: {
-          status: { online: false, playerCount: 0 },
-        },
-      },
+      { $set: config },
       { upsert: true, returnDocument: "after" },
     );
     console.log(`[seed] ${name} synchronisé`);

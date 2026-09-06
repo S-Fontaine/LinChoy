@@ -27,10 +27,10 @@ export async function syncGameServerData() {
       { name: "Palworld" },
       {
         $set: {
-          "status.state": "offline",
-          "status.online": false,
-          "status.playerCount": 0,
-          "status.lastChecked": new Date(),
+          "statusInfo.state": "offline",
+          "statusInfo.online": false,
+          "playerInfo.playerCount": 0,
+          "statusInfo.lastChecked": new Date(),
         },
       },
     );
@@ -39,9 +39,7 @@ export async function syncGameServerData() {
 
   const existing = await GameServer.findOne({ name: "Palworld" });
   if (!existing) {
-    console.warn(
-      "[sync] Document 'Palworld' introuvable",
-    );
+    console.warn("[sync] Document 'Palworld' introuvable");
     return;
   }
 
@@ -87,16 +85,19 @@ export async function syncGameServerData() {
       {
         $set: {
           palworldData,
-          "status.state": isOnline ? "online" : "starting",
-          "status.online": isOnline,
-          "status.playerCount": isOnline
+          "statusInfo.state": isOnline ? "online" : "starting",
+          "statusInfo.online": isOnline,
+          "playerInfo.playerCount": isOnline
             ? (palworldData.metrics?.currentplayernum ?? 0)
             : 0,
-          "status.maxPlayers": palworldData.metrics?.maxplayernum,
-          "status.displayName": palworldData.info?.servername,
-          "status.description": palworldData.info?.description,
-          "status.lastChecked": new Date(),
-          "status.players": palworldData.players.map((player) => player.name),
+          "playerInfo.maxPlayers": palworldData.metrics?.maxplayernum,
+          "serverInfo.displayName": palworldData.info?.servername,
+          "serverInfo.description": palworldData.info?.description,
+          "statusInfo.lastChecked": new Date(),
+          "playerInfo.players": palworldData.players.map((player) => ({
+            id: player.userId,
+            name: player.name,
+          })),
         },
       },
       { returnDocument: "after" },
@@ -118,8 +119,8 @@ export async function syncGameServerData() {
       { name: "Palworld" },
       {
         $set: {
-          "status.online": false,
-          "status.lastChecked": new Date(),
+          "statusInfo.online": false,
+          "statusInfo.lastChecked": new Date(),
         },
       },
     ).catch((updateErr) => {

@@ -7,24 +7,24 @@ const router = Router();
 
 function toGameData(server: HydratedDocument<IGameServer>) {
   return {
-    slug: server.slug,
     name: server.name,
-    servername: server.status.displayName || server.name,
-    description: server.description || "",
-    totalPlayer: server.status.maxPlayers ?? 0,
-    playerOnLine: server.status.playerCount,
-    online: server.status.online,
-    state: server.status.state,
-    comingSoon: server.comingSoon,
-    image: server.image,
-    players: server.status.players ?? [],
+    servername: server.serverInfo.displayName || server.name,
+    description: server.serverInfo.description || "",
+    image: server.serverInfo.image,
+    totalPlayer: server.playerInfo.maxPlayers ?? 0,
+    playerOnLine: server.playerInfo.playerCount,
+    players: server.playerInfo.players ?? [],
+    online: server.statusInfo.online,
+    state: server.statusInfo.state,
+    comingSoon: server.statusInfo.comingSoon,
+    slug: server.gameData.slug,
   };
 }
 
 router.get("/", async (_req, res) => {
   try {
     const servers = await GameServer.find().select(
-      "name slug type image status comingSoon description",
+      "name gameData.slug gameData.type serverInfo.image serverInfo.description statusInfo.state statusInfo.comingSoon",
     );
 
     return res.status(200).json({ result: true, servers });
@@ -62,7 +62,9 @@ router.get("/stream", async (req, res) => {
 
 router.get("/:slug", async (req, res) => {
   try {
-    const server = await GameServer.findOne({ slug: req.params.slug });
+    const server = await GameServer.findOne({
+      "gameData.slug": req.params.slug,
+    });
     if (!server) {
       return res
         .status(404)

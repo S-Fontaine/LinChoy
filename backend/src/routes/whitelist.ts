@@ -17,7 +17,7 @@ function getIdentifier(
 
 router.get("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const server = await GameServer.findOne({ slug: req.params.slug });
+    const server = await GameServer.findOne({ "gameData.slug": req.params.slug });
     if (!server) {
       return res
         .status(404)
@@ -31,11 +31,14 @@ router.get("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
         .json({ result: false, message: "Utilisateur introuvable" });
     }
 
-    const identifier = getIdentifier(user, server.type);
+    const identifier = getIdentifier(user, server.gameData.type);
     if (!identifier) {
-      return res
-        .status(200)
-        .json({ result: true, linked: false, whitelisted: false, connection: null });
+      return res.status(200).json({
+        result: true,
+        linked: false,
+        whitelisted: false,
+        connection: null,
+      });
     }
 
     const entry = await ServerWhitelist.findOne({
@@ -48,7 +51,10 @@ router.get("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
       linked: true,
       whitelisted: !!entry,
       connection: entry
-        ? { address: server.address, port: server.port }
+        ? {
+            address: server.connectionInfo.address,
+            port: server.connectionInfo.port,
+          }
         : null,
     });
   } catch (err) {
@@ -58,7 +64,9 @@ router.get("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
 
 router.post("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const server = await GameServer.findOne({ slug: req.params.slug });
+    const server = await GameServer.findOne({
+      "gameData.slug": req.params.slug,
+    });
     if (!server) {
       return res
         .status(404)
@@ -72,7 +80,7 @@ router.post("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
         .json({ result: false, message: "Utilisateur introuvable" });
     }
 
-    const identifier = getIdentifier(user, server.type);
+    const identifier = getIdentifier(user, server.gameData.type);
     if (!identifier) {
       return res.status(400).json({
         result: false,
@@ -89,8 +97,8 @@ router.post("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
     if (!existing) {
       await ServerWhitelist.create({ user: user._id, gameServer: server._id });
       await addToWhitelist({
-        type: server.type,
-        containerName: server.containerName,
+        type: server.gameData.type,
+        containerName: server.gameData.containerName,
         identifier,
       });
     }
@@ -98,7 +106,10 @@ router.post("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
     return res.status(200).json({
       result: true,
       message: "Tu es whitelisté sur ce serveur !",
-      connection: { address: server.address, port: server.port },
+      connection: {
+        address: server.connectionInfo.address,
+        port: server.connectionInfo.port,
+      },
     });
   } catch (err) {
     return handleMongooseError(err, res);

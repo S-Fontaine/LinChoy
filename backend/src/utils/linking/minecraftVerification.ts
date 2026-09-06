@@ -10,11 +10,11 @@ export function getMinecraftLinkExpiresAt(linkedAt: Date | null): Date | null {
 }
 
 export async function verifyOnlineMinecraftLinks(): Promise<void> {
-  const minecraftServers = await GameServer.find({ type: "minecraft" });
+  const minecraftServers = await GameServer.find({ "gameData.type": "minecraft" });
   const onlineNames = new Set(
     minecraftServers
-      .flatMap((server) => server.status.players ?? [])
-      .map((name) => name.toLowerCase()),
+      .flatMap((server) => server.playerInfo.players ?? [])
+      .map((name) => name.name.toLowerCase()),
   );
 
   if (onlineNames.size === 0) return;

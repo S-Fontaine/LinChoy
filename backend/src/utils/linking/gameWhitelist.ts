@@ -41,7 +41,9 @@ export async function revokeAllWhitelistsForUser(
       ? ["minecraft"]
       : ["palworld", "protocol-valve"];
 
-  const servers = await GameServer.find({ type: { $in: gameTypes } });
+  const servers = await GameServer.find({
+    "gameData.type": { $in: gameTypes },
+  });
   const serverIds = servers.map((s) => s._id);
 
   const entries = await ServerWhitelist.find({
@@ -53,8 +55,8 @@ export async function revokeAllWhitelistsForUser(
     const server = servers.find((s) => s._id.equals(entry.gameServer));
     if (!server) continue;
     await removeFromWhitelist({
-      type: server.type,
-      containerName: server.containerName,
+      type: server.gameData.type,
+      containerName: server.gameData.containerName,
       identifier,
     });
     await entry.deleteOne();

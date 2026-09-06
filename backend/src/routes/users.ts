@@ -135,7 +135,7 @@ router.patch(
 
     try {
       if (slug) {
-        const server = await GameServer.findOne({ slug });
+        const server = await GameServer.findOne({ "gameData.slug": slug });
         if (!server) {
           return res
             .status(404)
