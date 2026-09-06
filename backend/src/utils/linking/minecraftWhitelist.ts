@@ -1,9 +1,19 @@
-export async function addToServerWhitelist(username: string): Promise<void> {
-  // TODO: brancher sur RCON (enable-rcon=true côté server.properties)
-  console.log(`[minecraft-whitelist] TODO whitelist add ${username}`);
+export async function addToServerWhitelist(
+  containerName: string,
+  username: string,
+): Promise<void> {
+  // TODO: brancher sur RCON du conteneur `containerName` (enable-rcon=true côté server.properties)
+  console.log(
+    `[minecraft-whitelist] TODO whitelist add ${username} sur ${containerName}`,
+  );
 }
 
-export async function removeFromServerWhitelist(username: string): Promise<void> {
+export async function removeFromServerWhitelist(
+  containerName: string,
+  username: string,
+): Promise<void> {
   // TODO: brancher sur RCON
-  console.log(`[minecraft-whitelist] TODO whitelist remove ${username}`);
+  console.log(
+    `[minecraft-whitelist] TODO whitelist remove ${username} sur ${containerName}`,
+  );
 }

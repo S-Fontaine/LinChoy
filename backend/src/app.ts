@@ -10,6 +10,7 @@ import serverStatusRouter from "./routes/serverStatus.js";
 import authRouter from "./routes/auth.js";
 import usersRouter from "./routes/users.js";
 import gameServerRouter from "./routes/gamesServer.js";
+import whitelistRouter from "./routes/whitelist.js"
 import steamRouter from "./routes/steam.js";
 import minecraftRouter from "./routes/minecraft.js";
 
@@ -31,6 +32,7 @@ app.use("/server", serverStatusRouter);
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/games", gameServerRouter);
+app.use("/games", whitelistRouter);
 app.use("/steam", steamRouter);
 app.use("/minecraft", minecraftRouter);
 
