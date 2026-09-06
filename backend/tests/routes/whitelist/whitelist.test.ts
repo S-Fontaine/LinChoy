@@ -1,5 +1,6 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 
+const revokeAllWhitelistsForUserMock = jest.fn<() => Promise<void>>();
 const addToWhitelistMock =
   jest.fn<
     (target: {
@@ -11,6 +12,7 @@ const addToWhitelistMock =
 
 jest.unstable_mockModule("../../../src/utils/linking/gameWhitelist.js", () => ({
   addToWhitelist: addToWhitelistMock,
+  revokeAllWhitelistsForUser: revokeAllWhitelistsForUserMock,
 }));
 
 const { default: app } = await import("../../../src/app.js");
@@ -32,6 +34,8 @@ describe("Test route: POST /games/:slug/whitelist", () => {
   beforeEach(() => {
     addToWhitelistMock.mockReset();
     addToWhitelistMock.mockResolvedValue(undefined);
+    revokeAllWhitelistsForUserMock.mockReset();
+    revokeAllWhitelistsForUserMock.mockResolvedValue(undefined);
   });
 
   it("Refuse la requête sans authentification", async () => {
