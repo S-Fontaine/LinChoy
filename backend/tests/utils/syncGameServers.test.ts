@@ -9,9 +9,12 @@ jest.unstable_mockModule("../../src/models/GameServer.js", () => ({
 
 const syncGameServerDataMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-jest.unstable_mockModule("../../src/utils/gameServers/getPalworldData.js", () => ({
-  syncGameServerData: syncGameServerDataMock,
-}));
+jest.unstable_mockModule(
+  "../../src/utils/gameServers/getPalworldData.js",
+  () => ({
+    syncGameServerData: syncGameServerDataMock,
+  }),
+);
 
 const getContainerStateMock =
   jest.fn<(...args: unknown[]) => Promise<{ running: boolean }>>();
@@ -22,22 +25,24 @@ jest.unstable_mockModule("../../src/utils/gameServers/docker.js", () => ({
 
 const getSourceQueryStatusMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-jest.unstable_mockModule("../../src/utils/gameServers/gameStatusProviders.js", () => ({
-  getSourceQueryStatus: getSourceQueryStatusMock,
-}));
+jest.unstable_mockModule(
+  "../../src/utils/gameServers/gameStatusProviders.js",
+  () => ({
+    getSourceQueryStatus: getSourceQueryStatusMock,
+  }),
+);
 
-const { syncGameServers } = await import("../../src/utils/gameServers/syncGameServers.js");
+const { syncGameServers } =
+  await import("../../src/utils/gameServers/syncGameServers.js");
 
 function makeServer(overrides: Record<string, unknown> = {}) {
   const base = {
     _id: "id1",
     name: "Minecraft",
-    type: "minecraft",
-    containerName: "minecraft-server",
-    address: "127.0.0.1",
-    port: 25565,
-    queryPort: 25566,
-    status: { state: "offline", online: false, playerCount: 0 },
+    gameData: { type: "minecraft", containerName: "minecraft-server" },
+    connectionInfo: { address: "127.0.0.1", port: 25565, queryPort: 25566 },
+    playerInfo: { playerCount: 0 },
+    statusInfo: { state: "offline", online: false },
     ...overrides,
   };
 
@@ -54,7 +59,9 @@ describe("Test utilitaire: syncGameServers", () => {
   });
 
   it("Délègue les serveurs Palworld à syncGameServerData", async () => {
-    findMock.mockResolvedValue([makeServer({ type: "palworld" })]);
+    findMock.mockResolvedValue([
+      makeServer({ gameData: { type: "palworld" } }),
+    ]);
 
     await syncGameServers();
 
@@ -63,7 +70,9 @@ describe("Test utilitaire: syncGameServers", () => {
   });
 
   it("Ignore un serveur sans address/port", async () => {
-    findMock.mockResolvedValue([makeServer({ address: undefined })]);
+    findMock.mockResolvedValue([
+      makeServer({ connectionInfo: { address: undefined } }),
+    ]);
 
     await syncGameServers();
 
@@ -81,9 +90,9 @@ describe("Test utilitaire: syncGameServers", () => {
       { _id: "id1" },
       expect.objectContaining({
         $set: expect.objectContaining({
-          "status.state": "offline",
-          "status.online": false,
-          "status.playerCount": 0,
+          "statusInfo.state": "offline",
+          "statusInfo.online": false,
+          "playerInfo.playerCount": 0,
         }),
       }),
     );
@@ -99,7 +108,7 @@ describe("Test utilitaire: syncGameServers", () => {
     expect(updateOneMock).toHaveBeenCalledWith(
       { _id: "id1" },
       expect.objectContaining({
-        $set: expect.objectContaining({ "status.state": "offline" }),
+        $set: expect.objectContaining({ "statusInfo.state": "offline" }),
       }),
     );
   });
@@ -112,7 +121,7 @@ describe("Test utilitaire: syncGameServers", () => {
       playerCount: 5,
       maxPlayers: 20,
       version: "1.20",
-      players: ["Alice"],
+      players: [{ name: "Alice" }],
       displayName: "Mon serveur",
     });
 
@@ -127,9 +136,11 @@ describe("Test utilitaire: syncGameServers", () => {
       { _id: "id1" },
       expect.objectContaining({
         $set: expect.objectContaining({
-          "status.state": "online",
-          "status.online": true,
-          "status.playerCount": 5,
+          "statusInfo.state": "online",
+          "statusInfo.online": true,
+          "playerInfo.playerCount": 5,
+          "serverInfo.version": "1.20",
+          "serverInfo.displayName": "Mon serveur",
         }),
       }),
     );
@@ -149,8 +160,8 @@ describe("Test utilitaire: syncGameServers", () => {
       { _id: "id1" },
       expect.objectContaining({
         $set: expect.objectContaining({
-          "status.state": "starting",
-          "status.online": false,
+          "statusInfo.state": "starting",
+          "statusInfo.online": false,
         }),
       }),
     );

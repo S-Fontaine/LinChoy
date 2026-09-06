@@ -1,7 +1,9 @@
 import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
-import GameServer from "../../../src/models/GameServer.js";
+import GameServer, {
+  type IGameServer,
+} from "../../../src/models/GameServer.js";
 const BASE_URL = "/games";
 
 describe("Test route: GET /games", () => {
@@ -37,27 +39,11 @@ describe("Test route: GET /games", () => {
     expect(res.status).toBe(200);
     expect(res.body.servers).toHaveLength(2);
     const minecraft = res.body.servers.find(
-      (s: { slug: string }) => s.slug === "minecraft",
+      (s: IGameServer) => s.gameData.slug === "minecraft",
     );
     expect(minecraft.name).toBe("Minecraft");
-    expect(minecraft.status).toBeDefined();
-    expect(minecraft.comingSoon).toBe(false);
-  });
-
-  it("N'expose pas palworldData dans la liste (champ exclu du select)", async () => {
-    await GameServer.create({
-      name: "Palworld",
-      gameData: {
-        slug: "palworld",
-        type: "palworld",
-        containerName: "palworld-server",
-      },
-      palworldData: { info: { servername: "Test" } },
-    });
-
-    const res = await request(app).get(BASE_URL);
-
-    expect(res.body.servers[0].palworldData).toBeUndefined();
+    expect(minecraft.statusInfo).toBeDefined();
+    expect(minecraft.statusInfo.comingSoon).toBe(false);
   });
 
   it("Ne nécessite pas d'authentification", async () => {

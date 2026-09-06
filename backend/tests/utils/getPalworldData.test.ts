@@ -39,9 +39,9 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     await syncGameServerData();
 
     const updated = await GameServer.findOne({ name: "Palworld" });
-    expect(updated?.status.state).toBe("offline");
-    expect(updated?.status.online).toBe(false);
-    expect(updated?.status.playerCount).toBe(0);
+    expect(updated?.statusInfo.state).toBe("offline");
+    expect(updated?.statusInfo.online).toBe(false);
+    expect(updated?.playerInfo.playerCount).toBe(0);
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
@@ -70,12 +70,12 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     await syncGameServerData();
 
     const updated = await GameServer.findOne({ name: "Palworld" });
-    expect(updated?.status.state).toBe("online");
-    expect(updated?.status.online).toBe(true);
-    expect(updated?.status.playerCount).toBe(1);
-    expect(updated?.status.maxPlayers).toBe(32);
-    expect(updated?.status.displayName).toBe("Mon Pal");
-    expect(updated?.status.players).toEqual(["Alice"]);
+    expect(updated?.statusInfo.state).toBe("online");
+    expect(updated?.statusInfo.online).toBe(true);
+    expect(updated?.playerInfo.playerCount).toBe(1);
+    expect(updated?.playerInfo.maxPlayers).toBe(32);
+    expect(updated?.serverInfo.displayName).toBe("Mon Pal");
+    expect(updated?.playerInfo.players[0].name).toEqual("Alice");
   });
 
   it("Passe en 'starting' si le container tourne mais que l'API répond en erreur", async () => {
@@ -95,9 +95,9 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     await syncGameServerData();
 
     const updated = await GameServer.findOne({ name: "Palworld" });
-    expect(updated?.status.state).toBe("starting");
-    expect(updated?.status.online).toBe(false);
-    expect(updated?.status.playerCount).toBe(0);
+    expect(updated?.statusInfo.state).toBe("starting");
+    expect(updated?.statusInfo.online).toBe(false);
+    expect(updated?.playerInfo.playerCount).toBe(0);
   });
 
   it("Passe le statut à offline si une exception réseau survient", async () => {
@@ -108,7 +108,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
         type: "palworld",
         containerName: "palworld-server",
       },
-      status: { online: true, state: "online" },
+      statusInfo: { online: true, state: "online" },
     });
     getContainerStateMock.mockResolvedValue({ running: true });
 
@@ -118,7 +118,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     await syncGameServerData();
 
     const updated = await GameServer.findOne({ name: "Palworld" });
-    expect(updated?.status.online).toBe(false);
+    expect(updated?.statusInfo.online).toBe(false);
   });
   it("Ne crée rien et avertit si le document Palworld n'existe pas encore (pas de seed)", async () => {
     getContainerStateMock.mockResolvedValue({ running: true });
