@@ -9,4 +9,5 @@ frontend/out/
 frontend/.env*.local
 frontend/.env
 
+.env
 .env.test

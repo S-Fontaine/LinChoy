@@ -48,6 +48,9 @@ services:
     networks:
       - default
       - docker-proxy-net
+    volumes:
+      - ${MINECRAFT_DATA_DIR}:/whitelist/minecraft-solocorp
+      - ${VALHEIM_DATA_DIR}:/whitelist/valheim-server
 
 networks:
   docker-proxy-net:
