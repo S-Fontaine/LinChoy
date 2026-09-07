@@ -6,8 +6,8 @@ const servers = [
   {
     name: "Palworld",
     connectionInfo: {
-      address: process.env.PALWORLD_API_ADDRESS,
-      port: Number(process.env.PALWORLD_API_PORT),
+      address: process.env.PALWORLD_ADDRESS,
+      port: Number(process.env.PALWORLD_PORT),
       password: process.env.PALWORLD_PASSWORD,
     },
     playerInfo: { maxPlayers: 4 },

@@ -5,6 +5,10 @@ function normalizeUuid(input: string): string | null {
   return UUID_HEX_REGEX.test(stripped) ? stripped : null;
 }
 
+function formatDashedUuid(undashed: string): string {
+  return `${undashed.slice(0, 8)}-${undashed.slice(8, 12)}-${undashed.slice(12, 16)}-${undashed.slice(16, 20)}-${undashed.slice(20)}`;
+}
+
 interface MojangProfile {
   id: string;
   name: string;
@@ -33,5 +37,9 @@ export async function resolveMinecraftPlayer(
   }
 
   const data = (await res.json()) as MojangProfile;
-  return { uuid: data.id, username: data.name };
+
+  return { 
+    uuid: formatDashedUuid(data.id), 
+    username: data.name 
+  };
 }

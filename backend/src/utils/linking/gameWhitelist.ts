@@ -36,8 +36,8 @@ export async function syncWhitelist(server: IGameServer): Promise<void> {
     return syncValheimWhitelist(server.gameData.containerName, steamIds);
   }
 
-  //TODO: V Rising
-  //TODO: Palworld
+  // TODO: V Rising
+  // TODO: Palworld
 }
 
 export async function revokeAllWhitelistsForUser(

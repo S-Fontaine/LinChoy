@@ -24,5 +24,5 @@ export async function syncMinecraftWhitelist(
   const filePath = path.join(TMP_DIR, `${containerName}-whitelist.json`);
   await fs.writeFile(filePath, JSON.stringify(entries, null, 2));
 
-  await execFileAsync(SCRIPT_PATH, [containerName, filePath]);
+  await execFileAsync("bash", [SCRIPT_PATH, containerName, filePath]);
 }

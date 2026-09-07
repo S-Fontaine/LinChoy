@@ -19,5 +19,5 @@ export async function syncValheimWhitelist(
   const filePath = path.join(TMP_DIR, `${containerName}-permittedlist.txt`);
   await fs.writeFile(filePath, steamIds.join("\n"));
 
-  await execFileAsync(SCRIPT_PATH, [containerName, filePath]);
+  await execFileAsync("bash", [SCRIPT_PATH, containerName, filePath]);
 }
