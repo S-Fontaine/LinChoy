@@ -1,26 +1,19 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 
 const revokeAllWhitelistsForUserMock = jest.fn<() => Promise<void>>();
-const addToWhitelistMock =
-  jest.fn<
-    (target: {
-      type: string;
-      containerName: string;
-      identifier: string;
-    }) => Promise<void>
-  >();
+const syncWhitelistMock = jest.fn<(server: unknown) => Promise<void>>();
 
 jest.unstable_mockModule("../../../src/utils/linking/gameWhitelist.js", () => ({
-  addToWhitelist: addToWhitelistMock,
+  syncWhitelist: syncWhitelistMock,
   revokeAllWhitelistsForUser: revokeAllWhitelistsForUserMock,
 }));
 
 const { default: app } = await import("../../../src/app.js");
 const { default: User } = await import("../../../src/models/User.js");
-const { default: GameServer } =
-  await import("../../../src/models/GameServer.js");
-const { default: ServerWhitelist } =
-  await import("../../../src/models/ServerWhitelist.js");
+const { default: GameServer } = await import("../../../src/models/GameServer.js");
+const { default: ServerWhitelist } = await import(
+  "../../../src/models/ServerWhitelist.js"
+);
 const { generateAccessToken } = await import("../../../src/utils/auth/jwt.js");
 const request = (await import("supertest")).default;
 
@@ -32,10 +25,8 @@ const userPayload = {
 
 describe("Test route: POST /games/:slug/whitelist", () => {
   beforeEach(() => {
-    addToWhitelistMock.mockReset();
-    addToWhitelistMock.mockResolvedValue(undefined);
-    revokeAllWhitelistsForUserMock.mockReset();
-    revokeAllWhitelistsForUserMock.mockResolvedValue(undefined);
+    syncWhitelistMock.mockReset();
+    syncWhitelistMock.mockResolvedValue(undefined);
   });
 
   it("Refuse la requête sans authentification", async () => {
@@ -72,7 +63,7 @@ describe("Test route: POST /games/:slug/whitelist", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.linkRequired).toBe(true);
-    expect(addToWhitelistMock).not.toHaveBeenCalled();
+    expect(syncWhitelistMock).not.toHaveBeenCalled();
   });
 
   it("Whiteliste et renvoie les infos de connexion (Minecraft)", async () => {
@@ -101,10 +92,9 @@ describe("Test route: POST /games/:slug/whitelist", () => {
       address: "play.linchoy.com",
       port: 25565,
     });
-    expect(addToWhitelistMock).toHaveBeenCalledWith({
-      type: "minecraft",
-      containerName: "mc-server",
-      identifier: "Notch",
+    expect(syncWhitelistMock).toHaveBeenCalledTimes(1);
+    expect(syncWhitelistMock.mock.calls[0][0]).toMatchObject({
+      gameData: expect.objectContaining({ slug: "minecraft" }),
     });
 
     const entry = await ServerWhitelist.findOne({
@@ -134,14 +124,13 @@ describe("Test route: POST /games/:slug/whitelist", () => {
       .set("Cookie", `accessToken=${token}`);
 
     expect(res.status).toBe(200);
-    expect(addToWhitelistMock).toHaveBeenCalledWith({
-      type: "protocol-valve",
-      containerName: "vrising-server",
-      identifier: "76561198000000000",
+    expect(syncWhitelistMock).toHaveBeenCalledTimes(1);
+    expect(syncWhitelistMock.mock.calls[0][0]).toMatchObject({
+      gameData: expect.objectContaining({ slug: "vrising" }),
     });
   });
 
-  it("Est idempotent : n'appelle pas addToWhitelist une seconde fois si déjà whitelisté", async () => {
+  it("Est idempotent : n'appelle pas syncWhitelist une seconde fois si déjà whitelisté", async () => {
     const server = await GameServer.create({
       name: "Minecraft",
       gameData: {
@@ -163,7 +152,7 @@ describe("Test route: POST /games/:slug/whitelist", () => {
       .set("Cookie", `accessToken=${token}`);
 
     expect(res.status).toBe(200);
-    expect(addToWhitelistMock).not.toHaveBeenCalled();
+    expect(syncWhitelistMock).not.toHaveBeenCalled();
 
     const entries = await ServerWhitelist.find({
       user: user._id,

@@ -1,13 +1,11 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 
-const addToWhitelistMock = jest.fn<() => Promise<void>>();
+const syncWhitelistMock = jest.fn<() => Promise<void>>();
 const revokeAllWhitelistsForUserMock =
-  jest.fn<
-    (userId: string, accountType: string, identifier: string) => Promise<void>
-  >();
+  jest.fn<(userId: string, accountType: string) => Promise<void>>();
 
 jest.unstable_mockModule("../../../src/utils/linking/gameWhitelist.js", () => ({
-  addToWhitelist: addToWhitelistMock,
+  syncWhitelist: syncWhitelistMock,
   revokeAllWhitelistsForUser: revokeAllWhitelistsForUserMock,
 }));
 
@@ -24,8 +22,6 @@ const userPayload = {
 
 describe("Test route: DELETE /minecraft/link", () => {
   beforeEach(() => {
-    addToWhitelistMock.mockReset();
-    addToWhitelistMock.mockResolvedValue(undefined);
     revokeAllWhitelistsForUserMock.mockReset();
     revokeAllWhitelistsForUserMock.mockResolvedValue(undefined);
   });
@@ -52,7 +48,6 @@ describe("Test route: DELETE /minecraft/link", () => {
     expect(revokeAllWhitelistsForUserMock).toHaveBeenCalledWith(
       user._id.toString(),
       "minecraft",
-      "Notch",
     );
 
     const updated = await User.findById(user._id);

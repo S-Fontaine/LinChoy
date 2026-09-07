@@ -1,113 +1,136 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 import mongoose from "mongoose";
 
-const addMinecraftMock =
-  jest.fn<(containerName: string, username: string) => Promise<void>>();
-const removeMinecraftMock =
-  jest.fn<(containerName: string, username: string) => Promise<void>>();
-const addSteamMock =
-  jest.fn<(containerName: string, steamId: string) => Promise<void>>();
-const removeSteamMock =
-  jest.fn<(containerName: string, steamId: string) => Promise<void>>();
+const syncMinecraftMock =
+  jest.fn<
+    (
+      containerName: string,
+      entries: { uuid: string; name: string }[],
+    ) => Promise<void>
+  >();
+const syncValheimMock =
+  jest.fn<(containerName: string, steamIds: string[]) => Promise<void>>();
 
 jest.unstable_mockModule(
   "../../src/utils/linking/minecraftWhitelist.js",
   () => ({
-    addToServerWhitelist: addMinecraftMock,
-    removeFromServerWhitelist: removeMinecraftMock,
+    syncMinecraftWhitelist: syncMinecraftMock,
   }),
 );
 
-jest.unstable_mockModule("../../src/utils/linking/steamWhitelist.js", () => ({
-  addToSteamWhitelist: addSteamMock,
-  removeFromSteamWhitelist: removeSteamMock,
+jest.unstable_mockModule("../../src/utils/linking/valheimWhitelist.js", () => ({
+  syncValheimWhitelist: syncValheimMock,
 }));
 
-const { addToWhitelist, removeFromWhitelist, revokeAllWhitelistsForUser } =
+const { syncWhitelist, revokeAllWhitelistsForUser } =
   await import("../../src/utils/linking/gameWhitelist.js");
 const { default: GameServer } = await import("../../src/models/GameServer.js");
 const { default: ServerWhitelist } =
   await import("../../src/models/ServerWhitelist.js");
+const { default: User } = await import("../../src/models/User.js");
+
+const userPayload = {
+  username: "linchoyTest",
+  email: "fake@linchoy.com",
+  password: "MotDePasse123!",
+};
 
 describe("Test util: gameWhitelist", () => {
   beforeEach(() => {
-    addMinecraftMock.mockReset();
-    removeMinecraftMock.mockReset();
-    addSteamMock.mockReset();
-    removeSteamMock.mockReset();
+    syncMinecraftMock.mockReset();
+    syncMinecraftMock.mockResolvedValue(undefined);
+    syncValheimMock.mockReset();
+    syncValheimMock.mockResolvedValue(undefined);
   });
 
-  describe("addToWhitelist", () => {
-    it("Appelle le whitelist Minecraft pour le type minecraft", async () => {
-      await addToWhitelist({
-        type: "minecraft",
-        containerName: "mc-server",
-        identifier: "Notch",
+  describe("syncWhitelist", () => {
+    it("Synchronise le fichier Minecraft avec les joueurs whitelistés (uuid + pseudo)", async () => {
+      const server = await GameServer.create({
+        name: "Minecraft",
+        gameData: {
+          slug: "minecraft-hard",
+          type: "minecraft",
+          containerName: "mc-server",
+        },
       });
+      const user = await User.create({
+        ...userPayload,
+        minecraftUuid: "uuid-1",
+        minecraftUsername: "Notch",
+      });
+      await ServerWhitelist.create({ user: user._id, gameServer: server._id });
 
-      expect(addMinecraftMock).toHaveBeenCalledWith("mc-server", "Notch");
-      expect(addSteamMock).not.toHaveBeenCalled();
+      await syncWhitelist(server);
+
+      expect(syncMinecraftMock).toHaveBeenCalledWith("mc-server", [
+        { uuid: "uuid-1", name: "Notch" },
+      ]);
+      expect(syncValheimMock).not.toHaveBeenCalled();
     });
 
-    it("Appelle le whitelist Steam pour le type protocol-valve", async () => {
-      await addToWhitelist({
-        type: "protocol-valve",
-        containerName: "vrising-server",
-        identifier: "76561198000000000",
+    it("Ignore les utilisateurs whitelistés mais sans compte Minecraft valide", async () => {
+      const server = await GameServer.create({
+        name: "Minecraft",
+        gameData: {
+          slug: "minecraft-hard",
+          type: "minecraft",
+          containerName: "mc-server",
+        },
       });
+      const user = await User.create(userPayload);
+      await ServerWhitelist.create({ user: user._id, gameServer: server._id });
 
-      expect(addSteamMock).toHaveBeenCalledWith(
-        "vrising-server",
+      await syncWhitelist(server);
+
+      expect(syncMinecraftMock).toHaveBeenCalledWith("mc-server", []);
+    });
+
+    it("Synchronise le fichier Valheim avec les SteamID whitelistés", async () => {
+      const server = await GameServer.create({
+        name: "Valheim",
+        gameData: {
+          slug: "valheim",
+          type: "protocol-valve",
+          containerName: "valheim-server",
+        },
+      });
+      const user = await User.create({
+        ...userPayload,
+        steamId: "76561198000000000",
+      });
+      await ServerWhitelist.create({ user: user._id, gameServer: server._id });
+
+      await syncWhitelist(server);
+
+      expect(syncValheimMock).toHaveBeenCalledWith("valheim-server", [
         "76561198000000000",
-      );
-      expect(addMinecraftMock).not.toHaveBeenCalled();
+      ]);
+      expect(syncMinecraftMock).not.toHaveBeenCalled();
     });
 
-    it("Appelle le whitelist Steam pour le type palworld", async () => {
-      await addToWhitelist({
-        type: "palworld",
-        containerName: "pal-server",
-        identifier: "76561198000000000",
+    it("Ne fait rien pour un serveur sans whitelist fichier (V Rising, Palworld)", async () => {
+      const server = await GameServer.create({
+        name: "V Rising",
+        gameData: {
+          slug: "vrising",
+          type: "protocol-valve",
+          containerName: "vrising-server",
+        },
       });
 
-      expect(addSteamMock).toHaveBeenCalledWith(
-        "pal-server",
-        "76561198000000000",
-      );
-    });
-  });
+      await syncWhitelist(server);
 
-  describe("removeFromWhitelist", () => {
-    it("Appelle removeFromServerWhitelist pour minecraft", async () => {
-      await removeFromWhitelist({
-        type: "minecraft",
-        containerName: "mc-server",
-        identifier: "Notch",
-      });
-
-      expect(removeMinecraftMock).toHaveBeenCalledWith("mc-server", "Notch");
-    });
-
-    it("Appelle removeFromSteamWhitelist pour les jeux Steam", async () => {
-      await removeFromWhitelist({
-        type: "palworld",
-        containerName: "pal-server",
-        identifier: "76561198000000000",
-      });
-
-      expect(removeSteamMock).toHaveBeenCalledWith(
-        "pal-server",
-        "76561198000000000",
-      );
+      expect(syncMinecraftMock).not.toHaveBeenCalled();
+      expect(syncValheimMock).not.toHaveBeenCalled();
     });
   });
 
   describe("revokeAllWhitelistsForUser", () => {
-    it("Révoque uniquement les whitelists Minecraft et laisse les autres intactes", async () => {
+    it("Supprime les entrées Minecraft et resynchronise le fichier", async () => {
       const mcServer = await GameServer.create({
         name: "Minecraft",
         gameData: {
-          slug: "minecraft",
+          slug: "minecraft-hard",
           type: "minecraft",
           containerName: "mc-server",
         },
@@ -128,10 +151,10 @@ describe("Test util: gameWhitelist", () => {
         gameServer: steamServer._id,
       });
 
-      await revokeAllWhitelistsForUser(userId, "minecraft", "Notch");
+      await revokeAllWhitelistsForUser(userId, "minecraft");
 
-      expect(removeMinecraftMock).toHaveBeenCalledWith("mc-server", "Notch");
-      expect(removeSteamMock).not.toHaveBeenCalled();
+      expect(syncMinecraftMock).toHaveBeenCalledWith("mc-server", []);
+      expect(syncValheimMock).not.toHaveBeenCalled();
 
       const remaining = await ServerWhitelist.find({ user: userId });
       expect(remaining).toHaveLength(1);
@@ -140,21 +163,21 @@ describe("Test util: gameWhitelist", () => {
       );
     });
 
-    it("Révoque les whitelists Steam (palworld + protocol-valve) mais pas Minecraft", async () => {
+    it("Supprime les entrées Steam (palworld + protocol-valve) mais pas Minecraft", async () => {
       const mcServer = await GameServer.create({
         name: "Minecraft",
         gameData: {
-          slug: "minecraft",
+          slug: "minecraft-hard",
           type: "minecraft",
           containerName: "mc-server",
         },
       });
-      const palServer = await GameServer.create({
-        name: "Palworld",
+      const valheimServer = await GameServer.create({
+        name: "Valheim",
         gameData: {
-          slug: "palworld",
-          type: "palworld",
-          containerName: "pal-server",
+          slug: "valheim",
+          type: "protocol-valve",
+          containerName: "valheim-server",
         },
       });
       const userId = new mongoose.Types.ObjectId().toString();
@@ -162,16 +185,13 @@ describe("Test util: gameWhitelist", () => {
       await ServerWhitelist.create({ user: userId, gameServer: mcServer._id });
       await ServerWhitelist.create({
         user: userId,
-        gameServer: palServer._id,
+        gameServer: valheimServer._id,
       });
 
-      await revokeAllWhitelistsForUser(userId, "steam", "76561198000000000");
+      await revokeAllWhitelistsForUser(userId, "steam");
 
-      expect(removeSteamMock).toHaveBeenCalledWith(
-        "pal-server",
-        "76561198000000000",
-      );
-      expect(removeMinecraftMock).not.toHaveBeenCalled();
+      expect(syncValheimMock).toHaveBeenCalledWith("valheim-server", []);
+      expect(syncMinecraftMock).not.toHaveBeenCalled();
 
       const remaining = await ServerWhitelist.find({ user: userId });
       expect(remaining).toHaveLength(1);
@@ -182,9 +202,9 @@ describe("Test util: gameWhitelist", () => {
       const userId = new mongoose.Types.ObjectId().toString();
 
       await expect(
-        revokeAllWhitelistsForUser(userId, "minecraft", "Notch"),
+        revokeAllWhitelistsForUser(userId, "minecraft"),
       ).resolves.toBeUndefined();
-      expect(removeMinecraftMock).not.toHaveBeenCalled();
+      expect(syncMinecraftMock).not.toHaveBeenCalled();
     });
   });
 });
