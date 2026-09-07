@@ -45,14 +45,14 @@ export default function LandingPage({ gamesList }: ILandingPage) {
             <h2>Nos Serveurs</h2>
             <div className={styles.gameList}>
               {gamesList?.map((game) => (
-                <div key={game.slug} className={styles.gameItem}>
+                <div key={game.gameData.slug} className={styles.gameItem}>
                   <div className={styles.gameInfo}>
                     <span className={styles.gameName}>{game.name}</span>
                   </div>
                   <span
                     className={styles.statusTag}
                     style={
-                      game.comingSoon
+                      game.statusInfo.comingSoon
                         ? {
                             color: "var(--text-low)",
                             borderColor: "var(--border)",
@@ -63,7 +63,7 @@ export default function LandingPage({ gamesList }: ILandingPage) {
                           }
                     }
                   >
-                    {game.comingSoon ? "Bientôt disponible" : "Disponible"}
+                    {game.statusInfo.comingSoon ? "Bientôt disponible" : "Disponible"}
                   </span>
                 </div>
               ))}

@@ -6,18 +6,25 @@ import LandingPage from "@/components/LandingPage/LandingPage";
 import ServerStatus from "@/components/ServerStatus/ServerStatus";
 import AccountSettings from "@/components/AccountSettings/AccountSettings";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export interface IGamesList {
   name: string;
-  comingSoon: boolean;
-  image: string;
-  type: string;
-  slug: string;
-  description: string;
-  status: {
-    state: "offline" | "starting" | "online";
-    online: boolean;
+  gameData: {
+    type: string;
+    slug: string;
+  };
+  playerInfo: {
     playerCount: number;
+  };
+  serverInfo: {
+    image: string;
+    description: string;
+  };
+  statusInfo: {
+    online: boolean;
+    comingSoon: boolean;
+    state: "offline" | "starting" | "online";
     lastChecked: Date;
   };
 }

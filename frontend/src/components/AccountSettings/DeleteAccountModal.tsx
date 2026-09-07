@@ -2,6 +2,7 @@
 import { useState } from "react";
 import styles from "./AccountSettings.module.css";
 import signStyles from "../AuthCard/Sign.module.css";
+import dangerStyles from "./DeleteAccountModal.module.css"
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Modal from "../ui/Modal";
@@ -55,7 +56,7 @@ export default function DeleteAccountModal({
     >
       <form onSubmit={handleDelete} className={signStyles.form}>
         <h2 className={styles.contentTitle}>Confirmer la suppression</h2>
-        <p className={styles.dangerText}>
+        <p className={dangerStyles.dangerText}>
           Entre ton mot de passe pour confirmer. Cette action est définitive.
         </p>
         <div className={signStyles.inputGroup}>
@@ -76,7 +77,7 @@ export default function DeleteAccountModal({
         )}
         <button
           type="submit"
-          className={styles.dangerBtn}
+          className={dangerStyles.dangerBtn}
           disabled={deleteState.loading || deletePassword.length === 0}
         >
           {deleteState.loading ? "Suppression..." : "Confirmer la suppression"}

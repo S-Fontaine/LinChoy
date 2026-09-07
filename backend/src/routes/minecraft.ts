@@ -64,11 +64,7 @@ router.delete("/link", requireAuth, async (req: AuthRequest, res) => {
   try {
     const user = await User.findById(req.user?.userId);
     if (user?.minecraftUsername) {
-      await revokeAllWhitelistsForUser(
-        req.user!.userId,
-        "minecraft",
-        user.minecraftUsername,
-      );
+      await revokeAllWhitelistsForUser(req.user!.userId, "minecraft");
     }
     await User.findByIdAndUpdate(req.user?.userId, {
       minecraftUuid: null,

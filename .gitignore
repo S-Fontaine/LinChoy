@@ -1,6 +1,7 @@
 backend/node_modules/
 backend/dist/
 backend/.env
+backend/src/utils/linking/*.sh
 
 frontend/node_modules/
 frontend/.next/

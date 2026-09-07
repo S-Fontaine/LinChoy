@@ -8,21 +8,16 @@ const execFileAsync = promisify(execFile);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const SCRIPT_PATH = path.join(__dirname, "whitelist-minecraft.sh");
+const SCRIPT_PATH = path.join(__dirname, "whitelist-valheim.sh");
 const TMP_DIR = "/tmp/linchoy-whitelists";
 
-export interface MinecraftWhitelistEntry {
-  uuid: string;
-  name: string;
-}
-
-export async function syncMinecraftWhitelist(
+export async function syncValheimWhitelist(
   containerName: string,
-  entries: MinecraftWhitelistEntry[],
+  steamIds: string[],
 ): Promise<void> {
   await fs.mkdir(TMP_DIR, { recursive: true });
-  const filePath = path.join(TMP_DIR, `${containerName}-whitelist.json`);
-  await fs.writeFile(filePath, JSON.stringify(entries, null, 2));
+  const filePath = path.join(TMP_DIR, `${containerName}-permittedlist.txt`);
+  await fs.writeFile(filePath, steamIds.join("\n"));
 
   await execFileAsync(SCRIPT_PATH, [containerName, filePath]);
 }

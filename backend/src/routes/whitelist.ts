@@ -4,7 +4,7 @@ import ServerWhitelist from "../models/ServerWhitelist.js";
 import User, { type IUser } from "../models/User.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import { addToWhitelist } from "../utils/linking/gameWhitelist.js";
+import { syncWhitelist } from "../utils/linking/gameWhitelist.js";
 
 const router = Router();
 
@@ -17,7 +17,9 @@ function getIdentifier(
 
 router.get("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const server = await GameServer.findOne({ "gameData.slug": req.params.slug });
+    const server = await GameServer.findOne({
+      "gameData.slug": req.params.slug,
+    });
     if (!server) {
       return res
         .status(404)
@@ -96,11 +98,12 @@ router.post("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
 
     if (!existing) {
       await ServerWhitelist.create({ user: user._id, gameServer: server._id });
-      await addToWhitelist({
-        type: server.gameData.type,
-        containerName: server.gameData.containerName,
-        identifier,
-      });
+      await syncWhitelist(server).catch((err) =>
+        console.error(
+          `[whitelist] échec de la synchro pour ${server.gameData.slug}`,
+          err,
+        ),
+      );
     }
 
     return res.status(200).json({

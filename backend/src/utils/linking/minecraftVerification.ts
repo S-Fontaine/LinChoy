@@ -10,7 +10,9 @@ export function getMinecraftLinkExpiresAt(linkedAt: Date | null): Date | null {
 }
 
 export async function verifyOnlineMinecraftLinks(): Promise<void> {
-  const minecraftServers = await GameServer.find({ "gameData.type": "minecraft" });
+  const minecraftServers = await GameServer.find({
+    "gameData.type": "minecraft",
+  });
   const onlineNames = new Set(
     minecraftServers
       .flatMap((server) => server.playerInfo.players ?? [])
@@ -47,11 +49,7 @@ export async function cleanupExpiredMinecraftLinks(): Promise<void> {
 
   for (const user of expiredUsers) {
     if (user.minecraftUsername) {
-      await revokeAllWhitelistsForUser(
-        user._id.toString(),
-        "minecraft",
-        user.minecraftUsername,
-      );
+      await revokeAllWhitelistsForUser(user._id.toString(), "minecraft");
     }
     await User.findByIdAndUpdate(user._id, {
       minecraftUuid: null,

@@ -59,6 +59,5 @@ export function useGameServersStream() {
       eventSource.close();
     };
   }, [user]);
-
   return { gamesDataMap };
 }

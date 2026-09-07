@@ -86,7 +86,7 @@ router.delete("/link", requireAuth, async (req: AuthRequest, res) => {
   try {
     const user = await User.findById(req.user?.userId);
     if (user?.steamId) {
-      await revokeAllWhitelistsForUser(req.user!.userId, "steam", user.steamId);
+      await revokeAllWhitelistsForUser(req.user!.userId, "steam");
     }
     await User.findByIdAndUpdate(req.user?.userId, { steamId: null });
     return res

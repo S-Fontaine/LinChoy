@@ -12,8 +12,8 @@ import { useGameServersStream } from "@/hooks/useGameServersStream";
 import { type IGamesList } from "@/app/page";
 
 function getGroupOrder(game: IGamesList): number {
-  if (game.comingSoon) return 1;
-  if (game.status.state === "online" || game.status.state === "starting") {
+  if (game.statusInfo.comingSoon) return 1;
+  if (game.statusInfo.state === "online" || game.statusInfo.state === "starting") {
     return 0;
   }
   return 2;
@@ -61,18 +61,18 @@ export default function ServerStatus({
   }
 
   const sorted = sortGames(gamesList);
-  const favoriteGame = sorted.find((g) => g.slug === user?.favoriteServer);
-  const otherGames = sorted.filter((g) => g.slug !== user?.favoriteServer);
+  const favoriteGame = sorted.find((g) => g.gameData.slug === user?.favoriteServer);
+  const otherGames = sorted.filter((g) => g.gameData.slug !== user?.favoriteServer);
 
   function renderFavorite(game: IGamesList) {
-    const gameData = gamesDataMap[game.slug];
+    const gameData = gamesDataMap[game.gameData.slug];
 
     return (
       <div className={styles.favoriteWrapper}>
         {gameData ? (
           <FeaturedGameStatus
-            slug={game.slug}
-            type={game.type}
+            slug={game.gameData.slug}
+            type={game.gameData.type}
             state={gameData.data.state}
             isOnline={gameData.data.online}
             name={gameData.data.name}
@@ -82,7 +82,7 @@ export default function ServerStatus({
             playerOnLine={gameData.data.playerOnLine}
             players={gameData.data.players}
             description={gameData.data.description}
-            onToggleFavorite={() => toggleFavorite(game.slug)}
+            onToggleFavorite={() => toggleFavorite(game.gameData.slug)}
           />
         ) : (
           <FeaturedGameStatusSkeleton />
@@ -92,11 +92,11 @@ export default function ServerStatus({
   }
 
   function renderCard(game: IGamesList, isFavorite: boolean) {
-    const gameData = gamesDataMap[game.slug];
+    const gameData = gamesDataMap[game.gameData.slug];
 
     if (!gameData) {
       return (
-        <div key={game.slug} className={styles.cardSkeleton}>
+        <div key={game.gameData.slug} className={styles.cardSkeleton}>
           <div className={styles.skeletonImage} />
           <div className={styles.skeletonLine} style={{ width: "60%" }} />
           <div className={styles.skeletonLine} style={{ width: "40%" }} />
@@ -106,12 +106,12 @@ export default function ServerStatus({
 
     return (
       <div
-        key={game.slug}
+        key={game.gameData.slug}
         className={`${styles.cardWrapper} ${isFavorite ? styles.favoriteWrapper : ""}`}
       >
         <GameStatus
-          slug={game.slug}
-          type={game.type}
+          slug={game.gameData.slug}
+          type={game.gameData.type}
           state={gameData.data.state}
           isOnline={gameData.data.online}
           name={gameData.data.name}
@@ -122,9 +122,9 @@ export default function ServerStatus({
           players={gameData.data.players}
           description={gameData.data.description}
           isFavorite={isFavorite}
-          onToggleFavorite={() => toggleFavorite(game.slug)}
+          onToggleFavorite={() => toggleFavorite(game.gameData.slug)}
         />
-        {game.comingSoon && (
+        {game.statusInfo.comingSoon && (
           <div className={styles.comingSoonOverlay}>
             <span className={styles.comingSoonBadge}>Bientôt disponible</span>
           </div>

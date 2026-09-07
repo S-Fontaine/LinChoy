@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
 export type GameServerState = "offline" | "starting" | "online";
 
@@ -36,6 +36,7 @@ export interface IGameData {
 }
 
 export interface IGameServer {
+  _id: Types.ObjectId;
   name: string;
   connectionInfo: IConnectionInfo;
   playerInfo: IPlayerInfo;

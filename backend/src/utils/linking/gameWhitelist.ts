@@ -1,40 +1,48 @@
-import GameServer, { type GameServerType } from "../../models/GameServer.js";
+import GameServer, {
+  type IGameServer,
+  type GameServerType,
+} from "../../models/GameServer.js";
 import ServerWhitelist from "../../models/ServerWhitelist.js";
-import {
-  addToServerWhitelist as addMinecraft,
-  removeFromServerWhitelist as removeMinecraft,
-} from "./minecraftWhitelist.js";
-import {
-  addToSteamWhitelist,
-  removeFromSteamWhitelist,
-} from "./steamWhitelist.js";
+import { syncMinecraftWhitelist } from "./minecraftWhitelist.js";
+import { syncValheimWhitelist } from "./valheimWhitelist.js";
 
-interface WhitelistTarget {
-  type: GameServerType;
-  containerName: string;
-  identifier: string;
-}
+export async function syncWhitelist(server: IGameServer): Promise<void> {
+  if (server.gameData.slug === "minecraft-hard") {
+    const entries = await ServerWhitelist.find({
+      gameServer: server._id,
+    }).populate<{
+      user: { minecraftUuid: string | null; minecraftUsername: string | null };
+    }>("user", "minecraftUuid minecraftUsername");
 
-export async function addToWhitelist(target: WhitelistTarget): Promise<void> {
-  if (target.type === "minecraft") {
-    return addMinecraft(target.containerName, target.identifier);
+    const players = entries
+      .filter((e) => e.user?.minecraftUuid && e.user?.minecraftUsername)
+      .map((e) => ({
+        uuid: e.user.minecraftUuid!,
+        name: e.user.minecraftUsername!,
+      }));
+
+    return syncMinecraftWhitelist(server.gameData.containerName, players);
   }
-  return addToSteamWhitelist(target.containerName, target.identifier);
-}
 
-export async function removeFromWhitelist(
-  target: WhitelistTarget,
-): Promise<void> {
-  if (target.type === "minecraft") {
-    return removeMinecraft(target.containerName, target.identifier);
+  if (server.gameData.slug === "valheim") {
+    const entries = await ServerWhitelist.find({
+      gameServer: server._id,
+    }).populate<{ user: { steamId: string | null } }>("user", "steamId");
+
+    const steamIds = entries
+      .filter((e) => e.user?.steamId)
+      .map((e) => e.user.steamId!);
+
+    return syncValheimWhitelist(server.gameData.containerName, steamIds);
   }
-  return removeFromSteamWhitelist(target.containerName, target.identifier);
+
+  //TODO: V Rising
+  //TODO: Palworld
 }
 
 export async function revokeAllWhitelistsForUser(
   userId: string,
   accountType: "steam" | "minecraft",
-  identifier: string,
 ): Promise<void> {
   const gameTypes: GameServerType[] =
     accountType === "minecraft"
@@ -46,19 +54,21 @@ export async function revokeAllWhitelistsForUser(
   });
   const serverIds = servers.map((s) => s._id);
 
-  const entries = await ServerWhitelist.find({
+  const affectedIds = await ServerWhitelist.find({
+    user: userId,
+    gameServer: { $in: serverIds },
+  }).distinct("gameServer");
+
+  await ServerWhitelist.deleteMany({
     user: userId,
     gameServer: { $in: serverIds },
   });
 
-  for (const entry of entries) {
-    const server = servers.find((s) => s._id.equals(entry.gameServer));
-    if (!server) continue;
-    await removeFromWhitelist({
-      type: server.gameData.type,
-      containerName: server.gameData.containerName,
-      identifier,
-    });
-    await entry.deleteOne();
+  for (const server of servers) {
+    if (affectedIds.some((id) => id.equals(server._id))) {
+      await syncWhitelist(server).catch((err) =>
+        console.error(`[whitelist] échec resync ${server.gameData.slug}`, err),
+      );
+    }
   }
 }
