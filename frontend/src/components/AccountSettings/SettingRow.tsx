@@ -1,7 +1,20 @@
 "use client";
 import { useState } from "react";
-import shared from "./AccountSettings.module.css";
-import styles from "./SettingRow.module.css";
+import {
+  rowClass,
+  rowLabelClass,
+  rowValueContainerClass,
+  rowValueClass,
+  modifyBtnClass,
+  rowInputClass,
+  errorTextClass,
+} from "./AccountSettings.styles";
+
+const cancelBtnClass =
+  "cursor-pointer rounded-lg border border-border bg-transparent px-4 py-2 text-text-medium disabled:cursor-not-allowed disabled:opacity-50";
+const saveBtnClass =
+  "cursor-pointer rounded-lg border-0 bg-choy-green px-4 py-2 font-semibold text-bg-main disabled:cursor-not-allowed disabled:opacity-50";
+const successTextClass = "text-[0.85rem] text-choy-green";
 
 interface ISettingRow {
   label: string;
@@ -13,6 +26,7 @@ interface ISettingRow {
     value: string,
     setValue: (v: string) => void,
   ) => React.ReactNode;
+  isValid?: (value: string) => boolean;
 }
 
 export default function SettingRow({
@@ -22,6 +36,7 @@ export default function SettingRow({
   onSave,
   inputType = "text",
   renderEditField,
+  isValid = (value) => value.length > 0,
 }: ISettingRow) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState("");
@@ -49,50 +64,50 @@ export default function SettingRow({
   }
 
   return (
-    <div className={shared.row}>
-      <div className={shared.rowLabel}>{label}</div>
+    <div className={rowClass}>
+      <div className={rowLabelClass}>{label}</div>
 
       {!isEditing ? (
-        <div className={shared.rowValueContainer}>
-          <span className={shared.rowValue}>{displayValue}</span>
-          <button className={shared.modifyBtn} onClick={openEdit}>
+        <div className={rowValueContainerClass}>
+          <span className={rowValueClass}>{displayValue}</span>
+          <button className={modifyBtnClass} onClick={openEdit}>
             {editLabel}
           </button>
         </div>
       ) : (
-        <div className={styles.rowEditContainer}>
+        <div className="flex flex-col gap-2.5">
           {renderEditField ? (
             renderEditField(value, setValue)
           ) : (
             <input
               type={inputType}
-              className={shared.rowInput}
+              className={rowInputClass}
               value={value}
               onChange={(e) => setValue(e.target.value)}
               autoFocus
             />
           )}
-          <div className={styles.rowActions}>
+          <div className="flex justify-end gap-2">
             <button
-              className={styles.cancelBtn}
+              className={cancelBtnClass}
               onClick={() => setIsEditing(false)}
               disabled={state.loading}
             >
               Annuler
             </button>
             <button
-              className={styles.saveBtn}
+              className={saveBtnClass}
               onClick={handleSave}
-              disabled={state.loading || value.length === 0}
+              disabled={state.loading || !isValid(value)}
             >
               {state.loading ? "..." : "Enregistrer"}
             </button>
           </div>
-          {state.error && <p className={shared.errorText}>{state.error}</p>}
+          {state.error && <p className={errorTextClass}>{state.error}</p>}
         </div>
       )}
       {!isEditing && state.success && (
-        <p className={styles.successText}>{state.success}</p>
+        <p className={successTextClass}>{state.success}</p>
       )}
     </div>
   );

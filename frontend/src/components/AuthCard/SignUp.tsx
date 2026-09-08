@@ -1,9 +1,19 @@
 "use client";
-import styles from "./Sign.module.css";
 import { eyeOff, eyeOn } from "../icons/Icons";
 import { useState } from "react";
 import { checkPasswordStrength } from "@/lib/passwordRules";
 import PasswordRulesList from "../ui/PasswordRulesList";
+
+const inputClass =
+  "w-full rounded-lg border border-border bg-bg-input px-4 py-3 text-[0.95rem] text-text-high outline-none transition-all duration-300 ease-smooth focus:border-lin-orange focus:shadow-[0_0_0_2px_var(--lin-orange-glow)]";
+const passwordInputClass = `${inputClass} pr-11.25`;
+const confirmInputBaseClass =
+  "w-full rounded-lg border bg-bg-input px-4 py-3 pr-11.25 text-[0.95rem] text-text-high outline-none transition-all duration-300 ease-smooth focus:border-lin-orange focus:shadow-[0_0_0_2px_var(--lin-orange-glow)]";
+const labelClass = "text-[0.85rem] font-medium text-text-high";
+const btnClass =
+  "cursor-pointer rounded-lg border border-border bg-bg-surface px-7 py-3.5 text-[0.95rem] font-semibold text-text-high transition-all duration-300 ease-smooth";
+const eyeButtonClass =
+  "absolute top-1/2 right-5 z-[2] flex -translate-y-1/2 items-center rounded-full border-0 bg-transparent p-0 text-text-medium cursor-pointer";
 
 interface IFormData {
   username: string;
@@ -42,9 +52,9 @@ export default function SignUp({
     formData.confirmPassword === formData.password;
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form} key="form-register">
-      <div className={styles.inputGroup}>
-        <label className={styles.label} htmlFor="signup-nickname">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5" key="form-register">
+      <div className="flex flex-col gap-2">
+        <label className={labelClass} htmlFor="signup-nickname">
           Nom d&apos;utilisateur
         </label>
         <input
@@ -54,14 +64,14 @@ export default function SignUp({
           required
           placeholder="JosephLeGourmand"
           autoComplete="off"
-          className={styles.input}
+          className={inputClass}
           value={formData.username}
           onChange={handleInputChange}
         />
       </div>
 
-      <div className={styles.inputGroup}>
-        <label className={styles.label} htmlFor="signup-email">
+      <div className="flex flex-col gap-2">
+        <label className={labelClass} htmlFor="signup-email">
           Adresse Email
         </label>
         <input
@@ -71,17 +81,17 @@ export default function SignUp({
           required
           placeholder="josephlegourmand@exemple.com"
           autoComplete="username"
-          className={styles.input}
+          className={inputClass}
           value={formData.email}
           onChange={handleInputChange}
         />
       </div>
 
-      <div className={styles.inputGroup}>
-        <label className={styles.label} htmlFor="signup-password">
+      <div className="flex flex-col gap-2">
+        <label className={labelClass} htmlFor="signup-password">
           Mot de passe
         </label>
-        <div style={{ position: "relative", width: "100%" }}>
+        <div className="relative w-full">
           <input
             type={showPassword ? "text" : "password"}
             name="password"
@@ -89,14 +99,14 @@ export default function SignUp({
             required
             autoComplete="new-password"
             placeholder="••••••••"
-            className={styles.input}
+            className={passwordInputClass}
             value={formData.password}
             onChange={handleInputChange}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className={styles.eyeButton}
+            className={eyeButtonClass}
             aria-label="Afficher ou masquer le mot de passe"
           >
             {showPassword ? eyeOff : eyeOn}
@@ -104,7 +114,7 @@ export default function SignUp({
         </div>
 
         {formData.password.length > 0 && (
-          <div className={styles.passwordFeedback}>
+          <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-250 ease-[ease]">
             <PasswordRulesList
               password={formData.password}
               showStrengthBar={true}
@@ -113,11 +123,11 @@ export default function SignUp({
         )}
       </div>
 
-      <div className={styles.inputGroup}>
-        <label className={styles.label} htmlFor="signup-confirm-password">
+      <div className="flex flex-col gap-2">
+        <label className={labelClass} htmlFor="signup-confirm-password">
           Confirmer le mot de passe
         </label>
-        <div style={{ position: "relative", width: "100%" }}>
+        <div className="relative w-full">
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
@@ -127,19 +137,14 @@ export default function SignUp({
             placeholder="••••••••"
             value={formData.confirmPassword}
             onChange={handleInputChange}
-            className={styles.input}
-            style={{
-              width: "100%",
-              paddingRight: "45px",
-              borderColor: !passwordsMatch
-                ? "var(--lin-orange)"
-                : "var(--border)",
-            }}
+            className={`${confirmInputBaseClass} ${
+              !passwordsMatch ? "border-lin-orange" : "border-border"
+            }`}
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className={styles.eyeButton}
+            className={eyeButtonClass}
             aria-label="Afficher ou masquer le mot de passe de confirmation"
           >
             {showConfirmPassword ? eyeOff : eyeOn}
@@ -150,7 +155,7 @@ export default function SignUp({
       <button
         type="submit"
         disabled={apiResponse.loading || !isPasswordValid || !passwordsMatch}
-        className={styles.btn}
+        className={btnClass}
       >
         {apiResponse.loading ? "Patientez..." : "S'inscrire"}
       </button>

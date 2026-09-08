@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import styles from "./ServerStatus.module.css";
+import { useCallback, useState } from "react";
 import { GameStatus } from "./GameStatus";
 import {
   FeaturedGameStatus,
@@ -10,6 +9,9 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import { useGameServersStream } from "@/hooks/useGameServersStream";
 import { type IGamesList } from "@/app/page";
+
+const skeletonLineClass = "h-3.5 rounded bg-border";
+const favoriteWrapperClass = "col-span-full";
 
 function getGroupOrder(game: IGamesList): number {
   if (game.statusInfo.comingSoon) return 1;
@@ -36,29 +38,32 @@ export default function ServerStatus({
   const { gamesDataMap } = useGameServersStream();
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
-  async function toggleFavorite(slug: string) {
-    if (!user || favoriteLoading) return;
-    const newFavorite = user.favoriteServer === slug ? null : slug;
+  const toggleFavorite = useCallback(
+    async (slug: string) => {
+      if (!user || favoriteLoading) return;
+      const newFavorite = user.favoriteServer === slug ? null : slug;
 
-    setFavoriteLoading(true);
-    const previousUser = user;
-    setUser({ ...user, favoriteServer: newFavorite });
+      setFavoriteLoading(true);
+      const previousUser = user;
+      setUser({ ...user, favoriteServer: newFavorite });
 
-    try {
-      const res = await fetchWithAuth(`/users/${user.id}/favorite-server`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: newFavorite }),
-      });
-      if (!res.ok) {
+      try {
+        const res = await fetchWithAuth(`/users/${user.id}/favorite-server`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: newFavorite }),
+        });
+        if (!res.ok) {
+          setUser(previousUser);
+        }
+      } catch {
         setUser(previousUser);
+      } finally {
+        setFavoriteLoading(false);
       }
-    } catch {
-      setUser(previousUser);
-    } finally {
-      setFavoriteLoading(false);
-    }
-  }
+    },
+    [user, favoriteLoading, setUser],
+  );
 
   const sorted = sortGames(gamesList);
   const favoriteGame = sorted.find((g) => g.gameData.slug === user?.favoriteServer);
@@ -68,7 +73,7 @@ export default function ServerStatus({
     const gameData = gamesDataMap[game.gameData.slug];
 
     return (
-      <div className={styles.favoriteWrapper}>
+      <div className={favoriteWrapperClass}>
         {gameData ? (
           <FeaturedGameStatus
             slug={game.gameData.slug}
@@ -82,7 +87,7 @@ export default function ServerStatus({
             playerOnLine={gameData.data.playerOnLine}
             players={gameData.data.players}
             description={gameData.data.description}
-            onToggleFavorite={() => toggleFavorite(game.gameData.slug)}
+            onToggleFavorite={toggleFavorite}
           />
         ) : (
           <FeaturedGameStatusSkeleton />
@@ -91,15 +96,18 @@ export default function ServerStatus({
     );
   }
 
-  function renderCard(game: IGamesList, isFavorite: boolean) {
+  function renderCard(game: IGamesList, isFavorite: boolean, isPriority: boolean) {
     const gameData = gamesDataMap[game.gameData.slug];
 
     if (!gameData) {
       return (
-        <div key={game.gameData.slug} className={styles.cardSkeleton}>
-          <div className={styles.skeletonImage} />
-          <div className={styles.skeletonLine} style={{ width: "60%" }} />
-          <div className={styles.skeletonLine} style={{ width: "40%" }} />
+        <div
+          key={game.gameData.slug}
+          className="flex max-w-145 min-h-90 flex-col gap-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] p-6"
+        >
+          <div className="h-60 animate-[shimmer_1.5s_infinite] rounded-[10px] bg-[linear-gradient(90deg,var(--border)_25%,color-mix(in_srgb,var(--border)_60%,transparent)_50%,var(--border)_75%)] bg-size-[200%_100%]" />
+          <div className={skeletonLineClass} style={{ width: "60%" }} />
+          <div className={skeletonLineClass} style={{ width: "40%" }} />
         </div>
       );
     }
@@ -107,7 +115,7 @@ export default function ServerStatus({
     return (
       <div
         key={game.gameData.slug}
-        className={`${styles.cardWrapper} ${isFavorite ? styles.favoriteWrapper : ""}`}
+        className={`relative h-full ${isFavorite ? favoriteWrapperClass : ""}`}
       >
         <GameStatus
           slug={game.gameData.slug}
@@ -122,11 +130,14 @@ export default function ServerStatus({
           players={gameData.data.players}
           description={gameData.data.description}
           isFavorite={isFavorite}
-          onToggleFavorite={() => toggleFavorite(game.gameData.slug)}
+          priority={isPriority}
+          onToggleFavorite={toggleFavorite}
         />
         {game.statusInfo.comingSoon && (
-          <div className={styles.comingSoonOverlay}>
-            <span className={styles.comingSoonBadge}>Bientôt disponible</span>
+          <div className="absolute inset-0 flex items-center justify-center rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_70%,transparent)] backdrop-blur-[6px]">
+            <span className="rounded-full border border-border bg-bg-main px-5 py-2.5 text-[0.85rem] font-semibold tracking-[0.5px] text-text-high uppercase">
+              Bientôt disponible
+            </span>
           </div>
         )}
       </div>
@@ -134,10 +145,12 @@ export default function ServerStatus({
   }
 
   return (
-    <main className={styles.mainContent}>
-      <div className={styles.serverGrid}>
+    <main className="relative z-10 mx-auto max-w-312.5 px-6">
+      <div className="my-8 grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-6">
         {favoriteGame && renderFavorite(favoriteGame)}
-        {otherGames.map((game) => renderCard(game, false))}
+        {otherGames.map((game, index) =>
+          renderCard(game, false, !favoriteGame && index === 0),
+        )}
       </div>
     </main>
   );

@@ -32,3 +32,14 @@ export const forgotPasswordLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const sseLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: isTest ? Number.MAX_SAFE_INTEGER : 20,
+  message: {
+    result: false,
+    message: "Trop de connexions, réessaie plus tard.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

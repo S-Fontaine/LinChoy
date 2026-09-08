@@ -2,9 +2,13 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useAppUI } from "@/context/AppUIContext";
-import styles from "./Header.module.css";
 import AuthCard from "../AuthCard/AuthCard";
 import Modal from "../ui/Modal";
+
+const dropdownItemClass =
+  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-text-high transition-all duration-300 ease-smooth hover:bg-[color-mix(in_srgb,var(--text-high)_10%,transparent)]";
+const dangerItemClass =
+  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-[#ff4d4d] transition-all duration-300 ease-smooth hover:bg-[rgba(255,77,77,0.1)]";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -50,24 +54,30 @@ export default function Header() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <header className={styles.headerContainer}>
-        <div className={styles.logo} onClick={openServerStatus}>
-          <span className={styles.lin}>Lin</span>
-          <span className={styles.choy}>Choy</span>
+    <div className="sticky top-0 z-1000 w-full border-b border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+      <header className="mx-auto flex min-h-18.75 max-w-300 items-center justify-between p-5">
+        <div
+          className="cursor-pointer text-[clamp(1.2rem,4vw,1.5rem)] font-extrabold tracking-[-0.5px] text-text-high"
+          onClick={openServerStatus}
+        >
+          <span className="text-lin-orange">Lin</span>
+          <span className="text-choy-green">Choy</span>
         </div>
         <div>
           {!user && (
-            <button className={styles.btn} onClick={isUserLogin}>
+            <button
+              className="flex h-11.75 cursor-pointer items-center justify-center rounded-lg border border-border bg-bg-surface px-7 text-[0.95rem] font-semibold text-text-high transition-all duration-300 ease-smooth"
+              onClick={isUserLogin}
+            >
               Connexion
             </button>
           )}
 
           {user && (
-            <div className={styles.userMenuContainer} ref={dropdownRef}>
+            <div className="relative inline-block" ref={dropdownRef}>
               <button
                 type="button"
-                className={styles.userAvatarBtn}
+                className="flex h-11.75 w-11.75 cursor-pointer items-center justify-center rounded-full border border-border bg-bg-surface text-[1.5rem] font-semibold text-text-high transition-all duration-300 ease-smooth hover:border-lin-orange"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 aria-haspopup="menu"
                 aria-expanded={isDropdownOpen}
@@ -81,13 +91,13 @@ export default function Header() {
                 <ul
                   id="user-dropdown-menu"
                   role="menu"
-                  className={styles.dropdownMenu}
+                  className="absolute top-[calc(100%+10px)] right-0 z-9999 flex w-55 flex-col rounded-lg border border-border bg-bg-surface p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
                 >
                   <li role="none">
                     <button
                       type="button"
                       role="menuitem"
-                      className={styles.dropdownItem}
+                      className={dropdownItemClass}
                       onClick={() => {
                         setIsDropdownOpen(false);
                         openServerStatus?.();
@@ -100,7 +110,7 @@ export default function Header() {
                     <button
                       type="button"
                       role="menuitem"
-                      className={styles.dropdownItem}
+                      className={dropdownItemClass}
                       onClick={() => {
                         setIsDropdownOpen(false);
                         openAccountSettings?.();
@@ -109,12 +119,12 @@ export default function Header() {
                       Paramètres du compte
                     </button>
                   </li>
-                  <li className={styles.dropdownDivider} role="none" />
+                  <li className="my-1 h-px bg-border" role="none" />
                   <li role="none">
                     <button
                       type="button"
                       role="menuitem"
-                      className={`${styles.dropdownItem} ${styles.dangerItem}`}
+                      className={dangerItemClass}
                       onClick={() => {
                         setIsDropdownOpen(false);
                         logout();

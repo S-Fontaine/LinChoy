@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import styles from "./MinecraftLinkCountdown.module.css";
 
 export default function MinecraftLinkCountdown({
   expiresAt,
@@ -18,7 +17,7 @@ export default function MinecraftLinkCountdown({
 
   if (remainingMs <= 0) {
     return (
-      <p className={styles.hintText}>
+      <p className={"text-[0.8rem] text-lin-orange"}>
         Le délai est écoulé, la liaison va être libérée d&apos;un instant à
         l&apos;autre.
       </p>
@@ -34,7 +33,7 @@ export default function MinecraftLinkCountdown({
       : `${minutes} min`;
 
   return (
-    <p className={styles.hintText}>
+    <p className={"text-[0.8rem] text-lin-orange"}>
       Connecte-toi sur le serveur pour confirmer la liaison — expire dans{" "}
       {label}.
     </p>

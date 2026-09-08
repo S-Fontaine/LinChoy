@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import styles from "./AccountSettings.module.css";
+import { layoutClass, contentClass, contentTitleClass } from "./AccountSettings.styles";
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { checkPasswordStrength } from "@/lib/passwordRules";
 import SettingRow from "./SettingRow";
 import PasswordEditField from "./PasswordEditField";
 import SettingsNav from "./SettingsNav";
@@ -43,17 +44,17 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className={styles.layout}>
+    <div className={layoutClass}>
       <SettingsNav
         activeSection={activeSection}
         onSectionChange={setActiveSection}
         onDeleteClick={() => setIsDeleteOpen(true)}
       />
 
-      <div className={styles.content}>
+      <div className={contentClass}>
         {activeSection === "compte" && (
           <>
-            <h2 className={styles.contentTitle}>Compte et sécurité</h2>
+            <h2 className={contentTitleClass}>Compte et sécurité</h2>
 
             <SettingRow
               label="Nom d'utilisateur"
@@ -73,6 +74,7 @@ export default function AccountSettings() {
               displayValue="••••••••••••"
               editLabel="Changer"
               onSave={(value) => patchUser({ password: value })}
+              isValid={(value) => checkPasswordStrength(value).isComplete}
               renderEditField={(value, setValue) => (
                 <PasswordEditField value={value} setValue={setValue} />
               )}

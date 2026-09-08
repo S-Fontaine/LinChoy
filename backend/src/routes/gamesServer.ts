@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { HydratedDocument } from "mongoose";
 import GameServer, { type IGameServer } from "../models/GameServer.js";
 import { gameServerEvents } from "../utils/gameServers/gameServerEvents.js";
+import { sseLimiter } from "../middlewares/rateLimit.js";
 
 const router = Router();
 
@@ -34,7 +35,7 @@ router.get("/", async (_req, res) => {
   }
 });
 
-router.get("/stream", async (req, res) => {
+router.get("/stream", sseLimiter, async (req, res) => {
   res.set({
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",

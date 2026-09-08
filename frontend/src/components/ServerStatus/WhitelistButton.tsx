@@ -1,18 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
-import styles from "./WhitelistButton.module.css";
+import { memo, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useSteamLink } from "@/hooks/useSteamLink";
 import { useMinecraftLink } from "@/hooks/useMinecraftLink";
 import InlineMessage from "../AccountSettings/InlineMessage";
 
+const wrapperClass = "mt-3";
+const whitelistBtnClass =
+  "w-full cursor-pointer rounded-lg border border-border bg-bg-input px-4 py-2.5 text-[0.9rem] text-text-high transition-all duration-300 ease-smooth not-disabled:hover:border-choy-green not-disabled:hover:text-choy-green disabled:cursor-not-allowed disabled:opacity-60";
+
 interface WhitelistStatus {
   whitelisted: boolean;
   connection: { address: string; port: number } | null;
 }
 
-export default function WhitelistButton({
+function WhitelistButton({
   slug,
   gameType,
 }: {
@@ -72,9 +75,9 @@ export default function WhitelistButton({
 
   if (isLinked && status?.whitelisted && status.connection) {
     return (
-      <div className={styles.wrapper}>
-        <div className={styles.connectionBox}>
-          <code>
+      <div className={wrapperClass}>
+        <div className="flex flex-col gap-1 rounded-lg border border-choy-green bg-[rgba(50,205,50,0.1)] px-4 py-2.5 text-[0.9rem] text-choy-green-light">
+          <code className="text-[1rem] font-semibold text-text-high">
             {status.connection.address}:{status.connection.port}
           </code>
         </div>
@@ -85,9 +88,9 @@ export default function WhitelistButton({
   if (isLinked) {
     const checkingStatus = status === null;
     return (
-      <div className={styles.wrapper}>
+      <div className={wrapperClass}>
         <button
-          className={styles.whitelistBtn}
+          className={whitelistBtnClass}
           onClick={whitelistMe}
           disabled={actionLoading || checkingStatus}
         >
@@ -104,13 +107,14 @@ export default function WhitelistButton({
 
   if (!requiresSteam && showMinecraftForm) {
     return (
-      <div className={styles.wrapper}>
+      <div className={wrapperClass}>
         <form
           onSubmit={minecraftLink.handleLinkMinecraft}
-          className={styles.linkForm}
+          className="flex flex-wrap gap-2"
         >
           <input
             type="text"
+            className="min-w-40 flex-1 rounded-lg border border-border bg-bg-input px-3 py-2.5 text-[0.9rem] text-text-high"
             value={minecraftLink.minecraftInput}
             onChange={(e) => minecraftLink.setMinecraftInput(e.target.value)}
             placeholder="Pseudo ou UUID Minecraft"
@@ -119,7 +123,7 @@ export default function WhitelistButton({
           />
           <button
             type="submit"
-            className={styles.whitelistBtn}
+            className={whitelistBtnClass}
             disabled={
               minecraftLink.minecraftLoading ||
               !minecraftLink.minecraftInput.trim()
@@ -134,18 +138,20 @@ export default function WhitelistButton({
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div className={wrapperClass}>
       <button
-        className={styles.whitelistBtn}
+        className={whitelistBtnClass}
         onClick={
           requiresSteam
             ? steamLink.handleLinkSteam
             : () => setShowMinecraftForm(true)
         }
       >
-      {requiresSteam ? "Connecte ton compte Steam" : "Ajoute ton pseudo Minecraft"}
+        {requiresSteam ? "Connecte ton compte Steam" : "Ajoute ton pseudo Minecraft"}
       </button>
       {message && <InlineMessage message={message} onClose={clearMessage} />}
     </div>
   );
 }
+
+export default memo(WhitelistButton);

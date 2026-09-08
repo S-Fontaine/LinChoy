@@ -1,7 +1,15 @@
 "use client";
-import styles from "./Sign.module.css";
 import { eyeOff, eyeOn } from "../icons/Icons";
 import { useState } from "react";
+
+const inputClass =
+  "w-full rounded-lg border border-border bg-bg-input px-4 py-3 text-[0.95rem] text-text-high outline-none transition-all duration-300 ease-smooth focus:border-lin-orange focus:shadow-[0_0_0_2px_var(--lin-orange-glow)]";
+const passwordInputClass = `${inputClass} pr-11.25`;
+const labelClass = "text-[0.85rem] font-medium text-text-high";
+const btnClass =
+  "cursor-pointer rounded-lg border border-border bg-bg-surface px-7 py-3.5 text-[0.95rem] font-semibold text-text-high transition-all duration-300 ease-smooth";
+const eyeButtonClass =
+  "absolute top-1/2 right-5 z-[2] flex -translate-y-1/2 items-center rounded-full border-0 bg-transparent p-0 text-text-medium cursor-pointer";
 
 interface IFormData {
   email: string;
@@ -30,9 +38,9 @@ export default function SignIn({
 }: ISignIn) {
   const [showPassword, setShowPassword] = useState(false);
   return (
-    <form onSubmit={handleSubmit} className={styles.form} key="form-login">
-      <div className={styles.inputGroup}>
-        <label className={styles.label} htmlFor="login-username">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5" key="form-login">
+      <div className="flex flex-col gap-2">
+        <label className={labelClass} htmlFor="login-username">
           Adresse Email
         </label>
         <input
@@ -43,26 +51,26 @@ export default function SignIn({
           required
           placeholder="JosephLeGourmand@exemple.com"
           autoComplete="username"
-          className={styles.input}
+          className={inputClass}
           value={formData.email}
           onChange={handleInputChange}
         />
       </div>
 
-      <div className={styles.inputGroup}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <label className={styles.label} htmlFor="login-password">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between">
+          <label className={labelClass} htmlFor="login-password">
             Mot de passe
           </label>
           <button
             type="button"
             onClick={onForgotPassword}
-            className={styles.forgotLink}
+            className="cursor-pointer border-0 bg-transparent text-[0.8rem] text-text-low underline hover:text-choy-green"
           >
             Mot de passe oublié ?
           </button>
         </div>
-        <div style={{ position: "relative", width: "100%" }}>
+        <div className="relative w-full">
           <input
             type={showPassword ? "text" : "password"}
             name="password"
@@ -70,14 +78,14 @@ export default function SignIn({
             required
             autoComplete="current-password"
             placeholder="••••••••"
-            className={styles.input}
+            className={passwordInputClass}
             value={formData.password}
             onChange={handleInputChange}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className={styles.eyeButton}
+            className={eyeButtonClass}
             aria-label="Afficher ou masquer le mot de passe"
           >
             {showPassword ? eyeOff : eyeOn}{" "}
@@ -85,11 +93,7 @@ export default function SignIn({
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={apiResponse.loading}
-        className={styles.btn}
-      >
+      <button type="submit" disabled={apiResponse.loading} className={btnClass}>
         {apiResponse.loading ? "Patientez..." : "Se connecter"}
       </button>
     </form>

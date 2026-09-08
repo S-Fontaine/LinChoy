@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import styles from "./AuthCard.module.css";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import ForgotPassword from "./ForgotPassword";
@@ -9,6 +8,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useAutoHeight } from "@/hooks/useAutoHeight";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const switchBtnClass =
+  "cursor-pointer border-0 bg-transparent text-[0.85rem] text-text-medium underline underline-offset-4 transition-all duration-300 ease-smooth hover:text-text-high";
 
 interface IAuthCard {
   onLoginSuccess?: () => void;
@@ -125,74 +127,76 @@ export default function AuthCard({
         : "Crée un compte pour demander ton accès.";
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.card}>
+    <div className="z-10">
+      <div
+        className="overflow-hidden transition-[height] duration-500 ease-[ease]"
+        style={{
+          height: contentHeight !== undefined ? `${contentHeight}px` : "auto",
+        }}
+      >
         <div
-          className={styles.heightAnimator}
-          style={{
-            height: contentHeight !== undefined ? `${contentHeight}px` : "auto",
-          }}
+          ref={contentRef}
+          key={transitionKey}
+          className="animate-[fadeIn_0.5s_ease_backwards] motion-reduce:animate-none"
         >
-          <div
-            ref={contentRef}
-            key={transitionKey}
-            className={styles.animatedContent}
-          >
-            <div className={styles.header}>
-              <h2 className={styles.title}>{title}</h2>
-              <p className={styles.subtitle}>{subtitle}</p>
-            </div>
-
-            {apiResponse.error && (
-              <div className={styles.errorBox}>{apiResponse.error}</div>
-            )}
-
-            {forgotPasswordMode ? (
-              <ForgotPassword />
-            ) : showConfirmation ? (
-              <SignUpConfirmation email={pendingEmail} />
-            ) : isLogin ? (
-              <SignIn
-                handleSubmit={handleSubmit}
-                handleInputChange={handleInputChange}
-                formData={formData}
-                apiResponse={apiResponse}
-                onForgotPassword={() => setForgotPasswordMode(true)}
-              />
-            ) : (
-              <SignUp
-                handleSubmit={handleSubmit}
-                handleInputChange={handleInputChange}
-                formData={formData}
-                apiResponse={apiResponse}
-              />
-            )}
+          <div className="mb-6 border-b border-border pb-6 text-center">
+            <h2 className="mb-2 text-[1.75rem] font-bold tracking-[-0.5px] text-text-high">
+              {title}
+            </h2>
+            <p className="text-[0.95rem] text-text-medium">{subtitle}</p>
           </div>
-        </div>
 
-        <div className={styles.footerContainer}>
+          {apiResponse.error && (
+            <div className="mb-6 rounded-lg border border-lin-orange bg-[rgba(255,140,0,0.1)] p-3 text-center text-[0.9rem] text-lin-orange-light">
+              {apiResponse.error}
+            </div>
+          )}
+
           {forgotPasswordMode ? (
-            <button
-              onClick={() => setForgotPasswordMode(false)}
-              className={styles.switchBtn}
-            >
-              Retour à la connexion
-            </button>
-          ) : !showConfirmation ? (
-            <button
-              onClick={() => {
-                onSwitchClick();
-                setApiResponse({ loading: false, error: "", success: "" });
-                setShowConfirmation(false);
-              }}
-              className={styles.switchBtn}
-            >
-              {isLogin
-                ? "Pas encore de compte ? S'inscrire"
-                : "Déjà inscrit ? Se connecter"}
-            </button>
-          ) : null}
+            <ForgotPassword />
+          ) : showConfirmation ? (
+            <SignUpConfirmation email={pendingEmail} />
+          ) : isLogin ? (
+            <SignIn
+              handleSubmit={handleSubmit}
+              handleInputChange={handleInputChange}
+              formData={formData}
+              apiResponse={apiResponse}
+              onForgotPassword={() => setForgotPasswordMode(true)}
+            />
+          ) : (
+            <SignUp
+              handleSubmit={handleSubmit}
+              handleInputChange={handleInputChange}
+              formData={formData}
+              apiResponse={apiResponse}
+            />
+          )}
         </div>
+      </div>
+
+      <div className="mt-6 border-t border-border pt-6 text-center">
+        {forgotPasswordMode ? (
+          <button
+            onClick={() => setForgotPasswordMode(false)}
+            className={switchBtnClass}
+          >
+            Retour à la connexion
+          </button>
+        ) : !showConfirmation ? (
+          <button
+            onClick={() => {
+              onSwitchClick();
+              setApiResponse({ loading: false, error: "", success: "" });
+              setShowConfirmation(false);
+            }}
+            className={switchBtnClass}
+          >
+            {isLogin
+              ? "Pas encore de compte ? S'inscrire"
+              : "Déjà inscrit ? Se connecter"}
+          </button>
+        ) : null}
       </div>
     </div>
   );

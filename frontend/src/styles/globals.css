@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg-main: #0f0f10;
   --bg-surface: #1a1a1c;
@@ -17,6 +19,23 @@
   --choy-green-glow: rgba(50, 205, 50, 0.2);
 
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@theme inline {
+  --color-bg-main: var(--bg-main);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-input: var(--bg-input);
+  --color-text-high: var(--text-high);
+  --color-text-medium: var(--text-medium);
+  --color-text-low: var(--text-low);
+  --color-border: var(--border);
+
+  --color-lin-orange: var(--lin-orange);
+  --color-lin-orange-light: var(--lin-orange-light);
+  --color-choy-green: var(--choy-green);
+  --color-choy-green-light: var(--choy-green-light);
+
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* --- BASE --- */
@@ -131,9 +150,11 @@ h2 {
   left: 15%;
   width: 40vw;
   height: 40vw;
-  background: var(--lin-orange-glow);
-  filter: blur(150px);
-  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--lin-orange-glow) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: 0;
   animation: floatOrange 15s ease-in-out infinite;
@@ -146,14 +167,23 @@ h2 {
   right: -5%;
   width: 35vw;
   height: 35vw;
-  background: var(--choy-green-glow);
-  filter: blur(130px);
-  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--choy-green-glow) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: 0;
   animation: floatGreen 18s ease-in-out infinite;
   animation-delay: -5s;
   will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glowOrange,
+  .glowGreen {
+    animation: none;
+  }
 }
 
 @keyframes shimmer {
@@ -172,5 +202,11 @@ h2 {
   }
   50% {
     opacity: 0.4;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

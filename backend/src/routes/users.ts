@@ -132,6 +132,9 @@ router.patch(
     }
 
     const { slug } = req.body;
+    if (slug !== undefined && slug !== null && typeof slug !== "string") {
+      return res.status(400).json({ result: false, message: "Slug invalide" });
+    }
 
     try {
       if (slug) {

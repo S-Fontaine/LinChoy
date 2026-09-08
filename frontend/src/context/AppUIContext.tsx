@@ -1,5 +1,12 @@
 "use client";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 type View = "ServerStatus" | "AccountSettings";
@@ -21,24 +28,39 @@ export function AppUIProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeView, setActiveView] = useState<View>("ServerStatus");
 
-  function goHomeAnd(view: View) {
-    setActiveView(view);
-    if (pathname !== "/") router.push("/");
-  }
+  const goHomeAnd = useCallback(
+    (view: View) => {
+      setActiveView(view);
+      if (pathname !== "/") router.push("/");
+    },
+    [pathname, router],
+  );
+
+  const openAuth = useCallback(() => setIsOpen(true), []);
+  const closeAuth = useCallback(() => setIsOpen(false), []);
+  const openServerStatus = useCallback(
+    () => goHomeAnd("ServerStatus"),
+    [goHomeAnd],
+  );
+  const openAccountSettings = useCallback(
+    () => goHomeAnd("AccountSettings"),
+    [goHomeAnd],
+  );
+
+  const value = useMemo(
+    () => ({
+      isOpen,
+      openAuth,
+      closeAuth,
+      activeView,
+      openServerStatus,
+      openAccountSettings,
+    }),
+    [isOpen, openAuth, closeAuth, activeView, openServerStatus, openAccountSettings],
+  );
 
   return (
-    <AppUIContext.Provider
-      value={{
-        isOpen,
-        openAuth: () => setIsOpen(true),
-        closeAuth: () => setIsOpen(false),
-        activeView,
-        openServerStatus: () => goHomeAnd("ServerStatus"),
-        openAccountSettings: () => goHomeAnd("AccountSettings"),
-      }}
-    >
-      {children}
-    </AppUIContext.Provider>
+    <AppUIContext.Provider value={value}>{children}</AppUIContext.Provider>
   );
 }
 

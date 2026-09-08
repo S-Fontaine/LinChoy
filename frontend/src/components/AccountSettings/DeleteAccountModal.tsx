@@ -1,11 +1,20 @@
 "use client";
 import { useState } from "react";
-import styles from "./AccountSettings.module.css";
-import signStyles from "../AuthCard/Sign.module.css";
-import dangerStyles from "./DeleteAccountModal.module.css"
+import { contentTitleClass, errorTextClass } from "./AccountSettings.styles";
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Modal from "../ui/Modal";
+import { eyeOff, eyeOn } from "../icons/Icons";
+
+const inputGroupClass = "flex flex-col gap-2";
+const labelClass = "text-[0.85rem] font-medium text-text-high";
+const inputClass =
+  "w-full rounded-lg border border-border bg-bg-input px-4 py-3 pr-11.25 text-[0.95rem] text-text-high outline-none transition-all duration-300 ease-smooth focus:border-lin-orange focus:shadow-[0_0_0_2px_var(--lin-orange-glow)]";
+const eyeButtonClass =
+  "absolute top-1/2 right-5 z-[2] flex -translate-y-1/2 items-center rounded-full border-0 bg-transparent p-0 text-text-medium cursor-pointer";
+const dangerTextClass = "text-[0.9rem] text-text-medium";
+const dangerBtnClass =
+  "cursor-pointer rounded-lg border-0 bg-[#e04b4b] px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function DeleteAccountModal({
   isOpen,
@@ -16,6 +25,7 @@ export default function DeleteAccountModal({
 }) {
   const { user, logout } = useAuth();
   const [deletePassword, setDeletePassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [deleteState, setDeleteState] = useState({ loading: false, error: "" });
 
   async function handleDelete(e: React.FormEvent) {
@@ -54,30 +64,42 @@ export default function DeleteAccountModal({
         onClose();
       }}
     >
-      <form onSubmit={handleDelete} className={signStyles.form}>
-        <h2 className={styles.contentTitle}>Confirmer la suppression</h2>
-        <p className={dangerStyles.dangerText}>
+      <form onSubmit={handleDelete} className="flex flex-col gap-5">
+        <h2 className={contentTitleClass}>Confirmer la suppression</h2>
+        <p className={dangerTextClass}>
           Entre ton mot de passe pour confirmer. Cette action est définitive.
         </p>
-        <div className={signStyles.inputGroup}>
-          <label className={signStyles.label} htmlFor="account-delete-password">
+        <div className={inputGroupClass}>
+          <label className={labelClass} htmlFor="account-delete-password">
             Mot de passe
           </label>
-          <input
-            type="password"
-            id="account-delete-password"
-            className={signStyles.input}
-            value={deletePassword}
-            onChange={(e) => setDeletePassword(e.target.value)}
-            autoFocus
-          />
+          <div className="relative w-full">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="current-password"
+              autoComplete="current-password"
+              id="account-delete-password"
+              className={inputClass}
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className={eyeButtonClass}
+              aria-label="Afficher ou masquer le mot de passe"
+            >
+              {showPassword ? eyeOff : eyeOn}
+            </button>
+          </div>
         </div>
         {deleteState.error && (
-          <p className={styles.errorText}>{deleteState.error}</p>
+          <p className={errorTextClass}>{deleteState.error}</p>
         )}
         <button
           type="submit"
-          className={dangerStyles.dangerBtn}
+          className={dangerBtnClass}
           disabled={deleteState.loading || deletePassword.length === 0}
         >
           {deleteState.loading ? "Suppression..." : "Confirmer la suppression"}

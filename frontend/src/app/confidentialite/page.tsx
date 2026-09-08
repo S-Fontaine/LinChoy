@@ -1,4 +1,11 @@
-import styles from "@/components/Legal/legal.module.css";
+import {
+  pageClass,
+  titleClass,
+  updatedClass,
+  sectionClass,
+  sectionTitleClass,
+  highlightClass,
+} from "@/components/Legal/legal.styles";
 
 export const metadata = {
   title: "Politique de confidentialité — LinChoy",
@@ -6,22 +13,22 @@ export const metadata = {
 
 export default function ConfidentialitePage() {
   return (
-    <div className={styles.page}>
-      <h1 className={styles.title}>Politique de confidentialité</h1>
-      <p className={styles.updated}>Dernière mise à jour : 29/08/2026</p>
+    <div className={pageClass}>
+      <h1 className={titleClass}>Politique de confidentialité</h1>
+      <p className={updatedClass}>Dernière mise à jour : 29/08/2026</p>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Responsable du traitement</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Responsable du traitement</h2>
         <p>
           Le responsable du traitement des données collectées sur LinChoy est{" "}
-          <span className={styles.highlight}>Sebastien Fontaine</span>,
+          <span className={highlightClass}>Sebastien Fontaine</span>,
           joignable à l&apos;adresse{" "}
           <a href="mailto:contact@linchoy.com">contact@linchoy.com</a>.
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Données collectées</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Données collectées</h2>
         <p>Lors de la création d&apos;un compte, LinChoy collecte uniquement :</p>
         <ul>
           <li>Une adresse email</li>
@@ -35,8 +42,8 @@ export default function ConfidentialitePage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Finalité et base légale</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Finalité et base légale</h2>
         <p>
           Ces données sont collectées dans le seul but de permettre la
           création d&apos;un compte utilisateur et l&apos;accès aux
@@ -47,8 +54,8 @@ export default function ConfidentialitePage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Destinataires des données</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Destinataires des données</h2>
         <p>
           Les données ne sont ni vendues, ni cédées, ni partagées avec des
           tiers. Elles sont uniquement accessibles à l&apos;éditeur du site
@@ -56,16 +63,16 @@ export default function ConfidentialitePage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Hébergement des données</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Hébergement des données</h2>
         <p>
           Les données sont hébergées chez OVH SAS (France). Aucune donnée
           n&apos;est transférée en dehors de l&apos;Union européenne.
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Durée de conservation</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Durée de conservation</h2>
         <p>
           Les données sont conservées tant que le compte utilisateur existe.
           En cas de suppression du compte, l&apos;ensemble des données
@@ -74,8 +81,8 @@ export default function ConfidentialitePage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Cookies</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Cookies</h2>
         <p>
           LinChoy utilise uniquement des cookies strictement nécessaires au
           fonctionnement du service (maintien de la session de connexion via
@@ -91,8 +98,8 @@ export default function ConfidentialitePage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Vos droits</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Vos droits</h2>
         <p>
           Conformément au Règlement Général sur la Protection des Données
           (RGPD), vous disposez d&apos;un droit d&apos;accès, de
@@ -116,8 +123,8 @@ export default function ConfidentialitePage() {
         </p>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Sécurité</h2>
+      <section className={sectionClass}>
+        <h2 className={sectionTitleClass}>Sécurité</h2>
         <p>
           Les mots de passe sont hachés avant stockage (aucun mot de passe
           n&apos;est jamais conservé ou consultable en clair). Les échanges

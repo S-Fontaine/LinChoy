@@ -1,11 +1,22 @@
 "use client";
 import { useState } from "react";
-import styles from "./AccountSettings.module.css";
-import signStyles from "../AuthCard/Sign.module.css";
+import {
+  rowClass,
+  rowLabelClass,
+  rowValueContainerClass,
+  rowValueClass,
+  modifyBtnClass,
+} from "./AccountSettings.styles";
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import InlineMessage, { type InlineMessageState } from "./InlineMessage";
 import MinecraftLinkCountdown from "./MinecraftLinkCountdown";
+
+const inputGroupClass = "flex flex-col gap-2";
+const labelClass = "text-[0.85rem] font-medium text-text-high";
+const inputClass =
+  "w-full rounded-lg border border-border bg-bg-input px-4 py-3 text-[0.95rem] text-text-high outline-none transition-all duration-300 ease-smooth focus:border-lin-orange focus:shadow-[0_0_0_2px_var(--lin-orange-glow)]";
+const formActionsClass = "flex gap-2";
 
 export default function MinecraftLinkRow() {
   const { user, updateUser } = useAuth();
@@ -76,15 +87,15 @@ export default function MinecraftLinkRow() {
   }
 
   return (
-    <div className={styles.row}>
-      <div className={styles.rowLabel}>Compte Minecraft</div>
-      <div className={styles.rowValueContainer}>
+    <div className={rowClass}>
+      <div className={rowLabelClass}>Compte Minecraft</div>
+      <div className={rowValueContainerClass}>
         {user.minecraftUsername &&
           !user.minecraftVerified &&
           user.minecraftLinkExpiresAt && (
             <MinecraftLinkCountdown expiresAt={user.minecraftLinkExpiresAt} />
           )}
-        <span className={styles.rowValue}>
+        <span className={rowValueClass}>
           {user.minecraftUsername
             ? user.minecraftVerified
               ? user.minecraftUsername
@@ -93,7 +104,7 @@ export default function MinecraftLinkRow() {
         </span>
         {user.minecraftUsername ? (
           <button
-            className={styles.modifyBtn}
+            className={modifyBtnClass}
             onClick={handleUnlinkMinecraft}
             disabled={unlinkLoading}
           >
@@ -101,7 +112,7 @@ export default function MinecraftLinkRow() {
           </button>
         ) : !showForm ? (
           <button
-            className={styles.modifyBtn}
+            className={modifyBtnClass}
             onClick={() => setShowForm(true)}
             aria-expanded={showForm}
           >
@@ -111,31 +122,31 @@ export default function MinecraftLinkRow() {
       </div>
 
       {!user.minecraftUsername && showForm && (
-        <form onSubmit={handleLinkMinecraft} className={signStyles.inputGroup}>
-          <label className={signStyles.label} htmlFor="minecraft-link-input">
+        <form onSubmit={handleLinkMinecraft} className={inputGroupClass}>
+          <label className={labelClass} htmlFor="minecraft-link-input">
             Pseudo ou UUID Minecraft
           </label>
           <input
             type="text"
             id="minecraft-link-input"
-            className={signStyles.input}
+            className={inputClass}
             value={minecraftInput}
             onChange={(e) => setMinecraftInput(e.target.value)}
             placeholder="Notch ou 069a79f4-44e9-4726-a5be-fca90e38aaf5"
             disabled={minecraftLoading}
             autoFocus
           />
-          <div className={styles.formActions}>
+          <div className={formActionsClass}>
             <button
               type="submit"
-              className={styles.modifyBtn}
+              className={modifyBtnClass}
               disabled={minecraftLoading || !minecraftInput.trim()}
             >
               {minecraftLoading ? "..." : "Lier"}
             </button>
             <button
               type="button"
-              className={styles.modifyBtn}
+              className={modifyBtnClass}
               onClick={() => {
                 setShowForm(false);
                 setMinecraftInput("");

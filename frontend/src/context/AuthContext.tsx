@@ -1,8 +1,10 @@
 "use client";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type Dispatch,
   type ReactNode,
@@ -59,11 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  function updateUser(updater: (prev: User) => User) {
+  const updateUser = useCallback((updater: (prev: User) => User) => {
     setUser((prev) => (prev ? updater(prev) : prev));
-  }
+  }, []);
 
-  async function logout() {
+  const logout = useCallback(async () => {
     try {
       await fetch(`${BACKEND_URL}/auth/logout`, {
         method: "POST",
@@ -73,14 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
     }
-  }
+  }, []);
+
+  const value = useMemo(
+    () => ({ user, isLoading, setUser, updateUser, logout }),
+    [user, isLoading, updateUser, logout],
+  );
 
   return (
-    <AuthContext.Provider
-      value={{ user, isLoading, setUser, updateUser, logout }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   );
 }
 

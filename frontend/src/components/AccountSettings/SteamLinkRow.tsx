@@ -1,6 +1,12 @@
 "use client";
 import { useState } from "react";
-import styles from "./AccountSettings.module.css";
+import {
+  rowClass,
+  rowLabelClass,
+  rowValueContainerClass,
+  rowValueClass,
+  modifyBtnClass,
+} from "./AccountSettings.styles";
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import InlineMessage, { type InlineMessageState } from "./InlineMessage";
@@ -103,22 +109,22 @@ export default function SteamLinkRow() {
   }
 
   return (
-    <div className={styles.row}>
-      <div className={styles.rowLabel}>Compte Steam</div>
-      <div className={styles.rowValueContainer}>
-        <span className={styles.rowValue}>
+    <div className={rowClass}>
+      <div className={rowLabelClass}>Compte Steam</div>
+      <div className={rowValueContainerClass}>
+        <span className={rowValueClass}>
           {user.steamId ? user.steamId : "Non lié"}
         </span>
         {user.steamId ? (
           <button
-            className={styles.modifyBtn}
+            className={modifyBtnClass}
             onClick={handleUnlinkSteam}
             disabled={unlinkLoading}
           >
             {unlinkLoading ? "..." : "Délier"}
           </button>
         ) : (
-          <button className={styles.modifyBtn} onClick={handleLinkSteam}>
+          <button className={modifyBtnClass} onClick={handleLinkSteam}>
             Lier mon compte Steam
           </button>
         )}

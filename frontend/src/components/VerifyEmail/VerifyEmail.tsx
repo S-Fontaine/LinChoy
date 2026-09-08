@@ -3,10 +3,12 @@
 import { useAuth } from "@/context/AuthContext";
 import Modal from "@/components/ui/Modal";
 import AuthCard from "@/components/AuthCard/AuthCard";
-import styles from "./verify-email.module.css";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const btnClass =
+  "cursor-pointer rounded-lg border border-border bg-bg-surface px-7 py-3.5 text-[0.95rem] font-semibold text-text-high transition-all duration-300 ease-smooth disabled:cursor-not-allowed disabled:opacity-50";
 
 export function VerifyEmail() {
   const { user } = useAuth();
@@ -53,30 +55,30 @@ export function VerifyEmail() {
       {showAuth ? (
         <AuthCard isLogin={isLogin} onSwitchClick={() => setIsLogin(!isLogin)} />
       ) : (
-        <div className={styles.wrapper}>
-          <div className={styles.card}>
-            <div className={styles.header}>
-              <h2 className={styles.title}>
-                {response.result ? "Bienvenue !" : "Oups !"}
-              </h2>
-              <p className={styles.subtitle}>{response.message}</p>
-            </div>
-            <div className={styles.form}>
-              <button
-                className={styles.btn}
-                onClick={() => {
-                  if (response.result) {
-                    setShowAuth(true);
-                  } else {
-                    router.push("/");
-                  }
-                }}
-              >
-                {response.result ? "Se connecter" : "Retour à l'accueil"}
-              </button>
-            </div>
+        <>
+          <div className="mb-8 text-center">
+            <h2 className="mb-2 text-[1.75rem] font-bold tracking-[-0.5px] text-text-high">
+              {response.result ? "Bienvenue !" : "Oups !"}
+            </h2>
+            <p className="text-[0.95rem] text-text-medium">
+              {response.message}
+            </p>
           </div>
-        </div>
+          <div className="flex flex-col gap-5">
+            <button
+              className={btnClass}
+              onClick={() => {
+                if (response.result) {
+                  setShowAuth(true);
+                } else {
+                  router.push("/");
+                }
+              }}
+            >
+              {response.result ? "Se connecter" : "Retour à l'accueil"}
+            </button>
+          </div>
+        </>
       )}
     </Modal>
   );

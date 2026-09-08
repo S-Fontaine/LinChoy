@@ -1,12 +1,22 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import styles from "./SettingsNav.module.css";
 
 const NAV_ITEMS = [
   { key: "compte", label: "Compte et sécurité", comingSoon: false },
   { key: "notifications", label: "Notifications", comingSoon: true },
   { key: "confidentialite", label: "Confidentialité", comingSoon: true },
 ];
+
+const navItemBaseClass =
+  "flex items-center justify-between gap-2 rounded-lg border-0 px-3.5 py-3 text-left text-[0.95rem] transition-all duration-300 ease-smooth not-disabled:hover:bg-bg-input not-disabled:hover:text-text-high";
+const navItemDangerClass =
+  "mt-auto flex cursor-pointer items-center justify-between gap-2 rounded-lg border-0 bg-transparent px-3.5 py-3 text-left text-[0.95rem] text-[#e04b4b] transition-all duration-300 ease-smooth hover:bg-[rgba(224,75,75,0.1)]";
+const soonTagClass =
+  "rounded-full border border-border px-2 py-0.5 text-[0.65rem] text-text-low uppercase";
+const mobileNavItemBaseClass =
+  "flex w-full items-center justify-between gap-2 rounded-lg border-0 bg-transparent px-3 py-2.5 text-left text-[0.9rem] cursor-pointer";
+const mobileNavItemClass = `${mobileNavItemBaseClass} text-text-medium not-disabled:hover:bg-bg-input not-disabled:hover:text-text-high disabled:cursor-not-allowed disabled:text-text-low`;
+const mobileNavItemDangerClass = `${mobileNavItemBaseClass} text-[#e04b4b] hover:bg-[rgba(224,75,75,0.1)]`;
 
 export default function SettingsNav({
   activeSection,
@@ -46,30 +56,33 @@ export default function SettingsNav({
 
   return (
     <>
-      <div className={styles.mobileNav} ref={mobileNavRef}>
+      <div className="relative hidden max-sm:block" ref={mobileNavRef}>
         <button
           type="button"
-          className={styles.mobileNavTrigger}
+          className="flex w-full cursor-pointer items-center justify-between rounded-[10px] border border-border bg-bg-input px-4 py-3 text-[0.95rem] font-semibold text-text-high"
           onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
           aria-haspopup="menu"
           aria-expanded={isMobileNavOpen}
         >
           {activeItem?.label}
           <span
-            className={`${styles.chevron} ${isMobileNavOpen ? styles.chevronOpen : ""}`}
+            className={`text-text-low transition-transform duration-200 ease-[ease] ${isMobileNavOpen ? "rotate-180" : ""}`}
           >
             ▾
           </span>
         </button>
 
         {isMobileNavOpen && (
-          <ul role="menu" className={styles.mobileNavList}>
+          <ul
+            role="menu"
+            className="absolute top-[calc(100%+8px)] right-0 left-0 z-30 rounded-[10px] border border-border bg-bg-main p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+          >
             {NAV_ITEMS.map((item) => (
               <li key={item.key} role="none">
                 <button
                   type="button"
                   role="menuitem"
-                  className={styles.mobileNavItem}
+                  className={mobileNavItemClass}
                   disabled={item.comingSoon}
                   onClick={() => {
                     onSectionChange(item.key);
@@ -78,7 +91,7 @@ export default function SettingsNav({
                 >
                   {item.label}
                   {item.comingSoon && (
-                    <span className={styles.soonTag}>Bientôt</span>
+                    <span className={soonTagClass}>Bientôt</span>
                   )}
                 </button>
               </li>
@@ -87,7 +100,7 @@ export default function SettingsNav({
               <button
                 type="button"
                 role="menuitem"
-                className={styles.mobileNavItemDanger}
+                className={mobileNavItemDangerClass}
                 onClick={() => {
                   setIsMobileNavOpen(false);
                   onDeleteClick();
@@ -99,24 +112,23 @@ export default function SettingsNav({
           </ul>
         )}
       </div>
-      <nav className={styles.sidebar}>
+      <nav className="flex min-w-55 flex-col border-r border-border pr-4 max-sm:hidden">
         {NAV_ITEMS.map((item) => (
           <button
             key={item.key}
-            className={`${styles.navItem} ${
-              activeSection === item.key ? styles.navItemActive : ""
-            } ${item.comingSoon ? styles.navItemDisabled : ""}`}
+            className={`${navItemBaseClass} ${
+              activeSection === item.key
+                ? "bg-bg-input font-semibold text-choy-green"
+                : "bg-transparent text-text-medium"
+            } ${item.comingSoon ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
             onClick={() => !item.comingSoon && onSectionChange(item.key)}
             disabled={item.comingSoon}
           >
             {item.label}
-            {item.comingSoon && <span className={styles.soonTag}>Bientôt</span>}
+            {item.comingSoon && <span className={soonTagClass}>Bientôt</span>}
           </button>
         ))}
-        <button
-          className={`${styles.navItem} ${styles.navItemDanger}`}
-          onClick={onDeleteClick}
-        >
+        <button className={navItemDangerClass} onClick={onDeleteClick}>
           Supprimer le compte
         </button>
       </nav>

@@ -1,6 +1,8 @@
 "use client";
 import { PASSWORD_RULES, checkPasswordStrength } from "@/lib/passwordRules";
-import styles from "./PasswordRulesList.module.css";
+
+const ruleItemBaseClass =
+  "flex items-center gap-1.5 text-[0.75rem] transition-colors duration-200 ease-[ease]";
 
 interface IPasswordRulesList {
   password: string;
@@ -14,25 +16,27 @@ export default function PasswordRulesList({
   const { percent, color } = checkPasswordStrength(password);
 
   return (
-    <div className={styles.container}>
+    <div className="flex w-full flex-col gap-2">
       {showStrengthBar && (
-        <div className={styles.strengthBar}>
+        <div className="h-1 w-full overflow-hidden rounded-sm bg-border">
           <div
-            className={styles.strengthBarFill}
+            className="h-full transition-[width,background-color] duration-300 ease-[ease]"
             style={{ width: `${percent}%`, backgroundColor: color }}
           />
         </div>
       )}
 
-      <ul className={styles.rulesList}>
+      <ul className="m-0 flex list-none flex-col gap-1 p-0">
         {PASSWORD_RULES.map((rule) => {
           const isValid = rule.test(password);
           return (
             <li
               key={rule.label}
-              className={`${styles.ruleItem} ${isValid ? styles.valid : ""}`}
+              className={`${ruleItemBaseClass} ${isValid ? "text-choy-green" : "text-text-low"}`}
             >
-              <span className={styles.ruleIcon}>{isValid ? "✓" : "•"}</span>
+              <span className="text-[0.85rem] leading-none font-bold">
+                {isValid ? "✓" : "•"}
+              </span>
               {rule.label}
             </li>
           );
