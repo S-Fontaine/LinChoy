@@ -52,9 +52,10 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
           className={`object-cover transition-all duration-300 ease-smooth ${game.isOnline ? "" : "grayscale brightness-50"}`}
           src={game.image}
           alt={game.name}
-          sizes="(max-width: 900px) 100vw, 480px"
+          sizes="(max-width: 700px) 100vw, (max-width: 1298px) 40vw, 480px"
           fill
-          priority
+          loading="eager"
+          fetchPriority="high"
         />
         <button
           className="absolute top-4 left-4 flex cursor-pointer items-center gap-1.5 rounded-full border border-lin-orange bg-[color-mix(in_srgb,var(--bg-main)_80%,transparent)] px-3 py-1.5 text-[0.8rem] font-semibold text-lin-orange backdrop-blur-xs [&_svg]:h-3.5 [&_svg]:w-3.5"

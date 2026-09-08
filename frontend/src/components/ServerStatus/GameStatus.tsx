@@ -100,9 +100,10 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
           className={`object-cover [transition:filter_0.3s_ease] ${isServerOn ? "grayscale-0" : "grayscale"}`}
           src={game.image}
           alt={game.name}
-          sizes="(max-width: 600px) 100vw, 580px"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 45vw, 380px"
           fill
-          priority={game.priority}
+          loading={game.priority ? "eager" : undefined}
+          fetchPriority={game.priority ? "high" : undefined}
         />
       </div>
       <div className="flex min-h-25 flex-1 flex-col gap-3 px-5 pb-5">

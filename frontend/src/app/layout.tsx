@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import ReactDOM from "react-dom";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppUIProvider } from "@/context/AppUIContext";
@@ -76,6 +77,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
+    ReactDOM.preconnect(process.env.NEXT_PUBLIC_BACKEND_URL, {
+      crossOrigin: "use-credentials",
+    });
+  }
+
   return (
     <html
       lang="fr"
