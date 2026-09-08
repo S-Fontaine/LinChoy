@@ -23,7 +23,7 @@ export async function syncMinecraftWhitelist(
   await fs.rename(tmpFile, targetFile);
 
   try {
-    await execFileAsync("mcrcon-nsg", [
+    await execFileAsync("mcrcon", [
       "-H",
       process.env.MINECRAFT_RCON_HOST!,
       "-P",
@@ -32,7 +32,7 @@ export async function syncMinecraftWhitelist(
       process.env.MINECRAFT_RCON_PASSWORD!,
       "whitelist reload",
     ]);
-  } catch {
-    console.warn("[whitelist] Fichier mis à jour, mais reload RCON échoué.");
+  } catch(err) {
+    console.warn("[whitelist] Fichier mis à jour, mais reload RCON échoué.", err);
   }
 }

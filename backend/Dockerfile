@@ -14,6 +14,13 @@ FROM node:24-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache curl unzip \
+  && curl -L -o /tmp/mcrcon.zip https://github.com/Tiiffi/mcrcon/releases/download/v0.7.2/mcrcon-0.7.2-linux-x86-64-static.zip \
+  && unzip /tmp/mcrcon.zip -d /usr/local/bin \
+  && chmod +x /usr/local/bin/mcrcon \
+  && rm /tmp/mcrcon.zip \
+  && apk del curl unzip
+
 RUN corepack enable
 
 COPY package.json yarn.lock ./
