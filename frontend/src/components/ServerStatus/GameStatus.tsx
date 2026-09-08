@@ -102,7 +102,6 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
           alt={game.name}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 45vw, 380px"
           fill
-          preload={game.priority}
           loading={game.priority ? "eager" : undefined}
           fetchPriority={game.priority ? "high" : undefined}
         />
