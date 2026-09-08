@@ -54,6 +54,7 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
           alt={game.name}
           sizes="(max-width: 700px) 100vw, (max-width: 1298px) 40vw, 480px"
           fill
+          preload
           loading="eager"
           fetchPriority="high"
         />
