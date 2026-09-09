@@ -8,6 +8,7 @@ import {
 
 const PORT = Number(process.env.PORT) || 5000;
 const SYNC_ENABLED = process.env.SYNC_GAME_SERVERS !== "false";
+const SYNC_INTERVAL_MS = 10000;
 
 async function startServer() {
   try {
@@ -21,24 +22,25 @@ async function startServer() {
     let cleanupInterval: NodeJS.Timeout | undefined;
 
     if (SYNC_ENABLED) {
-      syncGameServers()
-        .then(() => verifyOnlineMinecraftLinks())
-        .catch((err) => {
-          console.error(
-            "[server]: Erreur inattendue lors de la synchro initiale :",
-            err,
-          );
-        });
-      syncInterval = setInterval(() => {
+      let isSyncing = false;
+      const runSync = () => {
+        if (isSyncing) return;
+        isSyncing = true;
         syncGameServers()
           .then(() => verifyOnlineMinecraftLinks())
           .catch((err) => {
             console.error(
-              "[server]: Erreur inattendue lors de la synchro périodique :",
+              "[server]: Erreur inattendue lors de la synchro :",
               err,
             );
+          })
+          .finally(() => {
+            isSyncing = false;
           });
-      }, 30000);
+      };
+
+      runSync();
+      syncInterval = setInterval(runSync, SYNC_INTERVAL_MS);
       cleanupInterval = setInterval(
         () => {
           cleanupExpiredMinecraftLinks().catch((err) => {

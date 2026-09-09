@@ -1,5 +1,7 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 import GameServer from "../../src/models/GameServer.js";
+import User from "../../src/models/User.js";
+import ServerWhitelist from "../../src/models/ServerWhitelist.js";
 
 const getContainerStateMock = jest.fn<() => Promise<{ running: boolean }>>();
 
@@ -46,7 +48,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
   });
 
   it("Marque le serveur en ligne si l'API répond correctement", async () => {
-    await GameServer.create({
+    const server = await GameServer.create({
       name: "Palworld",
       gameData: {
         slug: "palworld",
@@ -55,6 +57,13 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
       },
       playerInfo: { maxPlayers: 32 },
     });
+    const user = await User.create({
+      username: "alice",
+      email: "alice@linchoy.com",
+      password: "MotDePasse123!",
+      steamId: "76561198000000001",
+    });
+    await ServerWhitelist.create({ user: user._id, gameServer: server._id });
     getContainerStateMock.mockResolvedValue({ running: true });
 
     const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
@@ -62,11 +71,11 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
       .mockResolvedValueOnce(
         jsonResponse({ servername: "Mon Pal", description: "desc" }),
       )
-      .mockResolvedValueOnce(jsonResponse({ players: [{ name: "Alice" }] }))
       .mockResolvedValueOnce(
-        jsonResponse({ currentplayernum: 1}),
-      )
-      .mockResolvedValueOnce(jsonResponse({}));
+        jsonResponse({
+          players: [{ name: "Alice", userId: "steam_76561198000000001" }],
+        }),
+      );
 
     await syncGameServerData();
 
@@ -77,6 +86,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     expect(updated?.playerInfo.maxPlayers).toBe(32);
     expect(updated?.serverInfo.displayName).toBe("Mon Pal");
     expect(updated?.playerInfo.players[0].name).toEqual("Alice");
+    expect(mockedFetch).toHaveBeenCalledTimes(2);
   });
 
   it("Passe en 'starting' si le container tourne mais que l'API répond en erreur", async () => {
@@ -99,6 +109,29 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     expect(updated?.statusInfo.state).toBe("starting");
     expect(updated?.statusInfo.online).toBe(false);
     expect(updated?.playerInfo.playerCount).toBe(0);
+  });
+
+  it("Passe une AbortSignal avec timeout à chaque appel fetch", async () => {
+    await GameServer.create({
+      name: "Palworld",
+      gameData: {
+        slug: "palworld",
+        type: "palworld",
+        containerName: "palworld-server",
+      },
+    });
+    getContainerStateMock.mockResolvedValue({ running: true });
+
+    const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+    mockedFetch.mockResolvedValue(jsonResponse({}));
+
+    await syncGameServerData();
+
+    expect(mockedFetch).toHaveBeenCalledTimes(2);
+    for (const call of mockedFetch.mock.calls) {
+      const init = call[1] as RequestInit;
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+    }
   });
 
   it("Passe le statut à offline si une exception réseau survient", async () => {
@@ -135,5 +168,88 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       expect.stringContaining("[sync] Document 'Palworld' introuvable"),
     );
+  });
+
+  describe("Auto-kick des joueurs non whitelistés", () => {
+    it("Kick un joueur non whitelisté et laisse un joueur whitelisté tranquille", async () => {
+      const server = await GameServer.create({
+        name: "Palworld",
+        gameData: {
+          slug: "palworld",
+          type: "palworld",
+          containerName: "palworld-server",
+        },
+      });
+      const whitelistedUser = await User.create({
+        username: "alice",
+        email: "alice@linchoy.com",
+        password: "MotDePasse123!",
+        steamId: "76561198000000001",
+      });
+      await ServerWhitelist.create({
+        user: whitelistedUser._id,
+        gameServer: server._id,
+      });
+      getContainerStateMock.mockResolvedValue({ running: true });
+
+      const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+      mockedFetch
+        .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
+        .mockResolvedValueOnce(
+          jsonResponse({
+            players: [
+              { name: "Alice", userId: "steam_76561198000000001" },
+              { name: "Intrus", userId: "steam_99999999999999999" },
+            ],
+          }),
+        )
+        .mockResolvedValueOnce(jsonResponse({}));
+
+      await syncGameServerData();
+
+      expect(mockedFetch).toHaveBeenCalledTimes(3);
+      const [kickUrl, kickInit] = mockedFetch.mock.calls[2] as [
+        string,
+        RequestInit,
+      ];
+      expect(kickUrl).toContain("/kick");
+      const body = JSON.parse(kickInit.body as string);
+      expect(body.userid).toBe("steam_99999999999999999");
+    });
+
+    it("Ne kick personne si tous les joueurs sont whitelistés", async () => {
+      const server = await GameServer.create({
+        name: "Palworld",
+        gameData: {
+          slug: "palworld",
+          type: "palworld",
+          containerName: "palworld-server",
+        },
+      });
+      const whitelistedUser = await User.create({
+        username: "alice",
+        email: "alice@linchoy.com",
+        password: "MotDePasse123!",
+        steamId: "76561198000000001",
+      });
+      await ServerWhitelist.create({
+        user: whitelistedUser._id,
+        gameServer: server._id,
+      });
+      getContainerStateMock.mockResolvedValue({ running: true });
+
+      const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+      mockedFetch
+        .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
+        .mockResolvedValueOnce(
+          jsonResponse({
+            players: [{ name: "Alice", userId: "steam_76561198000000001" }],
+          }),
+        );
+
+      await syncGameServerData();
+
+      expect(mockedFetch).toHaveBeenCalledTimes(2);
+    });
   });
 });
