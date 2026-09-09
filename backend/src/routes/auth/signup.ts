@@ -10,18 +10,31 @@ const router = Router();
 
 router.post("/signup", authLimiter, async (req, res) => {
   const { username, email, password } = req.body;
-  if (!email?.trim() || !username?.trim() || !password) {
+  if (
+    typeof email !== "string" ||
+    !email.trim() ||
+    typeof username !== "string" ||
+    !username.trim() ||
+    typeof password !== "string" ||
+    !password
+  ) {
     return res.status(400).json({ result: false, message: "Champs manquants" });
   }
 
   let newUser;
+  const successMessage = "Compte créé. Vérifiez votre email pour l'activer.";
 
   try {
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
       return res
         .status(409)
-        .json({ result: false, message: "Connectez-vous s'il vous plaît" });
+        .json({ result: false, message: "Ce nom d'utilisateur est déjà pris" });
+    }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(201).json({ result: true, message: successMessage });
     }
   } catch (err) {
     return handleMongooseError(err, res);
@@ -70,7 +83,7 @@ router.post("/signup", authLimiter, async (req, res) => {
 
   return res.status(201).json({
     result: true,
-    message: "Compte créé. Vérifiez votre email pour l'activer.",
+    message: successMessage,
     data: { id: newUser._id, username: newUser.username, email: newUser.email },
   });
 });

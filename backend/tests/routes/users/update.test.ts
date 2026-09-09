@@ -20,7 +20,7 @@ describe("Test route: PATCH /users/:id", () => {
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ username: "linchoy" });
+      .send({ username: "linchoy", currentPassword: payload.password });
 
     expect(res.status).toBe(200);
     expect(res.body.result).toBe(true);
@@ -38,7 +38,11 @@ describe("Test route: PATCH /users/:id", () => {
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ username: "linchoy", email: "fake2@linchoy.com" });
+      .send({
+        username: "linchoy",
+        email: "fake2@linchoy.com",
+        currentPassword: payload.password,
+      });
 
     expect(res.status).toBe(200);
     expect(res.body.result).toBe(true);
@@ -61,7 +65,7 @@ describe("Test route: PATCH /users/:id", () => {
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ email: "fake2@linchoy.com" });
+      .send({ email: "fake2@linchoy.com", currentPassword: payload.password });
 
     expect(res.status).toBe(200);
     expect(res.body.data.isVerified).toBe(false);
@@ -80,7 +84,7 @@ describe("Test route: PATCH /users/:id", () => {
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ username: "linchoy" });
+      .send({ username: "linchoy", currentPassword: payload.password });
 
     expect(res.status).toBe(200);
     expect(res.body.data.isVerified).toBe(true);
@@ -136,7 +140,11 @@ describe("Test route: PATCH /users/:id", () => {
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ username: payload.username, email: "fake2@linchoy.com" });
+      .send({
+        username: payload.username,
+        email: "fake2@linchoy.com",
+        currentPassword: payload.password,
+      });
 
     expect(res.status).toBe(200);
     expect(res.body.data.username).toBe(payload.username);
@@ -166,8 +174,37 @@ describe("Test route: PATCH /users/:id", () => {
     const res = await request(app)
       .patch(`${BASE_URL}/${user._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ password: "NouveauMotDePasse456!" });
+      .send({
+        password: "NouveauMotDePasse456!",
+        currentPassword: payload.password,
+      });
 
     expect(res.status).toBe(200);
+  });
+
+  it("Refuse la modification si currentPassword n'est pas fourni", async () => {
+    const user = await User.create(payload);
+    const token = generateAccessToken({ userId: user._id.toString() });
+
+    const res = await request(app)
+      .patch(`${BASE_URL}/${user._id}`)
+      .set("Cookie", `accessToken=${token}`)
+      .send({ username: "linchoy" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.result).toBe(false);
+  });
+
+  it("Refuse la modification si currentPassword est incorrect", async () => {
+    const user = await User.create(payload);
+    const token = generateAccessToken({ userId: user._id.toString() });
+
+    const res = await request(app)
+      .patch(`${BASE_URL}/${user._id}`)
+      .set("Cookie", `accessToken=${token}`)
+      .send({ username: "linchoy", currentPassword: "MauvaisMotDePasse123!" });
+
+    expect(res.status).toBe(401);
+    expect(res.body.result).toBe(false);
   });
 });

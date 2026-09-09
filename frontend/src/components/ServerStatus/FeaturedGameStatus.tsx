@@ -45,7 +45,7 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
 
   return (
     <div
-      className={`flex h-[clamp(450px,calc(1409px-140vw),929px)] overflow-hidden rounded-2xl border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:flex-col ${cardBorderClass[game.state]}`}
+      className={`flex h-150 overflow-hidden rounded-2xl border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:h-240 max-[700px]:flex-col ${cardBorderClass[game.state]}`}
     >
       <div className="relative min-h-70 flex-[0_0_40%] max-[700px]:h-50 max-[700px]:flex-none">
         <Image
@@ -68,7 +68,7 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-8 py-7">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-x-visible overflow-y-auto px-8 py-7">
         <div className="flex flex-col justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-[0.8rem] tracking-[0.5px] text-text-low uppercase">
@@ -90,28 +90,26 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
 
         <p className="leading-normal text-text-medium">{game.description}</p>
 
-        <div className="mt-auto h-50 border-y border-border">
+        <div className="mt-auto flex h-50 flex-col justify-center gap-2.5 border-y border-border">
           <div className="flex items-center justify-between">
-            <p className="my-2.5 text-[0.85rem] text-text-low">
-              Joueurs en ligne
-            </p>
+            <p className="text-[0.85rem] text-text-low">Joueurs en ligne</p>
             <p className="text-[12px] font-semibold text-text-medium">
               {game.playerOnLine} / {game.totalPlayer} joueurs
             </p>
           </div>
           {game.players.length > 0 ? (
-            <ul className="m-0 flex flex-wrap list-none gap-2 pb-2.5">
+            <ul className="m-0 grid auto-cols-max grid-flow-col grid-rows-[repeat(3,auto)] list-none gap-2 overflow-x-auto pb-2.5 scrollbar-thin [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border">
               {game.players.map((player) => (
                 <li
                   key={player}
-                  className="rounded-full border border-border bg-bg-input px-3.5 py-1.5 text-[0.85rem] text-text-high"
+                  className="rounded-full border border-border bg-bg-input px-3.5 py-1.5 text-[0.85rem] whitespace-nowrap text-text-high"
                 >
                   {player}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="my-2.5 text-[0.9rem] text-text-low italic">
+            <p className="text-[0.9rem] text-text-low italic">
               Personne pour le moment
             </p>
           )}

@@ -33,6 +33,17 @@ export const forgotPasswordLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+export const minecraftLinkLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: isTest ? Number.MAX_SAFE_INTEGER : 5,
+  message: {
+    result: false,
+    message: "Trop de tentatives. Réessaie plus tard.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export const sseLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
   max: isTest ? Number.MAX_SAFE_INTEGER : 20,

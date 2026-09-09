@@ -102,7 +102,7 @@ export default function ServerStatus({
     if (!gameData) {
       return (
         <div key={game.gameData.slug} className="relative h-full">
-          <div className="flex h-[clamp(600px,calc(975px-93.75vw),675px)] max-w-145 flex-col overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)]">
+          <div className="flex h-160 max-w-145 flex-col overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)]">
             <div className="mx-6 flex items-center justify-between border-b border-border">
               <h2 className="my-3">
                 <span className={`inline-block h-5 w-28 ${skeletonBarClass}`} />

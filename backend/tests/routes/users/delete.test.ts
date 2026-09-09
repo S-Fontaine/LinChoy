@@ -2,6 +2,8 @@ import { describe, it, expect } from "@jest/globals";
 import request from "supertest";
 import app from "../../../src/app.js";
 import User from "../../../src/models/User.js";
+import GameServer from "../../../src/models/GameServer.js";
+import ServerWhitelist from "../../../src/models/ServerWhitelist.js";
 import { generateAccessToken } from "../../../src/utils/auth/jwt.js";
 const BASE_URL = "/users";
 
@@ -82,6 +84,35 @@ describe("DELETE /users/:id", () => {
       .send({ password: payload.password });
 
     expect(res.status).toBe(401);
+  });
+
+  it("Retire l'utilisateur des whitelists lors de la suppression du compte", async () => {
+    const user = await User.create({
+      ...payload,
+      minecraftUsername: "Notch",
+      minecraftUuid: "uuid-1",
+    });
+    const server = await GameServer.create({
+      name: "Minecraft",
+      gameData: {
+        slug: "minecraft",
+        type: "minecraft",
+        containerName: "mc-server",
+      },
+    });
+    await ServerWhitelist.create({ user: user._id, gameServer: server._id });
+
+    const token = generateAccessToken({ userId: user._id.toString() });
+
+    const res = await request(app)
+      .delete(`${BASE_URL}/${user._id}`)
+      .set("Cookie", `accessToken=${token}`)
+      .send({ password: payload.password });
+
+    expect(res.status).toBe(204);
+
+    const entries = await ServerWhitelist.find({ user: user._id });
+    expect(entries).toHaveLength(0);
   });
 
   it("Renvoie 404 si l'utilisateur n'existe déjà plus", async () => {

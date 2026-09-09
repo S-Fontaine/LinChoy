@@ -5,6 +5,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useSteamLink } from "@/hooks/useSteamLink";
 import { useMinecraftLink } from "@/hooks/useMinecraftLink";
 import InlineMessage from "../AccountSettings/InlineMessage";
+import CopyableValue from "../ui/CopyableValue";
 
 const wrapperClass = "mt-3";
 const whitelistBtnClass =
@@ -12,7 +13,7 @@ const whitelistBtnClass =
 
 interface WhitelistStatus {
   whitelisted: boolean;
-  connection: { address: string; port: number } | null;
+  connection: { address: string; port: number; password: string | null } | null;
 }
 
 function WhitelistButton({
@@ -76,10 +77,13 @@ function WhitelistButton({
   if (isLinked && status?.whitelisted && status.connection) {
     return (
       <div className={wrapperClass}>
-        <div className="flex flex-col gap-1 rounded-lg border border-choy-green bg-[rgba(50,205,50,0.1)] px-4 py-2.5 text-[0.9rem] text-choy-green-light">
-          <code className="text-[1rem] font-semibold text-text-high">
-            {status.connection.address}:{status.connection.port}
-          </code>
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-choy-green bg-[rgba(50,205,50,0.1)] px-4 py-2.5 text-[0.9rem] text-choy-green-light">
+          <CopyableValue
+            value={`${status.connection.address}:${status.connection.port}`}
+          />
+          {status.connection.password && (
+            <CopyableValue value={status.connection.password} />
+          )}
         </div>
       </div>
     );

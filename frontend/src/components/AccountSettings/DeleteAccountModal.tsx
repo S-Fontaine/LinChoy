@@ -73,6 +73,14 @@ export default function DeleteAccountModal({
           <label className={labelClass} htmlFor="account-delete-password">
             Mot de passe
           </label>
+          <input
+            type="email"
+            autoComplete="username"
+            value={user?.email ?? ""}
+            readOnly
+            tabIndex={-1}
+            className="sr-only"
+          />
           <div className="relative w-full">
             <input
               type={showPassword ? "text" : "password"}

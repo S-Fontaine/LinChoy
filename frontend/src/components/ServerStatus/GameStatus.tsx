@@ -71,7 +71,7 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
 
   return (
     <div
-      className={`flex h-[clamp(600px,calc(975px-93.75vw),675px)] max-w-145 flex-col overflow-hidden rounded-2xl border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] text-text-high [transition:border-color_0.3s_ease,box-shadow_0.3s_ease,transform_0.2s_ease] hover:-translate-y-1 ${cardStateClass[game.state]}`}
+      className={`flex h-160 max-w-145 flex-col overflow-hidden rounded-2xl border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] text-text-high [transition:border-color_0.3s_ease,box-shadow_0.3s_ease,transform_0.2s_ease] hover:-translate-y-1 ${cardStateClass[game.state]}`}
     >
       <div className="mx-6 flex items-center justify-between border-b border-border">
         <h2 className="my-3">{game.name}</h2>
@@ -108,7 +108,7 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
           quality={50}
         />
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 pb-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 px-5 pb-5">
         <div className="flex items-start justify-between">
           <h3 className="flex items-center text-[1.1rem] font-bold">
             {game.servername}
@@ -141,7 +141,7 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
             )}
           </div>
         </div>
-        <div className="flex h-full flex-col justify-between">
+        <div className="flex h-full min-h-0 flex-col justify-between overflow-x-visible overflow-y-auto">
           <p className="text-[0.9rem] leading-normal text-[#aaa]">
             {game.description}
           </p>

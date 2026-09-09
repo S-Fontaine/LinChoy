@@ -5,9 +5,10 @@ import { handleMongooseError } from "../utils/handleMongooseError.js";
 import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
 import { resolveMinecraftPlayer } from "../utils/linking/minecraftAuth.js";
 import { getMinecraftLinkExpiresAt } from "../utils/linking/minecraftVerification.js";
+import { minecraftLinkLimiter } from "../middlewares/rateLimit.js";
 const router = Router();
 
-router.post("/link", requireAuth, async (req: AuthRequest, res) => {
+router.post("/link", requireAuth, minecraftLinkLimiter, async (req: AuthRequest, res) => {
   const { input } = req.body as { input?: string };
   const linkedAt = new Date();
 

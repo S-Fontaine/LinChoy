@@ -1,5 +1,8 @@
+import { escapeHtml } from "../escapeHtml.js";
+
 export function getVerificationEmailTemplate(username: string, verifyUrl: string) {
   const text = `Bonjour ${username},\n\nBienvenue chez LinChoy ! Veuillez confirmer votre adresse email en copiant-collant le lien suivant dans votre navigateur : ${verifyUrl}\n\nCe lien expire dans 24 heures.\n\nÀ très vite !`;
+  const safeUsername = escapeHtml(username);
 
   const html = `<!DOCTYPE html>
 <html lang="fr">
@@ -23,7 +26,7 @@ export function getVerificationEmailTemplate(username: string, verifyUrl: string
           <tr>
             <td style="padding: 30px 40px; text-align: left; color: #b3b3b3; line-height: 1.6; font-size: 15px;">
               <p style="margin: 0 0 16px 0; font-size: 18px; color: #ffffff; font-weight: 600;">
-                Bonjour <span style="color: #ff8c00;">${username}</span>,
+                Bonjour <span style="color: #ff8c00;">${safeUsername}</span>,
               </p>
               <p style="margin: 0 0 24px 0;">Bienvenue dans l'aventure !<br/> Pour valider définitivement la création de ton compte et sécuriser tes accès, clique simplement sur le bouton ci-dessous :</p>
               

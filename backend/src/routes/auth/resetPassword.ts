@@ -16,7 +16,7 @@ const router = Router();
 
 router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
   const { email } = req.body;
-  if (!email?.trim()) {
+  if (typeof email !== "string" || !email.trim()) {
     return res.status(400).json({ result: false, message: "Email requis" });
   }
 
@@ -51,7 +51,12 @@ router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
 
 router.post("/reset-password", authLimiter, async (req, res) => {
   const { token, password } = req.body;
-  if (!token || !password) {
+  if (
+    typeof token !== "string" ||
+    !token ||
+    typeof password !== "string" ||
+    !password
+  ) {
     return res.status(400).json({ result: false, message: "Champs manquants" });
   }
 

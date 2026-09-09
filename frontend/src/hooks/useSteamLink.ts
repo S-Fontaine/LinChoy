@@ -79,14 +79,13 @@ export function useSteamLink(onLinked?: () => void) {
     const pollClosed = setInterval(async () => {
       if (!popup || !popup.closed) return;
       cleanup();
-      if (resolved) return;
 
       const res = await fetchWithAuth(`/auth/me`);
       if (res.ok) {
         const result = await res.json();
         const newSteamId = result.user.steamId;
         setUser(result.user);
-        if (newSteamId && newSteamId !== user?.steamId) {
+        if (!resolved && newSteamId && newSteamId !== user?.steamId) {
           setMessage({
             type: "success",
             text: "Compte Steam lié avec succès !",

@@ -6,7 +6,7 @@ const lineClass = `rounded ${shimmerClass}`;
 
 export function FeaturedGameStatusSkeleton() {
   return (
-    <div className="flex h-[clamp(450px,calc(1409px-140vw),929px)] overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:flex-col">
+    <div className="flex h-150 overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:h-240 max-[700px]:flex-col">
       <div
         className={`min-h-70 flex-[0_0_40%] max-[700px]:h-50 max-[700px]:flex-none ${shimmerClass}`}
       />

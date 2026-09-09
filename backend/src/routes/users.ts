@@ -5,14 +5,24 @@ import { generateVerifyToken } from "../utils/auth/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { mailer } from "../utils/mailer.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
+import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
 
 const router = Router();
 
 router.patch("/:id", requireAuth, async (req: AuthRequest, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, currentPassword } = req.body;
 
   if (req.user?.userId !== req.params.id) {
     return res.status(403).json({ result: false, message: "Accès refusé" });
+  }
+
+  if (
+    (username !== undefined && typeof username !== "string") ||
+    (email !== undefined && typeof email !== "string") ||
+    (password !== undefined && typeof password !== "string") ||
+    (currentPassword !== undefined && typeof currentPassword !== "string")
+  ) {
+    return res.status(400).json({ result: false, message: "Champs invalides" });
   }
 
   try {
@@ -33,6 +43,21 @@ router.patch("/:id", requireAuth, async (req: AuthRequest, res) => {
         result: false,
         message: "Aucune modification détectée",
       });
+    }
+
+    if (usernameChanged || emailChanged || passwordProvided) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          result: false,
+          message: "Mot de passe actuel requis pour modifier ces informations",
+        });
+      }
+      const currentPasswordMatch = await user.comparePassword(currentPassword);
+      if (!currentPasswordMatch) {
+        return res
+          .status(401)
+          .json({ result: false, message: "Mot de passe actuel incorrect" });
+      }
     }
 
     if (usernameChanged) user.username = username;
@@ -93,7 +118,7 @@ router.delete("/:id", requireAuth, async (req: AuthRequest, res) => {
     return res.status(403).json({ result: false, message: "Accès refusé" });
   }
 
-  if (!password) {
+  if (typeof password !== "string" || !password) {
     return res.status(400).json({
       result: false,
       message: "Mot de passe requis pour confirmer la suppression",
@@ -113,6 +138,14 @@ router.delete("/:id", requireAuth, async (req: AuthRequest, res) => {
       return res
         .status(401)
         .json({ result: false, message: "Mot de passe incorrect" });
+    }
+
+    try {
+      const userId = user._id.toString();
+      await revokeAllWhitelistsForUser(userId, "minecraft");
+      await revokeAllWhitelistsForUser(userId, "steam");
+    } catch (err) {
+      console.error("[delete user]: Échec du retrait des whitelists", err);
     }
 
     await User.findByIdAndDelete(req.params.id);

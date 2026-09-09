@@ -91,6 +91,7 @@ describe("Test route: POST /games/:slug/whitelist", () => {
     expect(res.body.connection).toEqual({
       address: "play.linchoy.com",
       port: 25565,
+      password: null,
     });
     expect(syncWhitelistMock).toHaveBeenCalledTimes(1);
     expect(syncWhitelistMock.mock.calls[0][0]).toMatchObject({
@@ -102,6 +103,34 @@ describe("Test route: POST /games/:slug/whitelist", () => {
       gameServer: server._id,
     });
     expect(entry).not.toBeNull();
+  });
+
+  it("Inclut le mot de passe de connexion quand le serveur en a un", async () => {
+    await GameServer.create({
+      name: "V Rising",
+      gameData: {
+        slug: "vrising-pass",
+        type: "protocol-valve",
+        containerName: "vrising-server",
+      },
+      connectionInfo: {
+        address: "play.linchoy.com",
+        port: 2456,
+        password: "secretserverpass",
+      },
+    });
+    const user = await User.create({
+      ...userPayload,
+      steamId: "76561198000000001",
+    });
+    const token = generateAccessToken({ userId: user._id.toString() });
+
+    const res = await request(app)
+      .post("/games/vrising-pass/whitelist")
+      .set("Cookie", `accessToken=${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.connection.password).toBe("secretserverpass");
   });
 
   it("Whiteliste avec le steamId pour un jeu Steam", async () => {

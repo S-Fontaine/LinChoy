@@ -132,6 +132,28 @@ describe("Test route: POST /auth/login", () => {
     expect(res.body.result).toBe(false);
     expect(res.body.message).toBe("Champs requis");
   });
+  it("Refuse une tentative d'injection NoSQL sur l'email (objet)", async () => {
+    await User.create(payload);
+    const res = await request(app)
+      .post(BASE_URL)
+      .send({ email: { $gt: "" }, password: payload.password });
+
+    expect(res.status).toBe(400);
+    expect(res.body.result).toBe(false);
+    expect(res.body.message).toBe("Champs requis");
+  });
+
+  it("Refuse une tentative d'injection NoSQL sur le password (objet)", async () => {
+    await User.create(payload);
+    const res = await request(app)
+      .post(BASE_URL)
+      .send({ email: payload.email, password: { $ne: null } });
+
+    expect(res.status).toBe(400);
+    expect(res.body.result).toBe(false);
+    expect(res.body.message).toBe("Champs requis");
+  });
+
   it("Renvoie les infos user dans la réponse de login", async () => {
     await User.create({ ...payload, isVerified: true });
 

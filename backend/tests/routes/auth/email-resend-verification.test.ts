@@ -12,39 +12,49 @@ describe("Test route: POST /auth/email/resend-verification", () => {
     password: "MotDePasse123!",
   };
 
-  it("Renvoie un email de vérification pour un utilisateur non vérifié", async () => {
+  it("Renvoie 200 et envoie un email pour un utilisateur non vérifié", async () => {
     await User.create(payload);
+    const spy = jest.spyOn(mailer, "sendVerificationEmail");
 
     const res = await request(app)
       .post(BASE_URL)
       .send({ email: payload.email });
+
     expect(res.status).toBe(200);
     expect(res.body.result).toBe(true);
-    expect(res.body.message).toMatch(/Email de vérification renvoyé/i);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it("Refuse de renvoyer un email de vérification pour un utilisateur déjà vérifié", async () => {
+  it("Renvoie 200 avec le même message sans renvoyer d'email pour un utilisateur déjà vérifié (anti-énumération)", async () => {
     await User.create(payload);
     const user = await User.findOne({ email: payload.email });
     if (user) {
       user.isVerified = true;
       await user.save();
     }
+    const spy = jest.spyOn(mailer, "sendVerificationEmail");
+
     const res = await request(app)
       .post(BASE_URL)
       .send({ email: payload.email });
-    expect(res.status).toBe(400);
-    expect(res.body.result).toBe(false);
-    expect(res.body.message).toMatch(/Utilisateur déjà vérifié/i);
+
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBe(true);
+    expect(res.body.message).toMatch(/si un compte existe/i);
+    expect(spy).not.toHaveBeenCalled();
   });
 
-  it("Refuse de renvoyer un email de vérification pour un utilisateur inexistant", async () => {
+  it("Renvoie 200 avec le même message pour un utilisateur inexistant (anti-énumération)", async () => {
+    const spy = jest.spyOn(mailer, "sendVerificationEmail");
+
     const res = await request(app)
       .post(BASE_URL)
       .send({ email: payload.email });
-    expect(res.status).toBe(404);
-    expect(res.body.result).toBe(false);
-    expect(res.body.message).toMatch(/Utilisateur introuvable/i);
+
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBe(true);
+    expect(res.body.message).toMatch(/si un compte existe/i);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it("Refuse de renvoyer un email de vérification sans email", async () => {
@@ -65,7 +75,8 @@ describe("Test route: POST /auth/email/resend-verification", () => {
     expect(res.body.result).toBe(false);
     expect(res.body.message).toMatch(/Champs requis/i);
   });
-  it("Renvoye une 500 si la base de données crash", async () => {
+
+  it("Répond 200 même si la base de données crash", async () => {
     jest
       .spyOn(User, "findOne")
       .mockRejectedValueOnce(new Error("Crash simulé"));
@@ -74,11 +85,11 @@ describe("Test route: POST /auth/email/resend-verification", () => {
       .post(BASE_URL)
       .send({ email: payload.email });
 
-    expect(res.status).toBe(500);
-    expect(res.body.message).toBe("Erreur serveur");
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBe(true);
   });
 
-  it("Renvoye une 500 si le service d'email crash", async () => {
+  it("Répond 200 même si le service d'email crash", async () => {
     await User.create(payload);
 
     jest
@@ -87,11 +98,8 @@ describe("Test route: POST /auth/email/resend-verification", () => {
     const res = await request(app)
       .post(BASE_URL)
       .send({ email: payload.email });
-    expect(res.status).toBe(500);
-    expect(res.body).toEqual({
-      result: false,
-      message:
-        "Impossible d'envoyer l'email pour le moment. Réessayez plus tard.",
-    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.result).toBe(true);
   });
 });

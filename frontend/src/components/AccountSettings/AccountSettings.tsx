@@ -5,7 +5,14 @@ import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { checkPasswordStrength } from "@/lib/passwordRules";
 import SettingRow from "./SettingRow";
-import PasswordEditField from "./PasswordEditField";
+import PasswordEditField, {
+  emptyPasswordFormValue,
+  type PasswordFormValue,
+} from "./PasswordEditField";
+import ValueWithPasswordField, {
+  emptyValueWithPassword,
+  type ValueWithPassword,
+} from "./ValueWithPasswordField";
 import SettingsNav from "./SettingsNav";
 import SteamLinkRow from "./SteamLinkRow";
 import MinecraftLinkRow from "./MinecraftLinkRow";
@@ -18,12 +25,15 @@ export default function AccountSettings() {
 
   if (!user) return null;
 
-  async function patchUser(payload: Record<string, string>) {
+  async function patchUser(
+    payload: Record<string, string>,
+    currentPassword: string,
+  ) {
     if (!user) return { success: false, message: "Utilisateur non connecté" };
     const res = await fetchWithAuth(`/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, currentPassword }),
     });
     const result = await res.json();
 
@@ -43,6 +53,28 @@ export default function AccountSettings() {
     return { success: true, message: result.message };
   }
 
+  async function patchPassword(value: PasswordFormValue) {
+    if (!user) return { success: false, message: "Utilisateur non connecté" };
+    const res = await fetchWithAuth(`/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        currentPassword: value.currentPassword,
+        password: value.newPassword,
+      }),
+    });
+    const result = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: result.message || "Une erreur est survenue",
+      };
+    }
+
+    return { success: true, message: result.message };
+  }
+
   return (
     <div className={layoutClass}>
       <SettingsNav
@@ -56,27 +88,56 @@ export default function AccountSettings() {
           <>
             <h2 className={contentTitleClass}>Compte et sécurité</h2>
 
-            <SettingRow
+            <SettingRow<ValueWithPassword>
               label="Nom d'utilisateur"
               displayValue={user.username}
-              onSave={(value) => patchUser({ username: value })}
+              emptyValue={emptyValueWithPassword}
+              onSave={(v) => patchUser({ username: v.value }, v.currentPassword)}
+              isValid={(v) => v.value.length > 0 && v.currentPassword.length > 0}
+              renderEditField={(v, setV) => (
+                <ValueWithPasswordField
+                  value={v}
+                  setValue={setV}
+                  email={user.email}
+                  placeholder="Nouveau nom d'utilisateur"
+                />
+              )}
             />
 
-            <SettingRow
+            <SettingRow<ValueWithPassword>
               label="Adresse Email"
               displayValue={user.email}
-              inputType="email"
-              onSave={(value) => patchUser({ email: value })}
+              emptyValue={emptyValueWithPassword}
+              onSave={(v) => patchUser({ email: v.value }, v.currentPassword)}
+              isValid={(v) => v.value.length > 0 && v.currentPassword.length > 0}
+              renderEditField={(v, setV) => (
+                <ValueWithPasswordField
+                  value={v}
+                  setValue={setV}
+                  email={user.email}
+                  inputType="email"
+                  placeholder="Nouvelle adresse email"
+                />
+              )}
             />
 
-            <SettingRow
+            <SettingRow<PasswordFormValue>
               label="Mot de passe"
               displayValue="••••••••••••"
               editLabel="Changer"
-              onSave={(value) => patchUser({ password: value })}
-              isValid={(value) => checkPasswordStrength(value).isComplete}
+              emptyValue={emptyPasswordFormValue}
+              onSave={patchPassword}
+              isValid={(value) =>
+                value.currentPassword.length > 0 &&
+                checkPasswordStrength(value.newPassword).isComplete &&
+                value.newPassword === value.confirmPassword
+              }
               renderEditField={(value, setValue) => (
-                <PasswordEditField value={value} setValue={setValue} />
+                <PasswordEditField
+                  value={value}
+                  setValue={setValue}
+                  email={user.email}
+                />
               )}
             />
 

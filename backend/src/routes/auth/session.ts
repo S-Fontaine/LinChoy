@@ -16,21 +16,26 @@ import { getMinecraftLinkExpiresAt } from "../../utils/linking/minecraftVerifica
 
 const router = Router();
 
+const DUMMY_PASSWORD_HASH =
+  "$2b$12$vqw7HG9ZrkEEm0QOOef3UepptuoZx0V3UDaKplyhOu4mLzk6WNbxS";
+
 router.post("/login", authLimiter, async (req, res) => {
   const { email, password } = req.body;
-  if (!email?.trim() || !password) {
+  if (
+    typeof email !== "string" ||
+    !email.trim() ||
+    typeof password !== "string" ||
+    !password
+  ) {
     return res.status(400).json({ result: false, message: "Champs requis" });
   }
   try {
     const user = await User.findOne({ email });
-    if (!user || !user.password) {
-      return res
-        .status(401)
-        .json({ result: false, message: "Identifiants invalides" });
-    }
+    const hash =
+      user && user.password ? String(user.password) : DUMMY_PASSWORD_HASH;
 
-    const match = await bcrypt.compare(password, String(user.password));
-    if (!match) {
+    const match = await bcrypt.compare(password, hash);
+    if (!user || !user.password || !match) {
       return res
         .status(401)
         .json({ result: false, message: "Identifiants invalides" });

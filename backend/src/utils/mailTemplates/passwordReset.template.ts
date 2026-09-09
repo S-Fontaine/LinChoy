@@ -1,5 +1,8 @@
+import { escapeHtml } from "../escapeHtml.js";
+
 export function getPasswordResetTemplate(username: string, resetUrl: string) {
   const text = `Bonjour ${username},\n\nUne demande de réinitialisation de mot de passe a été effectuée. Copie-colle ce lien dans ton navigateur pour choisir un nouveau mot de passe : ${resetUrl}\n\nCe lien expire dans 1 heure. Si tu n'es pas à l'origine de cette demande, ignore cet email.`;
+  const safeUsername = escapeHtml(username);
 
   const html = `<!DOCTYPE html>
 <html lang="fr">
@@ -23,7 +26,7 @@ export function getPasswordResetTemplate(username: string, resetUrl: string) {
           <tr>
             <td style="padding: 30px 40px; text-align: left; color: #b3b3b3; line-height: 1.6; font-size: 15px;">
               <p style="margin: 0 0 16px 0; font-size: 18px; color: #ffffff; font-weight: 600;">
-                Bonjour <span style="color: #ff8c00;">${username}</span>,
+                Bonjour <span style="color: #ff8c00;">${safeUsername}</span>,
               </p>
               <p style="margin: 0 0 24px 0;">Tu as demandé à réinitialiser ton mot de passe. Clique sur le bouton ci-dessous pour en choisir un nouveau :</p>
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 30px auto;">

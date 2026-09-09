@@ -56,6 +56,7 @@ router.get("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
         ? {
             address: server.connectionInfo.address,
             port: server.connectionInfo.port,
+            password: server.connectionInfo.password || null,
           }
         : null,
     });
@@ -112,6 +113,7 @@ router.post("/:slug/whitelist", requireAuth, async (req: AuthRequest, res) => {
       connection: {
         address: server.connectionInfo.address,
         port: server.connectionInfo.port,
+        password: server.connectionInfo.password || null,
       },
     });
   } catch (err) {

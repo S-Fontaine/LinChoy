@@ -1,9 +1,12 @@
 "use client";
+import { useEffect, useRef } from "react";
 
 export type InlineMessageState = {
   type: "success" | "error";
   text: string;
 };
+
+const AUTO_DISMISS_MS = 5000;
 
 const boxClass =
   "flex items-center justify-between gap-3 rounded-lg border p-3 mb-6 text-center text-[0.9rem]";
@@ -17,6 +20,17 @@ export default function InlineMessage({
   message: InlineMessageState;
   onClose: () => void;
 }) {
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
+  useEffect(() => {
+    const timeout = setTimeout(() => onCloseRef.current(), AUTO_DISMISS_MS);
+    return () => clearTimeout(timeout);
+  }, [message]);
+
   return (
     <div className={message.type === "success" ? successBoxClass : errorBoxClass}>
       <span>{message.text}</span>

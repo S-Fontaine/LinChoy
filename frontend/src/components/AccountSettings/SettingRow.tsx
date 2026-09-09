@@ -16,30 +16,33 @@ const saveBtnClass =
   "cursor-pointer rounded-lg border-0 bg-choy-green px-4 py-2 font-semibold text-bg-main disabled:cursor-not-allowed disabled:opacity-50";
 const successTextClass = "text-[0.85rem] text-choy-green";
 
-interface ISettingRow {
+interface ISettingRow<T> {
   label: string;
   displayValue: string;
   editLabel?: string;
-  onSave: (value: string) => Promise<{ success: boolean; message: string }>;
+  onSave: (value: T) => Promise<{ success: boolean; message: string }>;
   inputType?: string;
+  emptyValue?: T;
   renderEditField?: (
-    value: string,
-    setValue: (v: string) => void,
+    value: T,
+    setValue: (v: T) => void,
   ) => React.ReactNode;
-  isValid?: (value: string) => boolean;
+  isValid?: (value: T) => boolean;
 }
 
-export default function SettingRow({
+export default function SettingRow<T = string>({
   label,
   displayValue,
   editLabel = "Modifier",
   onSave,
   inputType = "text",
+  emptyValue = "" as T,
   renderEditField,
-  isValid = (value) => value.length > 0,
-}: ISettingRow) {
+  isValid = (value: T) =>
+    typeof value === "string" ? value.length > 0 : true,
+}: ISettingRow<T>) {
   const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<T>(emptyValue);
   const [state, setState] = useState({
     loading: false,
     error: "",
@@ -47,7 +50,7 @@ export default function SettingRow({
   });
 
   function openEdit() {
-    setValue("");
+    setValue(emptyValue);
     setState({ loading: false, error: "", success: "" });
     setIsEditing(true);
   }
@@ -75,20 +78,27 @@ export default function SettingRow({
           </button>
         </div>
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <form
+          className="flex flex-col gap-2.5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSave();
+          }}
+        >
           {renderEditField ? (
             renderEditField(value, setValue)
           ) : (
             <input
               type={inputType}
               className={rowInputClass}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              value={value as unknown as string}
+              onChange={(e) => setValue(e.target.value as unknown as T)}
               autoFocus
             />
           )}
           <div className="flex justify-end gap-2">
             <button
+              type="button"
               className={cancelBtnClass}
               onClick={() => setIsEditing(false)}
               disabled={state.loading}
@@ -96,15 +106,15 @@ export default function SettingRow({
               Annuler
             </button>
             <button
+              type="submit"
               className={saveBtnClass}
-              onClick={handleSave}
               disabled={state.loading || !isValid(value)}
             >
               {state.loading ? "..." : "Enregistrer"}
             </button>
           </div>
           {state.error && <p className={errorTextClass}>{state.error}</p>}
-        </div>
+        </form>
       )}
       {!isEditing && state.success && (
         <p className={successTextClass}>{state.success}</p>

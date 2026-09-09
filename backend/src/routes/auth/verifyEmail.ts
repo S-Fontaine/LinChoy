@@ -43,46 +43,33 @@ router.post(
   resendVerificationLimiter,
   async (req, res) => {
     const { email } = req.body;
-    if (!email?.trim()) {
+    if (typeof email !== "string" || !email.trim()) {
       return res.status(400).json({ result: false, message: "Champs requis" });
     }
-    let user;
-    try {
-      user = await User.findOne({ email });
-      if (!user) {
-        return res
-          .status(404)
-          .json({ result: false, message: "Utilisateur introuvable" });
-      }
 
-      if (user.isVerified) {
-        return res
-          .status(400)
-          .json({ result: false, message: "Utilisateur déjà vérifié" });
+    try {
+      const user = await User.findOne({ email });
+      if (user && !user.isVerified) {
+        try {
+          const verifyToken = generateVerifyToken({ userId: user._id.toString() });
+          await mailer.sendVerificationEmail(
+            user.email,
+            verifyToken,
+            user.username,
+          );
+        } catch (err) {
+          console.error("[Mail Resend]: Échec de l'envoi de l'email", err);
+        }
       }
     } catch (err) {
       console.error("[DB Resend]: Erreur recherche utilisateur", err);
-      return res.status(500).json({ result: false, message: "Erreur serveur" });
-    }
-    try {
-      const verifyToken = generateVerifyToken({ userId: user._id.toString() });
-      await mailer.sendVerificationEmail(
-        user.email,
-        verifyToken,
-        user.username,
-      );
-    } catch (err) {
-      console.error("[Mail Resend]: Échec de l'envoi de l'email", err);
-      return res.status(500).json({
-        result: false,
-        message:
-          "Impossible d'envoyer l'email pour le moment. Réessayez plus tard.",
-      });
     }
 
-    return res
-      .status(200)
-      .json({ result: true, message: "Email de vérification renvoyé" });
+    return res.status(200).json({
+      result: true,
+      message:
+        "Si un compte existe avec cette adresse et n'est pas encore vérifié, un email de vérification a été envoyé.",
+    });
   },
 );
 

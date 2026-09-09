@@ -41,12 +41,13 @@ describe("Test route: POST /auth/signup", () => {
     expect(res.status).toBe(400);
   });
 
-  it("Refuse un email déjà utilisé", async () => {
+  it("Renvoie un faux succès pour un email déjà utilisé, sans créer de compte ni envoyer d'email (anti-énumération)", async () => {
     await User.create({
       username: payload.username,
       email: payload.email,
       password: payload.password,
     });
+    const spy = jest.spyOn(mailer, "sendVerificationEmail");
 
     const res = await request(app).post(BASE_URL).send({
       username: "linchoyTest2",
@@ -54,7 +55,16 @@ describe("Test route: POST /auth/signup", () => {
       password: payload.password,
     });
 
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(201);
+    expect(res.body.result).toBe(true);
+    expect(res.body.message).toBe(
+      "Compte créé. Vérifiez votre email pour l'activer.",
+    );
+    expect(res.body.data).toBeUndefined();
+    expect(spy).not.toHaveBeenCalled();
+
+    const impostor = await User.findOne({ username: "linchoyTest2" });
+    expect(impostor).toBeNull();
   });
 
   it("Refuse un password absent", async () => {
