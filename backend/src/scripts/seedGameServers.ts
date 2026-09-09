@@ -77,9 +77,6 @@ const servers = [
       containerName: "valheim-server",
       slug: "valheim",
     },
-    statusInfo: {
-      comingSoon: true,
-    },
   },
 ];
 
