@@ -1,13 +1,7 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { useAppUI } from "@/context/AppUIContext";
-import LandingPage from "@/components/LandingPage/LandingPage";
-import ServerStatus from "@/components/ServerStatus/ServerStatus";
-import AccountSettings from "@/components/AccountSettings/AccountSettings";
-import LoadingScreen from "@/components/ui/LoadingScreen";
+import HomeView from "./HomeView";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export interface IGamesList {
   name: string;
   gameData: {
@@ -29,38 +23,23 @@ export interface IGamesList {
   };
 }
 
-export default function Home() {
-  const { user, isLoading } = useAuth();
-  const { activeView } = useAppUI();
-  const [gamesList, setGamesList] = useState<IGamesList[]>([]);
-
-  useEffect(() => {
-    async function getData() {
-      try {
-        const response = await fetch(`${BACKEND_URL}/games`, {
-          method: "GET",
-        });
-        const data = await response.json();
-        if (data?.result && Array.isArray(data.servers)) {
-          setGamesList(data.servers);
-        }
-      } catch (err) {
-        console.error("Erreur de récupération :", err);
-      }
+async function getGamesList(): Promise<IGamesList[]> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/games`, {
+      method: "GET",
+      cache: "no-store",
+    });
+    const data = await response.json();
+    if (data?.result && Array.isArray(data.servers)) {
+      return data.servers;
     }
-    getData();
-  }, []);
+  } catch (err) {
+    console.error("Erreur de récupération :", err);
+  }
+  return [];
+}
 
-  return (
-    <div>
-      {isLoading && <LoadingScreen />}
-      {!isLoading && !user && <LandingPage gamesList={gamesList} />}
-      {!isLoading && user && activeView === "ServerStatus" && (
-        <ServerStatus gamesList={gamesList} />
-      )}
-      {!isLoading && user && activeView === "AccountSettings" && (
-        <AccountSettings />
-      )}
-    </div>
-  );
+export default async function Home() {
+  const gamesList = await getGamesList();
+  return <HomeView gamesList={gamesList} />;
 }
