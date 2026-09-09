@@ -29,8 +29,8 @@ export async function syncValheimWhitelist(
   const toAdd = steamIds.filter((id) => !previousSet.has(id));
   const toRemove = previousIds.filter((id) => !desiredSet.has(id));
   const commands = [
-    ...toAdd.map((id) => `permit add ${id}`),
-    ...toRemove.map((id) => `permit remove ${id}`),
+    ...toAdd.map((id) => `addPermitted ${id}`),
+    ...toRemove.map((id) => `removePermitted ${id}`),
   ];
 
   if (commands.length > 0) {
