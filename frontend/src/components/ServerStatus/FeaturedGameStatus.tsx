@@ -45,7 +45,7 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
 
   return (
     <div
-      className={`flex min-h-100 overflow-hidden rounded-2xl border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:flex-col ${cardBorderClass[game.state]}`}
+      className={`flex h-[clamp(450px,calc(1409px-140vw),929px)] overflow-hidden rounded-2xl border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:flex-col ${cardBorderClass[game.state]}`}
     >
       <div className="relative min-h-70 flex-[0_0_40%] max-[700px]:h-50 max-[700px]:flex-none">
         <Image
@@ -54,8 +54,10 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
           alt={game.name}
           sizes="(max-width: 700px) 100vw, (max-width: 1298px) 40vw, 480px"
           fill
+          preload
           loading="eager"
           fetchPriority="high"
+          quality={75}
         />
         <button
           className="absolute top-4 left-4 flex cursor-pointer items-center gap-1.5 rounded-full border border-lin-orange bg-[color-mix(in_srgb,var(--bg-main)_80%,transparent)] px-3 py-1.5 text-[0.8rem] font-semibold text-lin-orange backdrop-blur-xs [&_svg]:h-3.5 [&_svg]:w-3.5"
@@ -66,7 +68,7 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 px-8 py-7">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-8 py-7">
         <div className="flex flex-col justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-[0.8rem] tracking-[0.5px] text-text-low uppercase">
@@ -88,7 +90,7 @@ export const FeaturedGameStatus = memo(function FeaturedGameStatus(
 
         <p className="leading-normal text-text-medium">{game.description}</p>
 
-        <div className="mt-auto border-y border-border">
+        <div className="mt-auto h-50 border-y border-border">
           <div className="flex items-center justify-between">
             <p className="my-2.5 text-[0.85rem] text-text-low">
               Joueurs en ligne

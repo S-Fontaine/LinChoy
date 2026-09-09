@@ -6,11 +6,11 @@ const lineClass = `rounded ${shimmerClass}`;
 
 export function FeaturedGameStatusSkeleton() {
   return (
-    <div className="flex min-h-100 overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:flex-col">
+    <div className="flex h-[clamp(450px,calc(1409px-140vw),929px)] overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] max-[700px]:flex-col">
       <div
         className={`min-h-70 flex-[0_0_40%] max-[700px]:h-50 max-[700px]:flex-none ${shimmerClass}`}
       />
-      <div className="flex flex-1 flex-col gap-5 px-8 py-7">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-8 py-7">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-2.5">
             <div className={lineClass} style={{ width: "80px", height: "12px" }} />

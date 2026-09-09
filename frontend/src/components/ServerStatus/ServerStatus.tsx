@@ -10,7 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useGameServersStream } from "@/hooks/useGameServersStream";
 import { type IGamesList } from "@/app/page";
 
-const skeletonLineClass = "h-3.5 rounded bg-border";
+const skeletonBarClass = "rounded bg-border";
 const favoriteWrapperClass = "col-span-full";
 
 function getGroupOrder(game: IGamesList): number {
@@ -101,13 +101,28 @@ export default function ServerStatus({
 
     if (!gameData) {
       return (
-        <div
-          key={game.gameData.slug}
-          className="flex max-w-145 min-h-90 flex-col gap-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)] p-6"
-        >
-          <div className="h-60 animate-[shimmer_1.5s_infinite] rounded-[10px] bg-[linear-gradient(90deg,var(--border)_25%,color-mix(in_srgb,var(--border)_60%,transparent)_50%,var(--border)_75%)] bg-size-[200%_100%]" />
-          <div className={skeletonLineClass} style={{ width: "60%" }} />
-          <div className={skeletonLineClass} style={{ width: "40%" }} />
+        <div key={game.gameData.slug} className="relative h-full">
+          <div className="flex h-[clamp(600px,calc(975px-93.75vw),675px)] max-w-145 flex-col overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg-main)_75%,transparent)]">
+            <div className="mx-6 flex items-center justify-between border-b border-border">
+              <h2 className="my-3">
+                <span className={`inline-block h-5 w-28 ${skeletonBarClass}`} />
+              </h2>
+              <div className={`h-4 w-14 ${skeletonBarClass}`} />
+            </div>
+            <div className="relative m-4 h-60 overflow-hidden rounded-[10px]">
+              <div className="absolute inset-0 animate-[shimmer_1.5s_infinite] bg-[linear-gradient(90deg,var(--border)_25%,color-mix(in_srgb,var(--border)_60%,transparent)_50%,var(--border)_75%)] bg-size-[200%_100%]" />
+            </div>
+            <div className="flex min-h-25 flex-1 flex-col gap-3 px-5 pb-5">
+              <div className="flex items-start justify-between">
+                <div className={`h-5.5 w-32 ${skeletonBarClass}`} />
+                <div className="h-8 w-24 rounded-[20px] bg-border" />
+              </div>
+              <div className="flex h-full flex-col justify-between">
+                <div className={`min-h-11 w-full ${skeletonBarClass}`} />
+                <div className="mt-3 h-10.5 w-full rounded-lg bg-border" />
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
