@@ -33,6 +33,7 @@ export function computePasswordFingerprint(passwordHash: string): string {
 
 export interface JwtPayload {
   userId: string;
+  role?: "user" | "admin";
 }
 export interface ResetTokenPayload {
   userId: string;

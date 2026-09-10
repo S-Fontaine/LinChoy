@@ -12,9 +12,12 @@ export interface MinecraftWhitelistEntry {
 
 export async function syncMinecraftWhitelist(
   containerName: string,
+  hostAddress: string,
+  hostPort: number,
+  hostPassword: string,
   entries: MinecraftWhitelistEntry[],
 ): Promise<void> {
-  const dataDir = path.join(process.env.WHITELISTS_DATA_DIR!, containerName);
+  const dataDir = path.join("/whitelist", containerName);
   const targetFile = path.join(dataDir, "whitelist.json");
   const tmpFile = path.join(dataDir, "whitelist.json.tmp");
 
@@ -25,11 +28,11 @@ export async function syncMinecraftWhitelist(
   try {
     await execFileAsync("mcrcon", [
       "-H",
-      process.env.MINECRAFT_RCON_HOST!,
+      hostAddress,
       "-P",
-      process.env.MINECRAFT_RCON_PORT!,
+      String(hostPort),
       "-p",
-      process.env.MINECRAFT_RCON_PASSWORD!,
+      hostPassword,
       "whitelist reload",
     ]);
   } catch(err) {

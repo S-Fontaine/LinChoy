@@ -21,7 +21,13 @@ export async function syncWhitelist(server: IGameServer): Promise<void> {
         name: e.user.minecraftUsername!,
       }));
 
-    return syncMinecraftWhitelist(server.gameData.containerName, players);
+    return syncMinecraftWhitelist(
+      server.gameData.containerName,
+      server.hostInfo.address,
+      server.hostInfo.port,
+      server.hostInfo.password,
+      players,
+    );
   }
 
   if (server.gameData.slug === "valheim") {
@@ -33,7 +39,13 @@ export async function syncWhitelist(server: IGameServer): Promise<void> {
       .filter((e) => e.user?.steamId)
       .map((e) => e.user.steamId!);
 
-    return syncValheimWhitelist(server.gameData.containerName, steamIds);
+    return syncValheimWhitelist(
+      server.gameData.containerName,
+      server.hostInfo.address,
+      server.hostInfo.port,
+      server.hostInfo.password,
+      steamIds,
+    );
   }
 
   // TODO: V Rising

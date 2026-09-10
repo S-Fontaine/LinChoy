@@ -17,9 +17,12 @@ async function readSyncedIds(stateFile: string): Promise<string[]> {
 
 export async function syncValheimWhitelist(
   containerName: string,
+  hostAddress: string,
+  hostPort: number,
+  hostPassword: string,
   steamIds: string[],
 ): Promise<void> {
-  const dataDir = path.join(process.env.WHITELISTS_DATA_DIR!, containerName);
+  const dataDir = path.join("/whitelist", containerName);
   const stateFile = path.join(dataDir, "permittedlist.synced.json");
 
   const previousIds = await readSyncedIds(stateFile);
@@ -36,11 +39,11 @@ export async function syncValheimWhitelist(
   if (commands.length > 0) {
     await execFileAsync("mcrcon", [
       "-H",
-      process.env.VALHEIM_RCON_HOST!,
+      hostAddress,
       "-P",
-      process.env.VALHEIM_RCON_PORT!,
+      String(hostPort),
       "-p",
-      process.env.VALHEIM_RCON_PASSWORD!,
+      hostPassword,
       ...commands,
     ]);
   }

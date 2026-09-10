@@ -13,6 +13,7 @@ import gameServerRouter from "./routes/gamesServer.js";
 import whitelistRouter from "./routes/whitelist.js"
 import steamRouter from "./routes/steam.js";
 import minecraftRouter from "./routes/minecraft.js";
+import adminRouter from "./routes/admin.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/games", gameServerRouter);
 app.use("/games", whitelistRouter);
 app.use("/steam", steamRouter);
 app.use("/minecraft", minecraftRouter);
+app.use("/admin", adminRouter);
 
 // Check
 app.use((_req, res) => {

@@ -5,11 +5,22 @@ const syncMinecraftMock =
   jest.fn<
     (
       containerName: string,
+      hostAddress: string,
+      hostPort: number,
+      hostPassword: string,
       entries: { uuid: string; name: string }[],
     ) => Promise<void>
   >();
 const syncValheimMock =
-  jest.fn<(containerName: string, steamIds: string[]) => Promise<void>>();
+  jest.fn<
+    (
+      containerName: string,
+      hostAddress: string,
+      hostPort: number,
+      hostPassword: string,
+      steamIds: string[],
+    ) => Promise<void>
+  >();
 
 jest.unstable_mockModule(
   "../../src/utils/linking/minecraftWhitelist.js",
@@ -52,6 +63,11 @@ describe("Test util: gameWhitelist", () => {
           type: "minecraft",
           containerName: "mc-server",
         },
+        hostInfo: {
+          address: "192.168.0.1",
+          port: 65000,
+          password: "Steve",
+        },
       });
       const user = await User.create({
         ...userPayload,
@@ -62,9 +78,13 @@ describe("Test util: gameWhitelist", () => {
 
       await syncWhitelist(server);
 
-      expect(syncMinecraftMock).toHaveBeenCalledWith("mc-server", [
-        { uuid: "uuid-1", name: "Notch" },
-      ]);
+      expect(syncMinecraftMock).toHaveBeenCalledWith(
+        "mc-server",
+        "192.168.0.1",
+        65000,
+        "Steve",
+        [{ uuid: "uuid-1", name: "Notch" }],
+      );
       expect(syncValheimMock).not.toHaveBeenCalled();
     });
 
@@ -76,13 +96,24 @@ describe("Test util: gameWhitelist", () => {
           type: "minecraft",
           containerName: "mc-server",
         },
+        hostInfo: {
+          address: "192.168.0.1",
+          port: 65000,
+          password: "Steve",
+        },
       });
       const user = await User.create(userPayload);
       await ServerWhitelist.create({ user: user._id, gameServer: server._id });
 
       await syncWhitelist(server);
 
-      expect(syncMinecraftMock).toHaveBeenCalledWith("mc-server", []);
+      expect(syncMinecraftMock).toHaveBeenCalledWith(
+        "mc-server",
+        "192.168.0.1",
+        65000,
+        "Steve",
+        [],
+      );
     });
 
     it("Synchronise le fichier Valheim avec les SteamID whitelistés", async () => {
@@ -93,6 +124,11 @@ describe("Test util: gameWhitelist", () => {
           type: "protocol-valve",
           containerName: "valheim-server",
         },
+        hostInfo: {
+          address: "192.0.2.1",
+          port: 65000,
+          password: "123465",
+        },
       });
       const user = await User.create({
         ...userPayload,
@@ -102,9 +138,13 @@ describe("Test util: gameWhitelist", () => {
 
       await syncWhitelist(server);
 
-      expect(syncValheimMock).toHaveBeenCalledWith("valheim-server", [
-        "76561198000000000",
-      ]);
+      expect(syncValheimMock).toHaveBeenCalledWith(
+        "valheim-server",
+        "192.0.2.1",
+        65000,
+        "123465",
+        ["76561198000000000"],
+      );
       expect(syncMinecraftMock).not.toHaveBeenCalled();
     });
 
@@ -134,6 +174,11 @@ describe("Test util: gameWhitelist", () => {
           type: "minecraft",
           containerName: "mc-server",
         },
+        hostInfo: {
+          address: "192.168.0.1",
+          port: 65000,
+          password: "Steve",
+        },
       });
       const steamServer = await GameServer.create({
         name: "V Rising",
@@ -153,7 +198,13 @@ describe("Test util: gameWhitelist", () => {
 
       await revokeAllWhitelistsForUser(userId, "minecraft");
 
-      expect(syncMinecraftMock).toHaveBeenCalledWith("mc-server", []);
+      expect(syncMinecraftMock).toHaveBeenCalledWith(
+        "mc-server",
+        "192.168.0.1",
+        65000,
+        "Steve",
+        [],
+      );
       expect(syncValheimMock).not.toHaveBeenCalled();
 
       const remaining = await ServerWhitelist.find({ user: userId });
@@ -179,6 +230,11 @@ describe("Test util: gameWhitelist", () => {
           type: "protocol-valve",
           containerName: "valheim-server",
         },
+        hostInfo: {
+          address: "192.0.2.1",
+          port: 65000,
+          password: "123465",
+        },
       });
       const userId = new mongoose.Types.ObjectId().toString();
 
@@ -190,7 +246,13 @@ describe("Test util: gameWhitelist", () => {
 
       await revokeAllWhitelistsForUser(userId, "steam");
 
-      expect(syncValheimMock).toHaveBeenCalledWith("valheim-server", []);
+      expect(syncValheimMock).toHaveBeenCalledWith(
+        "valheim-server",
+        "192.0.2.1",
+        65000,
+        "123465",
+        [],
+      );
       expect(syncMinecraftMock).not.toHaveBeenCalled();
 
       const remaining = await ServerWhitelist.find({ user: userId });

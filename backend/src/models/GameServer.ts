@@ -35,6 +35,12 @@ export interface IGameData {
   slug: string;
 }
 
+export interface IHostInfo {
+  address: string;
+  port: number;
+  password: string;
+}
+
 export interface IGameServer {
   _id: Types.ObjectId;
   name: string;
@@ -43,6 +49,7 @@ export interface IGameServer {
   serverInfo: IServerInfo;
   statusInfo: IStatusInfo;
   gameData: IGameData;
+  hostInfo: IHostInfo;
 }
 
 // Sous-Document
@@ -103,6 +110,14 @@ const GameDataSchema = new Schema<IGameData>(
   },
   { _id: false },
 );
+const HostInfoSchema = new Schema<IHostInfo>(
+  {
+    address: { type: String, default: "" },
+    port: Number,
+    password: { type: String, default: "" },
+  },
+  { _id: false },
+);
 
 // Document
 const GameServerSchema = new Schema<IGameServer>({
@@ -112,6 +127,7 @@ const GameServerSchema = new Schema<IGameServer>({
   serverInfo: { type: ServerInfoSchema, default: () => ({}) },
   statusInfo: { type: StatusInfoSchema, default: () => ({}) },
   gameData: { type: GameDataSchema, default: () => ({}) },
+  hostInfo: { type: HostInfoSchema, default: () => ({}) },
 });
 
 export default mongoose.model<IGameServer>(

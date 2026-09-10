@@ -52,3 +52,26 @@ export async function getContainerState(
     cpu: info.HostConfig.NanoCpus,
   };
 }
+
+// Redémarrage propre : laisse au serveur le délai par défaut de Docker pour
+// s'arrêter proprement (sauvegarde en cours, joueurs prévenus, etc.) avant le kill.
+export async function restartContainer(containerName: string): Promise<void> {
+  const container = docker.getContainer(containerName);
+  await container.restart();
+}
+
+// Redémarrage d'urgence : aucun délai de grâce, le serveur est tué immédiatement
+// puis relancé — à utiliser seulement si le serveur ne répond plus.
+export async function emergencyRestartContainer(
+  containerName: string,
+): Promise<void> {
+  const container = docker.getContainer(containerName);
+  await container.restart({ t: 0 });
+}
+
+// Extinction : arrêt propre, le conteneur reste arrêté (pas de redémarrage
+// automatique sauf politique de restart configurée sur le conteneur lui-même).
+export async function stopContainer(containerName: string): Promise<void> {
+  const container = docker.getContainer(containerName);
+  await container.stop();
+}

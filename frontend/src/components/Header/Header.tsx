@@ -1,17 +1,22 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAppUI } from "@/context/AppUIContext";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import AuthCard from "../AuthCard/AuthCard";
 import Modal from "../ui/Modal";
 
 const dropdownItemClass =
   "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-text-high transition-all duration-300 ease-smooth hover:bg-[color-mix(in_srgb,var(--text-high)_10%,transparent)]";
+const adminItemClass =
+  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-lin-orange transition-all duration-300 ease-smooth hover:bg-[rgba(255,140,0,0.1)]";
 const dangerItemClass =
   "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-[#ff4d4d] transition-all duration-300 ease-smooth hover:bg-[rgba(255,77,77,0.1)]";
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const {
     isOpen,
     openAuth,
@@ -24,6 +29,16 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const onSwitchClick = () => setIsLogin(!isLogin);
+
+  // Le layout /admin est un Server Component qui ne rafraîchit jamais le
+  // accessToken lui-même (le refreshToken n'est envoyé qu'à /auth/refresh,
+  // pas accessible côté serveur pour /admin) — on s'assure ici qu'un cookie
+  // frais existe côté navigateur avant la navigation SSR.
+  const goToAdmin = async () => {
+    setIsDropdownOpen(false);
+    await fetchWithAuth("/auth/me").catch(() => {});
+    router.push("/admin");
+  };
 
   const isUserLogin = () => {
     setIsLogin(true);
@@ -60,7 +75,7 @@ export default function Header() {
           className="cursor-pointer text-[clamp(1.2rem,4vw,1.5rem)] font-extrabold tracking-[-0.5px] text-text-high"
           onClick={openServerStatus}
         >
-          <span className="text-lin-orange">Lin</span>
+          <span className="text-lin-orange">Dra</span>
           <span className="text-choy-green">Choy</span>
         </div>
         <div>
@@ -119,6 +134,21 @@ export default function Header() {
                       Paramètres du compte
                     </button>
                   </li>
+                  {user.role === "admin" && (
+                    <>
+                      <li className="my-1 h-px bg-border" role="none" />
+                      <li role="none">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={adminItemClass}
+                          onClick={goToAdmin}
+                        >
+                          Admin
+                        </button>
+                      </li>
+                    </>
+                  )}
                   <li className="my-1 h-px bg-border" role="none" />
                   <li role="none">
                     <button

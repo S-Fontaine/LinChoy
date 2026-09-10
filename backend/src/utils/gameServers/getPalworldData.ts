@@ -1,7 +1,7 @@
-import GameServer from "../../models/GameServer.js";
+import GameServer, { type IGameServer } from "../../models/GameServer.js";
 import ServerWhitelist from "../../models/ServerWhitelist.js";
 import { getContainerState } from "./docker.js";
-import type { Types } from "mongoose";
+import type { HydratedDocument } from "mongoose";
 
 export interface IPalworldPlayer {
   name: string;
@@ -23,26 +23,34 @@ export interface IPalworldInfo {
   worldguid: string;
 }
 
-const PALWORLD_API = `http://${process.env.PALWORLD_API_ADDRESS}:${process.env.PALWORLD_API_PORT}/v1/api`;
-const PALWORLD_ADMIN = process.env.PALWORLD_ADMIN;
 const FETCH_TIMEOUT_MS = 5000;
-
-const authHeader =
-  "Basic " + Buffer.from(`${PALWORLD_ADMIN}`).toString("base64");
 const KICK_DELAY_MS = 500;
+
+function palworldApiUrl(server: HydratedDocument<IGameServer>, path: string): string {
+  return `http://${server.hostInfo.address}:${server.hostInfo.port}/v1/api${path}`;
+}
+
+function palworldAuthHeader(server: HydratedDocument<IGameServer>): string {
+  return (
+    "Basic " + Buffer.from(`admin:${server.hostInfo.password}`).toString("base64")
+  );
+}
 
 function extractSteamId(userId: string): string | null {
   const match = /^steam_(\d+)$/.exec(userId);
   return match?.[1] ?? null;
 }
 
-async function kickPlayer(userId: string): Promise<void> {
+async function kickPlayer(
+  server: HydratedDocument<IGameServer>,
+  userId: string,
+): Promise<void> {
   try {
-    const res = await fetch(`${PALWORLD_API}/kick`, {
+    const res = await fetch(palworldApiUrl(server, "/kick"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: authHeader,
+        Authorization: palworldAuthHeader(server),
       },
       body: JSON.stringify({
         userid: userId,
@@ -57,13 +65,13 @@ async function kickPlayer(userId: string): Promise<void> {
 }
 
 async function kickNonWhitelistedPlayers(
-  gameServerId: Types.ObjectId,
+  server: HydratedDocument<IGameServer>,
   players: IPalworldPlayer[],
 ): Promise<void> {
   if (players.length === 0) return;
 
   const entries = await ServerWhitelist.find({
-    gameServer: gameServerId,
+    gameServer: server._id,
   }).populate<{ user: { steamId: string | null } }>("user", "steamId");
   const whitelistedSteamIds = new Set(
     entries
@@ -74,7 +82,7 @@ async function kickNonWhitelistedPlayers(
   for (const player of players) {
     const steamId = extractSteamId(player.userId);
     if (!steamId || !whitelistedSteamIds.has(steamId)) {
-      await kickPlayer(player.userId);
+      await kickPlayer(server, player.userId);
       await new Promise((resolve) => setTimeout(resolve, KICK_DELAY_MS));
     }
   }
@@ -110,12 +118,13 @@ export async function syncGameServerData() {
     return;
   }
   try {
+    const authHeader = palworldAuthHeader(existing);
     const [infoRes, playersRes] = await Promise.all([
-      fetch(`${PALWORLD_API}/info`, {
+      fetch(palworldApiUrl(existing, "/info"), {
         headers: { Authorization: authHeader },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       }),
-      fetch(`${PALWORLD_API}/players`, {
+      fetch(palworldApiUrl(existing, "/players"), {
         headers: { Authorization: authHeader },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       }),
@@ -129,7 +138,7 @@ export async function syncGameServerData() {
         | { players?: IPalworldPlayer[] }
         | IPalworldPlayer[];
       players = Array.isArray(json) ? json : json.players || [];
-      await kickNonWhitelistedPlayers(existing._id, players);
+      await kickNonWhitelistedPlayers(existing, players);
     }
 
     const info = infoRes.ok
