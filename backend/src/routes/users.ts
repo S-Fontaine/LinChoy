@@ -200,4 +200,33 @@ router.patch(
   },
 );
 
+router.patch("/:id/theme", requireAuth, async (req: AuthRequest, res) => {
+  if (req.user?.userId !== req.params.id) {
+    return res.status(403).json({ result: false, message: "Accès refusé" });
+  }
+
+  const { theme } = req.body;
+  if (theme !== "light" && theme !== "dark") {
+    return res.status(400).json({ result: false, message: "Thème invalide" });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { theme },
+      { returnDocument: "after" },
+    );
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ result: false, message: "Utilisateur introuvable" });
+    }
+
+    return res.status(200).json({ result: true, theme: user.theme });
+  } catch (err) {
+    return handleMongooseError(err, res);
+  }
+});
+
 export default router;

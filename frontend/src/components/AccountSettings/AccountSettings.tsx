@@ -16,6 +16,7 @@ import ValueWithPasswordField, {
 import SettingsNav from "./SettingsNav";
 import SteamLinkRow from "./SteamLinkRow";
 import MinecraftLinkRow from "./MinecraftLinkRow";
+import ThemeRow from "./ThemeRow";
 import DeleteAccountModal from "./DeleteAccountModal";
 
 export default function AccountSettings() {
@@ -143,6 +144,7 @@ export default function AccountSettings() {
 
             <SteamLinkRow />
             <MinecraftLinkRow />
+            <ThemeRow />
           </>
         )}
       </div>

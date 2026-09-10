@@ -109,4 +109,9 @@ describe("Test modèle: User", () => {
     const user = await User.create(payload);
     expect(user.role).toBe("user");
   });
+
+  it("Attribue le thème 'dark' par défaut", async () => {
+    const user = await User.create(payload);
+    expect(user.theme).toBe("dark");
+  });
 });

@@ -79,7 +79,7 @@ export default function GameServerDetail({
       <GameServerForm value={value} onChange={setValue} />
 
       {state.error && (
-        <p className="mt-3 shrink-0 text-[0.85rem] text-[#e04b4b]">{state.error}</p>
+        <p className="mt-3 shrink-0 text-[0.85rem] text-danger">{state.error}</p>
       )}
 
       <div className={actionsRowClass}>

@@ -10,9 +10,9 @@ import Modal from "../ui/Modal";
 const dropdownItemClass =
   "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-text-high transition-all duration-300 ease-smooth hover:bg-[color-mix(in_srgb,var(--text-high)_10%,transparent)]";
 const adminItemClass =
-  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-lin-orange transition-all duration-300 ease-smooth hover:bg-[rgba(255,140,0,0.1)]";
+  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-lin-orange transition-all duration-300 ease-smooth hover:bg-[color-mix(in_srgb,var(--lin-orange)_10%,transparent)]";
 const dangerItemClass =
-  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-[#ff4d4d] transition-all duration-300 ease-smooth hover:bg-[rgba(255,77,77,0.1)]";
+  "w-full cursor-pointer rounded-lg border-0 bg-transparent px-4 py-3 text-left text-[0.95rem] text-danger transition-all duration-300 ease-smooth hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -75,7 +75,7 @@ export default function Header() {
           className="cursor-pointer text-[clamp(1.2rem,4vw,1.5rem)] font-extrabold tracking-[-0.5px] text-text-high"
           onClick={openServerStatus}
         >
-          <span className="text-lin-orange">Dra</span>
+          <span className="text-lin-orange">Lin</span>
           <span className="text-choy-green">Choy</span>
         </div>
         <div>

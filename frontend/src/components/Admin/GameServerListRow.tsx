@@ -84,7 +84,7 @@ export default function GameServerListRow({
           type="button"
           title="Éteindre"
           aria-label={`Éteindre ${server.name}`}
-          className={`${rowActionBtnClass} hover:text-[#e04b4b]`}
+          className={`${rowActionBtnClass} hover:text-danger`}
           disabled={pending !== null}
           onClick={() =>
             trigger(

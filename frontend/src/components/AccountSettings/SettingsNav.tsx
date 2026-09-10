@@ -10,13 +10,13 @@ const NAV_ITEMS = [
 const navItemBaseClass =
   "flex items-center justify-between gap-2 rounded-lg border-0 px-3.5 py-3 text-left text-[0.95rem] transition-all duration-300 ease-smooth not-disabled:hover:bg-bg-input not-disabled:hover:text-text-high";
 const navItemDangerClass =
-  "mt-auto flex cursor-pointer items-center justify-between gap-2 rounded-lg border-0 bg-transparent px-3.5 py-3 text-left text-[0.95rem] text-[#e04b4b] transition-all duration-300 ease-smooth hover:bg-[rgba(224,75,75,0.1)]";
+  "mt-auto flex cursor-pointer items-center justify-between gap-2 rounded-lg border-0 bg-transparent px-3.5 py-3 text-left text-[0.95rem] text-danger transition-all duration-300 ease-smooth hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]";
 const soonTagClass =
   "rounded-full border border-border px-2 py-0.5 text-[0.65rem] text-text-low uppercase";
 const mobileNavItemBaseClass =
   "flex w-full items-center justify-between gap-2 rounded-lg border-0 bg-transparent px-3 py-2.5 text-left text-[0.9rem] cursor-pointer";
 const mobileNavItemClass = `${mobileNavItemBaseClass} text-text-medium not-disabled:hover:bg-bg-input not-disabled:hover:text-text-high disabled:cursor-not-allowed disabled:text-text-low`;
-const mobileNavItemDangerClass = `${mobileNavItemBaseClass} text-[#e04b4b] hover:bg-[rgba(224,75,75,0.1)]`;
+const mobileNavItemDangerClass = `${mobileNavItemBaseClass} text-danger hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]`;
 
 export default function SettingsNav({
   activeSection,

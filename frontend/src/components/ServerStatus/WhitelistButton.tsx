@@ -77,7 +77,7 @@ function WhitelistButton({
   if (isLinked && status?.whitelisted && status.connection) {
     return (
       <div className={wrapperClass}>
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-choy-green bg-[rgba(50,205,50,0.1)] px-4 py-2.5 text-[0.9rem] text-choy-green-light">
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-choy-green bg-[color-mix(in_srgb,var(--choy-green)_10%,transparent)] px-4 py-2.5 text-[0.9rem] text-choy-green-light">
           <CopyableValue
             value={`${status.connection.address}:${status.connection.port}`}
           />

@@ -190,7 +190,7 @@ export function ResetPassword() {
             </div>
 
             {submitState.error && (
-              <p className="text-[0.85rem] text-[#e04b4b]">
+              <p className="text-[0.85rem] text-danger">
                 {submitState.error}
               </p>
             )}

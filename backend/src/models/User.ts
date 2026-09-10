@@ -8,6 +8,7 @@ export interface IUser extends Document {
   authProvider: string;
   isVerified: boolean;
   role: "user" | "admin";
+  theme: "light" | "dark";
   favoriteServer: string | null;
   comparePassword(userPassword: string): Promise<boolean>;
   steamId: string | null;
@@ -73,6 +74,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],
     default: "user",
+  },
+  theme: {
+    type: String,
+    enum: ["light", "dark"],
+    default: "dark",
   },
   favoriteServer: {
     type: String,

@@ -22,8 +22,10 @@ interface IGame {
 }
 
 const cardStateClass: Record<IGame["state"], string> = {
-  online: "border-choy-green shadow-[0_0_15px_rgba(50,205,50,0.15)]",
-  starting: "border-lin-orange shadow-[0_0_15px_rgba(255,165,0,0.15)]",
+  online:
+    "border-choy-green shadow-[0_0_15px_color-mix(in_srgb,var(--choy-green)_15%,transparent)]",
+  starting:
+    "border-lin-orange shadow-[0_0_15px_color-mix(in_srgb,var(--lin-orange)_15%,transparent)]",
   offline: "border-border",
 };
 
@@ -32,6 +34,12 @@ const statusIndicatorClass: Record<IGame["state"], string> = {
   starting:
     "bg-lin-orange shadow-[0_0_10px_var(--lin-orange)] animate-[pulse_1.5s_ease-in-out_infinite]",
   offline: "bg-border",
+};
+
+const statusLabelClass: Record<IGame["state"], string> = {
+  online: "text-choy-green",
+  starting: "text-lin-orange",
+  offline: "text-text-low",
 };
 
 const tooltipHiddenClass = "invisible opacity-0 translate-y-1 pointer-events-none";
@@ -88,7 +96,9 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
             </button>
           )}
           <div className="flex items-center">
-            <p className="mr-2 text-[12px] font-extrabold">{statusLabel}</p>
+            <p className={`mr-2 text-[12px] font-extrabold ${statusLabelClass[game.state]}`}>
+              {statusLabel}
+            </p>
             <div
               className={`h-3 w-3 rounded-full transition-all duration-300 ease-smooth ${statusIndicatorClass[game.state]}`}
             ></div>
@@ -115,7 +125,7 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
           </h3>
           <div
             ref={badgeRef}
-            className={`group relative ml-2 inline-flex items-center justify-center gap-2 rounded-[20px] border border-border bg-[rgba(255,255,255,0.05)] px-3 py-1.5 text-[0.85rem] font-semibold whitespace-nowrap ${
+            className={`group relative ml-2 inline-flex items-center justify-center gap-2 rounded-[20px] border border-border bg-[color-mix(in_srgb,var(--text-high)_5%,transparent)] px-3 py-1.5 text-[0.85rem] font-semibold whitespace-nowrap ${
               hasOnlinePlayers ? "cursor-pointer hover:z-30" : "cursor-default"
             } ${isTooltipOpen ? "z-30" : ""}`}
             onClick={() => hasOnlinePlayers && setIsTooltipOpen((v) => !v)}
@@ -129,7 +139,7 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
                   isTooltipOpen ? tooltipVisibleClass : tooltipHiddenClass
                 }`}
               >
-                <p className="mb-1.5 text-[0.7rem] font-bold tracking-wider text-[#aaa] uppercase">
+                <p className="mb-1.5 text-[0.7rem] font-bold tracking-wider text-text-low uppercase">
                   En ligne
                 </p>
                 <ul className="m-0 flex max-h-40 list-none flex-col gap-1 p-0 text-[0.85rem] font-medium text-text-high overflow-y-auto">
@@ -142,7 +152,7 @@ export const GameStatus = memo(function GameStatus(game: IGame) {
           </div>
         </div>
         <div className="flex h-full min-h-0 flex-col justify-between overflow-x-visible overflow-y-auto">
-          <p className="text-[0.9rem] leading-normal text-[#aaa]">
+          <p className="text-[0.9rem] leading-normal text-text-low">
             {game.description}
           </p>
           <WhitelistButton slug={game.slug} gameType={game.type} />

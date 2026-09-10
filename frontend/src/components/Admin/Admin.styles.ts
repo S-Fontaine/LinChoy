@@ -15,7 +15,7 @@ export const sidebarHeaderClass = "mb-3 flex items-center justify-between px-1";
 export const pageTitleClass = "text-[1.1rem] text-text-high";
 
 export const adminBadgeClass =
-  "rounded-full border border-lin-orange bg-[rgba(255,140,0,0.1)] px-2.5 py-1 text-[0.7rem] font-bold tracking-wider text-lin-orange uppercase";
+  "rounded-full border border-lin-orange bg-[color-mix(in_srgb,var(--lin-orange)_10%,transparent)] px-2.5 py-1 text-[0.7rem] font-bold tracking-wider text-lin-orange uppercase";
 
 export const newRowClass =
   "mb-2 flex w-full cursor-pointer items-center gap-2 rounded-lg border-l-4 px-3 py-2.5 text-left text-[0.9rem] font-semibold transition-all duration-300 ease-smooth";
@@ -29,13 +29,13 @@ export const rowActionBtnClass =
   "flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent text-text-low transition-colors duration-300 ease-smooth disabled:cursor-not-allowed disabled:opacity-40";
 
 export const listRowActiveClass =
-  "border-l-lin-orange bg-[rgba(255,140,0,0.1)] text-text-high";
+  "border-l-lin-orange bg-[color-mix(in_srgb,var(--lin-orange)_10%,transparent)] text-text-high";
 
 export const listRowInactiveClass =
   "border-l-transparent text-text-low hover:bg-[color-mix(in_srgb,var(--text-high)_6%,transparent)]";
 
 export const newRowInactiveClass =
-  "border-l-transparent text-lin-orange hover:bg-[rgba(255,140,0,0.08)]";
+  "border-l-transparent text-lin-orange hover:bg-[color-mix(in_srgb,var(--lin-orange)_8%,transparent)]";
 
 export const detailPanelClass = "flex min-w-0 flex-1 flex-col overflow-y-auto p-8";
 
@@ -46,10 +46,10 @@ export const detailTitleRowClass = "flex min-w-0 items-center gap-2.5";
 export const detailTitleClass = "truncate text-[1.2rem] text-text-high";
 
 export const typeBadgeClass =
-  "shrink-0 rounded-[20px] border border-border bg-[rgba(255,255,255,0.05)] px-2.5 py-1 text-[0.75rem] font-semibold text-text-low";
+  "shrink-0 rounded-[20px] border border-border bg-[color-mix(in_srgb,var(--text-high)_5%,transparent)] px-2.5 py-1 text-[0.75rem] font-semibold text-text-low";
 
 export const sectionHeaderClass =
-  "mt-1 text-[0.7rem] font-bold tracking-wider text-[#aaa] uppercase";
+  "mt-1 text-[0.7rem] font-bold tracking-wider text-text-low uppercase";
 
 export const fieldGridClass = "grid grid-cols-2 gap-3 max-sm:grid-cols-1";
 
@@ -79,7 +79,7 @@ export const secondaryBtnClass =
   "cursor-pointer rounded-lg border border-border bg-transparent px-4 py-2 text-text-medium disabled:cursor-not-allowed disabled:opacity-50";
 
 export const dangerBtnClass =
-  "cursor-pointer rounded-lg border border-[#e04b4b] bg-transparent px-4 py-2 text-[#e04b4b] disabled:cursor-not-allowed disabled:opacity-50";
+  "cursor-pointer rounded-lg border border-danger bg-transparent px-4 py-2 text-danger disabled:cursor-not-allowed disabled:opacity-50";
 
 export const actionsRowClass = "mt-4 flex shrink-0 justify-end gap-2";
 

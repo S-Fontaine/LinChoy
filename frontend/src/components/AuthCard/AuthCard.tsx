@@ -147,7 +147,7 @@ export default function AuthCard({
           </div>
 
           {apiResponse.error && (
-            <div className="mb-6 rounded-lg border border-lin-orange bg-[rgba(255,140,0,0.1)] p-3 text-center text-[0.9rem] text-lin-orange-light">
+            <div className="mb-6 rounded-lg border border-lin-orange bg-[color-mix(in_srgb,var(--lin-orange)_10%,transparent)] p-3 text-center text-[0.9rem] text-lin-orange-light">
               {apiResponse.error}
             </div>
           )}
