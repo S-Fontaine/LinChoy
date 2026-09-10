@@ -21,7 +21,7 @@ export function checkPasswordStrength(password: string) {
         ? "var(--choy-green)"
         : validCount === 2
           ? "var(--lin-orange)"
-          : "#e04b4b";
+          : "var(--danger)";
 
   return { validCount, isComplete, percent, color };
 }

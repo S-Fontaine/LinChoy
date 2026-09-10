@@ -47,7 +47,7 @@ router.post("/login", authLimiter, async (req, res) => {
         message: "Veuillez vérifier votre email avant de vous connecter",
       });
     }
-    const payload = { userId: String(user._id) };
+    const payload = { userId: String(user._id), role: user.role };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
     res.cookie("accessToken", accessToken, accessTokenCookieOptions);
@@ -59,6 +59,8 @@ router.post("/login", authLimiter, async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
+        theme: user.theme,
         favoriteServer: user.favoriteServer,
         steamId: user.steamId,
         minecraftUuid: user.minecraftUuid,
@@ -92,7 +94,10 @@ router.post("/refresh", (req, res) => {
 
   try {
     const payload = verifyRefreshToken(refreshToken);
-    const accessToken = generateAccessToken({ userId: payload.userId });
+    const accessToken = generateAccessToken({
+      userId: payload.userId,
+      role: payload.role,
+    });
 
     res.cookie("accessToken", accessToken, accessTokenCookieOptions);
 
@@ -120,6 +125,8 @@ router.get("/me", requireAuth, async (req: AuthRequest, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
+        theme: user.theme,
         favoriteServer: user.favoriteServer,
         steamId: user.steamId,
         minecraftUuid: user.minecraftUuid,

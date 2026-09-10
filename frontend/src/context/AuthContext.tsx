@@ -18,6 +18,8 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  role: "user" | "admin";
+  theme: "light" | "dark";
   favoriteServer: string | null;
   steamId: string | null;
   minecraftUuid: string | null;
@@ -60,6 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (user?.theme) {
+      document.documentElement.dataset.theme = user.theme;
+    } else {
+      delete document.documentElement.dataset.theme;
+    }
+  }, [user?.theme]);
 
   const updateUser = useCallback((updater: (prev: User) => User) => {
     setUser((prev) => (prev ? updater(prev) : prev));

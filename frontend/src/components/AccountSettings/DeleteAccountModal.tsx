@@ -14,7 +14,7 @@ const eyeButtonClass =
   "absolute top-1/2 right-5 z-[2] flex -translate-y-1/2 items-center rounded-full border-0 bg-transparent p-0 text-text-medium cursor-pointer";
 const dangerTextClass = "text-[0.9rem] text-text-medium";
 const dangerBtnClass =
-  "cursor-pointer rounded-lg border-0 bg-[#e04b4b] px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50";
+  "cursor-pointer rounded-lg border-0 bg-danger px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function DeleteAccountModal({
   isOpen,

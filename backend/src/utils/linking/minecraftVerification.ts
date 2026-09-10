@@ -2,8 +2,7 @@ import User from "../../models/User.js";
 import GameServer from "../../models/GameServer.js";
 import { revokeAllWhitelistsForUser } from "./gameWhitelist.js";
 
-export const MINECRAFT_LINK_TTL_MS =
-  (Number(process.env.MINECRAFT_LINK_TTL_HOURS) || 4) * 60 * 60 * 1000;
+export const MINECRAFT_LINK_TTL_MS = Number(4 * 60 * 60 * 1000);
 
 export function getMinecraftLinkExpiresAt(linkedAt: Date | null): Date | null {
   return linkedAt ? new Date(linkedAt.getTime() + MINECRAFT_LINK_TTL_MS) : null;

@@ -19,4 +19,4 @@ export const modifyBtnClass =
 export const rowInputClass =
   "rounded-lg border border-border bg-bg-input px-3 py-2.5 text-[0.95rem] text-text-high";
 
-export const errorTextClass = "text-[0.85rem] text-[#e04b4b]";
+export const errorTextClass = "text-[0.85rem] text-danger";

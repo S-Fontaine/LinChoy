@@ -10,8 +10,8 @@ const AUTO_DISMISS_MS = 5000;
 
 const boxClass =
   "flex items-center justify-between gap-3 rounded-lg border p-3 mb-6 text-center text-[0.9rem]";
-const successBoxClass = `${boxClass} border-choy-green bg-[rgba(50,205,50,0.1)] text-choy-green-light`;
-const errorBoxClass = `${boxClass} border-lin-orange bg-[rgba(255,140,0,0.1)] text-lin-orange-light`;
+const successBoxClass = `${boxClass} border-choy-green bg-[color-mix(in_srgb,var(--choy-green)_10%,transparent)] text-choy-green-light`;
+const errorBoxClass = `${boxClass} border-lin-orange bg-[color-mix(in_srgb,var(--lin-orange)_10%,transparent)] text-lin-orange-light`;
 
 export default function InlineMessage({
   message,

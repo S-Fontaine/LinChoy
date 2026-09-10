@@ -4,9 +4,9 @@ import { useState } from "react";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const errorBoxClass =
-  "mb-6 rounded-lg border border-lin-orange bg-[rgba(255,140,0,0.1)] p-3 text-center text-[0.9rem] text-lin-orange-light";
+  "mb-6 rounded-lg border border-lin-orange bg-[color-mix(in_srgb,var(--lin-orange)_10%,transparent)] p-3 text-center text-[0.9rem] text-lin-orange-light";
 const successBoxClass =
-  "mb-6 rounded-lg border border-choy-green bg-[rgba(50,205,50,0.1)] p-3 text-center text-[0.9rem] text-choy-green-light";
+  "mb-6 rounded-lg border border-choy-green bg-[color-mix(in_srgb,var(--choy-green)_10%,transparent)] p-3 text-center text-[0.9rem] text-choy-green-light";
 const inputClass =
   "w-full rounded-lg border border-border bg-bg-input px-4 py-3 text-[0.95rem] text-text-high outline-none transition-all duration-300 ease-smooth focus:border-lin-orange focus:shadow-[0_0_0_2px_var(--lin-orange-glow)]";
 const btnClass =

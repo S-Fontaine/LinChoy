@@ -104,4 +104,14 @@ describe("Test modèle: User", () => {
     expect(user.username).toBe(payload.username);
     expect(user.email).toBe(payload.email);
   });
+
+  it("Attribue le rôle 'user' par défaut", async () => {
+    const user = await User.create(payload);
+    expect(user.role).toBe("user");
+  });
+
+  it("Attribue le thème 'dark' par défaut", async () => {
+    const user = await User.create(payload);
+    expect(user.theme).toBe("dark");
+  });
 });
