@@ -1,6 +1,11 @@
 export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
 
-export type PowerAction = "restart" | "emergency-restart" | "shutdown";
+export type PowerAction =
+  | "restart"
+  | "quick-restart"
+  | "emergency-restart"
+  | "shutdown"
+  | "start";
 
 export interface AdminGameServer {
   _id: string;
@@ -13,6 +18,7 @@ export interface AdminGameServer {
   };
   playerInfo: { maxPlayers: number };
   serverInfo: { image: string; description: string };
+  statusInfo: { state: "offline" | "starting" | "online"; comingSoon: boolean };
   gameData: { type: GameServerType; containerName: string; slug: string };
   hostInfo: { address: string; port: number; password: string };
 }
@@ -27,6 +33,7 @@ export interface GameServerFormValue {
   };
   playerInfo: { maxPlayers: string };
   serverInfo: { image: string; description: string };
+  statusInfo: { comingSoon: boolean };
   gameData: { type: GameServerType; containerName: string; slug: string };
   hostInfo: { address: string; port: string; password: string };
 }
@@ -36,6 +43,7 @@ export const emptyFormValue: GameServerFormValue = {
   connectionInfo: { address: "linchoy.com", port: "", password: "", queryPort: "" },
   playerInfo: { maxPlayers: "" },
   serverInfo: { image: "", description: "" },
+  statusInfo: { comingSoon: false },
   gameData: { type: "minecraft", containerName: "", slug: "" },
   hostInfo: { address: "", port: "", password: "" },
 };
@@ -56,6 +64,9 @@ export function toFormValue(server: AdminGameServer): GameServerFormValue {
       image: server.serverInfo?.image ?? "",
       description: server.serverInfo?.description ?? "",
     },
+    statusInfo: {
+      comingSoon: server.statusInfo?.comingSoon ?? false,
+    },
     gameData: {
       type: server.gameData?.type ?? "minecraft",
       containerName: server.gameData?.containerName ?? "",
@@ -67,6 +78,16 @@ export function toFormValue(server: AdminGameServer): GameServerFormValue {
       password: server.hostInfo?.password ?? "",
     },
   };
+}
+
+export function slugify(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(new RegExp("[\\u0300-\\u036f]", "g"), "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export function isFormValid(value: GameServerFormValue): boolean {
@@ -96,6 +117,7 @@ export function toApiPayload(value: GameServerFormValue) {
         : undefined,
     },
     serverInfo: value.serverInfo,
+    statusInfo: value.statusInfo,
     gameData: value.gameData,
     hostInfo: {
       address: value.hostInfo.address,

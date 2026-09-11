@@ -1,4 +1,4 @@
-import { jest, describe, it, expect, afterEach } from "@jest/globals";
+import { jest, describe, it, expect, afterEach, beforeEach } from "@jest/globals";
 import net from "net";
 const docker = "../../src/utils/gameServers/docker.js";
 
@@ -43,7 +43,13 @@ jest.unstable_mockModule("dockerode", () => ({
   })),
 }));
 
-const { getContainerState } = await import(docker);
+const {
+  getContainerState,
+  restartContainer,
+  emergencyRestartContainer,
+  stopContainer,
+  startContainer,
+} = await import(docker);
 
 describe("Test utilitaire: getContainerState (dockerode mocké)", () => {
   it("Renvoie l'état du container quand il existe", async () => {
@@ -68,5 +74,58 @@ describe("Test utilitaire: getContainerState (dockerode mocké)", () => {
     await expect(getContainerState("inexistant")).rejects.toThrow(
       "no such container",
     );
+  });
+});
+
+describe("Test utilitaire: restart/stop de conteneur (via docker-power-proxy)", () => {
+  const fetchMock = jest.fn<typeof fetch>();
+
+  beforeEach(() => {
+    process.env.DOCKER_POWER_PROXY_HOST = "docker-power-proxy";
+    process.env.DOCKER_POWER_PROXY_PORT = "3001";
+    fetchMock.mockReset().mockResolvedValue({ ok: true } as Response);
+    global.fetch = fetchMock as unknown as typeof fetch;
+  });
+
+  it("Appelle POST /containers/:name/restart", async () => {
+    await restartContainer("minecraft-server");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://docker-power-proxy:3001/containers/minecraft-server/restart",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("Appelle POST /containers/:name/restart?t=0 pour l'urgence", async () => {
+    await emergencyRestartContainer("minecraft-server");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://docker-power-proxy:3001/containers/minecraft-server/restart?t=0",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("Appelle POST /containers/:name/stop", async () => {
+    await stopContainer("minecraft-server");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://docker-power-proxy:3001/containers/minecraft-server/stop",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("Appelle POST /containers/:name/start", async () => {
+    await startContainer("minecraft-server");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://docker-power-proxy:3001/containers/minecraft-server/start",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("Lève une erreur si docker-power-proxy répond en échec", async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 502 } as Response);
+
+    await expect(restartContainer("minecraft-server")).rejects.toThrow();
   });
 });

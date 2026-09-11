@@ -1,3 +1,21 @@
+export const menuIcon = (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="18" x2="21" y2="18" />
+  </svg>
+);
+
 export const eyeOff = (
   <svg
     width="20"
@@ -122,6 +140,23 @@ export const restartIcon = (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M20.49 9A9 9 0 1 0 21 13" />
+    <polyline points="21 3 21 9 15 9" />
+  </svg>
+);
+
+export const quickRestartIcon = (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -163,6 +198,18 @@ export const powerIcon = (
   >
     <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
     <line x1="12" y1="2" x2="12" y2="12" />
+  </svg>
+);
+
+export const playIcon = (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <polygon points="6 3 20 12 6 21 6 3" />
   </svg>
 );
 

@@ -4,10 +4,16 @@ import {
   restartContainer,
   emergencyRestartContainer,
   stopContainer,
+  startContainer,
 } from "./docker.js";
 import { runRconCommand } from "./rcon.js";
 
-export type PowerAction = "restart" | "emergency-restart" | "shutdown";
+export type PowerAction =
+  | "restart"
+  | "quick-restart"
+  | "emergency-restart"
+  | "shutdown"
+  | "start";
 
 const FETCH_TIMEOUT_MS = 5000;
 
@@ -21,9 +27,6 @@ function palworldAuthHeader(server: HydratedDocument<IGameServer>): string {
   );
 }
 
-// Diffuse un message aux joueurs connectés. Best-effort : une annonce ratée ne
-// doit jamais interrompre la séquence (sauvegarde puis extinction/redémarrage
-// doivent avoir lieu même si le canal d'annonce est indisponible).
 async function announce(
   server: HydratedDocument<IGameServer>,
   message: string,
@@ -67,10 +70,6 @@ async function announce(
   }
 }
 
-// Sauvegarde best-effort avant extinction/redémarrage. Seuls Minecraft
-// (save-all) et Palworld (REST /save) exposent une commande de sauvegarde
-// connue — Valheim (ValheimRcon) et VRising n'en ont pas via RCON, leur monde
-// se sauvegarde seul à intervalle régulier côté jeu.
 async function save(server: HydratedDocument<IGameServer>): Promise<void> {
   try {
     const { type } = server.gameData;
@@ -107,10 +106,6 @@ export function isPowerActionRunning(containerName: string): boolean {
   return runningActions.has(containerName);
 }
 
-// Reproduit le déroulé des scripts de maintenance existants : annonces
-// échelonnées aux joueurs, sauvegarde, puis action Docker. Ne bloque jamais
-// l'appelant plus que nécessaire : conçu pour être lancé sans await depuis la
-// route (fire-and-forget), toutes les erreurs sont interceptées en interne.
 export async function runPowerSequence(
   server: HydratedDocument<IGameServer>,
   action: PowerAction,
@@ -120,7 +115,12 @@ export async function runPowerSequence(
 
   runningActions.add(containerName);
   try {
-    if (action === "emergency-restart") {
+    if (action === "start") {
+      await startContainer(containerName);
+      return;
+    }
+
+    if (action === "emergency-restart" || action === "quick-restart") {
       await announce(server, `URGENT: ${verb} dans 30 secondes`);
       for (let i = 30; i >= 1; i--) {
         if (i === 30 || i === 20 || i <= 10) {

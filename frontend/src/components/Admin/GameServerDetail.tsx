@@ -8,7 +8,8 @@ import {
   typeBadgeClass,
   dangerBtnClass,
   primaryBtnClass,
-  actionsRowClass,
+  secondaryBtnClass,
+  detailActionsRowClass,
 } from "./Admin.styles";
 import GameServerForm from "./GameServerForm";
 import {
@@ -32,6 +33,7 @@ export default function GameServerDetail({
 }) {
   const [value, setValue] = useState<GameServerFormValue>(() => toFormValue(server));
   const [state, setState] = useState({ loading: false, error: "" });
+  const [isEditing, setIsEditing] = useState(false);
 
   async function handleSave() {
     setState({ loading: true, error: "" });
@@ -40,6 +42,7 @@ export default function GameServerDetail({
       setState({ loading: false, error: result.message });
     } else {
       setState({ loading: false, error: "" });
+      setIsEditing(false);
     }
   }
 
@@ -50,6 +53,12 @@ export default function GameServerDetail({
     if (!result.success) {
       setState({ loading: false, error: result.message });
     }
+  }
+
+  function handleCancel() {
+    setValue(toFormValue(server));
+    setState({ loading: false, error: "" });
+    setIsEditing(false);
   }
 
   return (
@@ -67,30 +76,46 @@ export default function GameServerDetail({
           <h2 className={detailTitleClass}>{server.name}</h2>
           <span className={typeBadgeClass}>{server.gameData.type}</span>
         </div>
-        <button
-          className={dangerBtnClass}
-          onClick={handleDelete}
-          disabled={state.loading}
-        >
-          Supprimer
-        </button>
+        {!isEditing && (
+          <button className={secondaryBtnClass} onClick={() => setIsEditing(true)}>
+            Modifier
+          </button>
+        )}
       </div>
 
-      <GameServerForm value={value} onChange={setValue} />
+      <GameServerForm value={value} onChange={setValue} readOnly={!isEditing} />
 
       {state.error && (
         <p className="mt-3 shrink-0 text-[0.85rem] text-danger">{state.error}</p>
       )}
 
-      <div className={actionsRowClass}>
-        <button
-          className={primaryBtnClass}
-          onClick={handleSave}
-          disabled={state.loading || !isFormValid(value)}
-        >
-          {state.loading ? "..." : "Enregistrer"}
-        </button>
-      </div>
+      {isEditing && (
+        <div className={detailActionsRowClass}>
+          <button
+            className={dangerBtnClass}
+            onClick={handleDelete}
+            disabled={state.loading}
+          >
+            Supprimer
+          </button>
+          <div className="flex gap-2">
+            <button
+              className={secondaryBtnClass}
+              onClick={handleCancel}
+              disabled={state.loading}
+            >
+              Annuler
+            </button>
+            <button
+              className={primaryBtnClass}
+              onClick={handleSave}
+              disabled={state.loading || !isFormValid(value)}
+            >
+              {state.loading ? "..." : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import InlineMessage, {
   type InlineMessageState,
@@ -9,7 +8,7 @@ import {
   pageWrapperClass,
   shellClass,
   sidebarClass,
-  backLinkClass,
+  sidebarOpenClass,
   sidebarHeaderClass,
   pageTitleClass,
   adminBadgeClass,
@@ -21,7 +20,11 @@ import {
   actionsRowClass,
   detailPanelClass,
   placeholderClass,
+  mobileToolbarClass,
+  mobileToolbarBtnClass,
+  mobileContentWrapClass,
 } from "./Admin.styles";
+import { menuIcon, cross } from "@/components/icons/Icons";
 import GameServerForm from "./GameServerForm";
 import GameServerListRow from "./GameServerListRow";
 import GameServerDetail from "./GameServerDetail";
@@ -40,6 +43,7 @@ export default function AdminGameServers() {
   const [message, setMessage] = useState<InlineMessageState | null>(null);
   const [createValue, setCreateValue] = useState(emptyFormValue);
   const [createLoading, setCreateLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -50,7 +54,10 @@ export default function AdminGameServers() {
         if (data.servers.length > 0) setSelectedId(data.servers[0]._id);
       } else {
         setServers([]);
-        setMessage({ type: "error", text: "Impossible de charger les serveurs." });
+        setMessage({
+          type: "error",
+          text: "Impossible de charger les serveurs.",
+        });
       }
     }
     load();
@@ -127,25 +134,11 @@ export default function AdminGameServers() {
   return (
     <div className={pageWrapperClass}>
       <div className={shellClass}>
-        <aside className={sidebarClass}>
-          <Link href="/" className={backLinkClass}>
-            ← Retour au site
-          </Link>
+        <aside className={mobileMenuOpen ? sidebarOpenClass : sidebarClass}>
           <div className={sidebarHeaderClass}>
             <h1 className={pageTitleClass}>Serveurs</h1>
             <span className={adminBadgeClass}>Admin</span>
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              setCreateValue(emptyFormValue);
-              setSelectedId("new");
-            }}
-            className={`${newRowClass} ${selectedId === "new" ? listRowActiveClass : newRowInactiveClass}`}
-          >
-            + Nouveau serveur
-          </button>
 
           {servers === null && (
             <p className="px-3 text-[0.85rem] text-text-low">Chargement…</p>
@@ -155,46 +148,73 @@ export default function AdminGameServers() {
               key={server._id}
               server={server}
               isSelected={selectedId === server._id}
-              onClick={() => setSelectedId(server._id)}
+              onClick={() => {
+                setSelectedId(server._id);
+                setMobileMenuOpen(false);
+              }}
               onPower={handlePower}
             />
           ))}
+          <button
+            type="button"
+            onClick={() => {
+              setCreateValue(emptyFormValue);
+              setSelectedId("new");
+              setMobileMenuOpen(false);
+            }}
+            className={`${newRowClass} ${selectedId === "new" ? listRowActiveClass : newRowInactiveClass}`}
+          >
+            + Nouveau serveur
+          </button>
         </aside>
 
-        {selectedId === "new" ? (
-          <div className={detailPanelClass}>
-            <GameServerForm value={createValue} onChange={setCreateValue} />
-            <div className={actionsRowClass}>
-              <button
-                className={secondaryBtnClass}
-                onClick={() => setSelectedId(servers?.[0]?._id ?? null)}
-                disabled={createLoading}
-              >
-                Annuler
-              </button>
-              <button
-                className={primaryBtnClass}
-                onClick={handleCreate}
-                disabled={createLoading || !isFormValid(createValue)}
-              >
-                {createLoading ? "..." : "Créer"}
-              </button>
+        <div className={mobileContentWrapClass}>
+          {selectedId === "new" ? (
+            <div className={detailPanelClass}>
+              <GameServerForm value={createValue} onChange={setCreateValue} />
+              <div className={actionsRowClass}>
+                <button
+                  className={secondaryBtnClass}
+                  onClick={() => setSelectedId(servers?.[0]?._id ?? null)}
+                  disabled={createLoading}
+                >
+                  Annuler
+                </button>
+                <button
+                  className={primaryBtnClass}
+                  onClick={handleCreate}
+                  disabled={createLoading || !isFormValid(createValue)}
+                >
+                  {createLoading ? "..." : "Créer"}
+                </button>
+              </div>
             </div>
+          ) : selectedServer ? (
+            <GameServerDetail
+              key={selectedServer._id}
+              server={selectedServer}
+              onSave={handleSave}
+              onDelete={handleDelete}
+            />
+          ) : (
+            <p className={placeholderClass}>
+              {servers?.length === 0
+                ? "Aucun serveur configuré — clique sur « Nouveau serveur »."
+                : "Sélectionne un serveur à gauche."}
+            </p>
+          )}
+
+          <div className={mobileToolbarClass}>
+            <button
+              type="button"
+              className={mobileToolbarBtnClass}
+              aria-label={mobileMenuOpen ? "Fermer la liste des serveurs" : "Ouvrir la liste des serveurs"}
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              {mobileMenuOpen ? cross : menuIcon}
+            </button>
           </div>
-        ) : selectedServer ? (
-          <GameServerDetail
-            key={selectedServer._id}
-            server={selectedServer}
-            onSave={handleSave}
-            onDelete={handleDelete}
-          />
-        ) : (
-          <p className={placeholderClass}>
-            {servers?.length === 0
-              ? "Aucun serveur configuré — clique sur « Nouveau serveur »."
-              : "Sélectionne un serveur à gauche."}
-          </p>
-        )}
+        </div>
 
         {message && (
           <div className="fixed bottom-6 left-1/2 z-50 w-full max-w-md -translate-x-1/2 px-4">

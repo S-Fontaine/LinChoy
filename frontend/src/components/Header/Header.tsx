@@ -30,10 +30,6 @@ export default function Header() {
 
   const onSwitchClick = () => setIsLogin(!isLogin);
 
-  // Le layout /admin est un Server Component qui ne rafraîchit jamais le
-  // accessToken lui-même (le refreshToken n'est envoyé qu'à /auth/refresh,
-  // pas accessible côté serveur pour /admin) — on s'assure ici qu'un cookie
-  // frais existe côté navigateur avant la navigation SSR.
   const goToAdmin = async () => {
     setIsDropdownOpen(false);
     await fetchWithAuth("/auth/me").catch(() => {});

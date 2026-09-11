@@ -81,7 +81,7 @@ const ServerInfoSchema = new Schema<IServerInfo>(
     displayName: String,
     version: String,
     image: { type: String, default: "" },
-    description: { type: String, default: "" },
+    description: { type: String, default: "", maxlength: 250 },
   },
   { _id: false },
 );

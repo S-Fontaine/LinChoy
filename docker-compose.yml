@@ -33,6 +33,14 @@ services:
     networks:
       - docker-proxy-net
 
+  docker-power-proxy:
+    build: ./docker-power-proxy
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - docker-proxy-net
+
   backend:
     build: ./backend
     restart: unless-stopped
@@ -41,10 +49,13 @@ services:
     environment:
       DOCKER_PROXY_HOST: docker-proxy
       DOCKER_PROXY_PORT: 2375
+      DOCKER_POWER_PROXY_HOST: docker-power-proxy
+      DOCKER_POWER_PROXY_PORT: 3001
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
       - docker-proxy
+      - docker-power-proxy
     networks:
       - default
       - docker-proxy-net

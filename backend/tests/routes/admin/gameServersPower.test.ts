@@ -22,7 +22,7 @@ const payload = {
   name: "Minecraft",
   gameData: {
     slug: "minecraft",
-    type: "minecraft",
+    type: "minecraft" as const,
     containerName: "minecraft-server",
   },
 };
@@ -46,6 +46,26 @@ describe("Routes /admin/game-servers/:id/(restart|emergency-restart|shutdown)", 
     expect(res.status).toBe(202);
     expect(runPowerSequenceMock).toHaveBeenCalledTimes(1);
     expect(runPowerSequenceMock.mock.calls[0]![1]).toBe("restart");
+  });
+
+  it("Programme un redémarrage rapide", async () => {
+    const server = await GameServer.create(payload);
+    const res = await request(app)
+      .post(`/admin/game-servers/${server._id}/quick-restart`)
+      .set("Cookie", `accessToken=${adminToken()}`);
+
+    expect(res.status).toBe(202);
+    expect(runPowerSequenceMock.mock.calls[0]![1]).toBe("quick-restart");
+  });
+
+  it("Programme un démarrage", async () => {
+    const server = await GameServer.create(payload);
+    const res = await request(app)
+      .post(`/admin/game-servers/${server._id}/start`)
+      .set("Cookie", `accessToken=${adminToken()}`);
+
+    expect(res.status).toBe(202);
+    expect(runPowerSequenceMock.mock.calls[0]![1]).toBe("start");
   });
 
   it("Programme un redémarrage d'urgence", async () => {

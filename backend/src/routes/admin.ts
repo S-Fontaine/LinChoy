@@ -14,8 +14,10 @@ router.use(requireAdmin);
 
 const POWER_MESSAGES: Record<PowerAction, string> = {
   restart: "Redémarrage programmé — annonces aux joueurs sur 5 minutes.",
+  "quick-restart": "Redémarrage rapide programmé — 30 secondes.",
   "emergency-restart": "Redémarrage d'urgence programmé — 30 secondes.",
   shutdown: "Extinction programmée — annonces aux joueurs sur 5 minutes.",
+  start: "Démarrage du serveur en cours.",
 };
 
 function createPowerHandler(action: PowerAction) {
@@ -55,7 +57,7 @@ router.get("/game-servers", async (_req, res) => {
 });
 
 router.post("/game-servers", async (req, res) => {
-  const { name, connectionInfo, playerInfo, serverInfo, gameData, hostInfo } =
+  const { name, connectionInfo, playerInfo, serverInfo, gameData, hostInfo, statusInfo } =
     req.body;
 
   if (typeof name !== "string" || !name.trim()) {
@@ -72,6 +74,10 @@ router.post("/game-servers", async (req, res) => {
       serverInfo,
       gameData,
       hostInfo,
+      statusInfo:
+        statusInfo?.comingSoon !== undefined
+          ? { comingSoon: !!statusInfo.comingSoon }
+          : undefined,
     });
     return res.status(201).json({ result: true, server });
   } catch (err) {
@@ -80,7 +86,7 @@ router.post("/game-servers", async (req, res) => {
 });
 
 router.patch("/game-servers/:id", async (req, res) => {
-  const { name, connectionInfo, playerInfo, serverInfo, gameData, hostInfo } =
+  const { name, connectionInfo, playerInfo, serverInfo, gameData, hostInfo, statusInfo } =
     req.body;
 
   if (name !== undefined && (typeof name !== "string" || !name.trim())) {
@@ -96,12 +102,14 @@ router.patch("/game-servers/:id", async (req, res) => {
   if (serverInfo !== undefined) update.serverInfo = serverInfo;
   if (gameData !== undefined) update.gameData = gameData;
   if (hostInfo !== undefined) update.hostInfo = hostInfo;
+  if (statusInfo?.comingSoon !== undefined)
+    update["statusInfo.comingSoon"] = !!statusInfo.comingSoon;
 
   try {
     const server = await GameServer.findByIdAndUpdate(
       req.params.id,
       { $set: update },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
     if (!server) {
       return res
@@ -116,10 +124,15 @@ router.patch("/game-servers/:id", async (req, res) => {
 
 router.post("/game-servers/:id/restart", createPowerHandler("restart"));
 router.post(
+  "/game-servers/:id/quick-restart",
+  createPowerHandler("quick-restart"),
+);
+router.post(
   "/game-servers/:id/emergency-restart",
   createPowerHandler("emergency-restart"),
 );
 router.post("/game-servers/:id/shutdown", createPowerHandler("shutdown"));
+router.post("/game-servers/:id/start", createPowerHandler("start"));
 
 router.delete("/game-servers/:id", async (req, res) => {
   try {
