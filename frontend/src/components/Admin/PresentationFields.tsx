@@ -1,12 +1,19 @@
-import { fieldLabelClass, inputClass, sectionHeaderClass } from "./Admin.styles";
+import {
+  fieldLabelClass,
+  inputClass,
+  readOnlyFieldClass,
+  sectionHeaderClass,
+} from "./Admin.styles";
 import type { GameServerFormValue } from "./types";
 
 export default function PresentationFields({
   value,
   onChange,
+  readOnly,
 }: {
   value: GameServerFormValue;
   onChange: (value: GameServerFormValue) => void;
+  readOnly?: boolean;
 }) {
   return (
     <>
@@ -14,8 +21,9 @@ export default function PresentationFields({
       <label className={fieldLabelClass}>
         Image
         <input
-          className={inputClass}
+          className={readOnly ? readOnlyFieldClass : inputClass}
           value={value.serverInfo.image}
+          disabled={readOnly}
           onChange={(e) =>
             onChange({
               ...value,
@@ -29,9 +37,11 @@ export default function PresentationFields({
       <label className={fieldLabelClass}>
         Description
         <textarea
-          className={`${inputClass} min-h-20 resize-y`}
+          className={`${readOnly ? readOnlyFieldClass : inputClass} min-h-48 resize-none`}
           value={value.serverInfo.description}
           placeholder="Courte description affichée sur la page du serveur"
+          maxLength={250}
+          disabled={readOnly}
           onChange={(e) =>
             onChange({
               ...value,

@@ -18,7 +18,7 @@ const payload = {
   name: "Minecraft",
   gameData: {
     slug: "minecraft",
-    type: "minecraft",
+    type: "minecraft" as const,
     containerName: "minecraft-server",
   },
 };

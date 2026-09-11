@@ -15,11 +15,13 @@ const restartContainerMock = jest.fn<(containerName: string) => Promise<void>>()
 const emergencyRestartContainerMock =
   jest.fn<(containerName: string) => Promise<void>>();
 const stopContainerMock = jest.fn<(containerName: string) => Promise<void>>();
+const startContainerMock = jest.fn<(containerName: string) => Promise<void>>();
 
 jest.unstable_mockModule("../../src/utils/gameServers/docker.js", () => ({
   restartContainer: restartContainerMock,
   emergencyRestartContainer: emergencyRestartContainerMock,
   stopContainer: stopContainerMock,
+  startContainer: startContainerMock,
   getContainerState: jest.fn(),
   isServerOnline: jest.fn(),
 }));
@@ -36,32 +38,18 @@ beforeEach(() => {
   restartContainerMock.mockReset().mockResolvedValue(undefined);
   emergencyRestartContainerMock.mockReset().mockResolvedValue(undefined);
   stopContainerMock.mockReset().mockResolvedValue(undefined);
+  startContainerMock.mockReset().mockResolvedValue(undefined);
   fetchMock.mockReset().mockResolvedValue({ ok: true, json: async () => ({}) } as Response);
-  process.env.MINECRAFT_RCON_HOST = "mc-host";
-  process.env.MINECRAFT_RCON_PORT = "25575";
-  process.env.MINECRAFT_RCON_PASSWORD = "mc-pass";
-  process.env.VALHEIM_RCON_HOST = "valheim-host";
-  process.env.VALHEIM_RCON_PORT = "2458";
-  process.env.VALHEIM_RCON_PASSWORD = "valheim-pass";
-  process.env.VRISING_RCON_HOST = "vrising-host";
-  process.env.VRISING_RCON_PORT = "25575";
-  process.env.VRISING_RCON_PASSWORD = "vrising-pass";
-  process.env.PALWORLD_ADMIN = "admin:pal-pass";
-  process.env.PALWORLD_API_ADDRESS = "pal-host";
-  process.env.PALWORLD_API_PORT = "8212";
 });
 
-function countCalls(mock: jest.Mock, urlFragment: string): number {
+function countCalls(mock: jest.Mock<typeof fetch>, urlFragment: string): number {
   return mock.mock.calls.filter((call) => String(call[0]).includes(urlFragment))
     .length;
 }
 
-// N'active les fake timers qu'autour de l'appel lui-même : MongoMemoryServer
-// (créer/lire le GameServer) dépend de vrais timers, les fausser plus tôt fait
-// pendre les requêtes Mongoose.
 async function runSequence(
   server: HydratedDocument<IGameServer>,
-  action: "restart" | "emergency-restart" | "shutdown",
+  action: "restart" | "quick-restart" | "emergency-restart" | "shutdown" | "start",
   advanceMs: number,
 ) {
   jest.useFakeTimers();
@@ -100,6 +88,32 @@ describe("runPowerSequence", () => {
     expect(countCalls(fetchMock, "/announce")).toBe(14);
     expect(emergencyRestartContainerMock).toHaveBeenCalledWith("palworld-server");
     expect(restartContainerMock).not.toHaveBeenCalled();
+  });
+
+  it("Redémarrage rapide Palworld : échéancier de 30 secondes puis restart normal (pas d'urgence)", async () => {
+    const server = await GameServer.create({
+      name: "Palworld",
+      gameData: { slug: "palworld", type: "palworld", containerName: "palworld-server" },
+    });
+
+    await runSequence(server, "quick-restart", 60 * 1000);
+
+    expect(countCalls(fetchMock, "/announce")).toBe(14);
+    expect(restartContainerMock).toHaveBeenCalledWith("palworld-server");
+    expect(emergencyRestartContainerMock).not.toHaveBeenCalled();
+  });
+
+  it("Démarrage Palworld : aucune annonce, aucune sauvegarde, juste start()", async () => {
+    const server = await GameServer.create({
+      name: "Palworld",
+      gameData: { slug: "palworld", type: "palworld", containerName: "palworld-server" },
+    });
+
+    await runPowerSequence(server, "start");
+
+    expect(countCalls(fetchMock, "/announce")).toBe(0);
+    expect(countCalls(fetchMock, "/save")).toBe(0);
+    expect(startContainerMock).toHaveBeenCalledWith("palworld-server");
   });
 
   it("Extinction Palworld : même échéancier que le redémarrage mais stop() au lieu de restart()", async () => {

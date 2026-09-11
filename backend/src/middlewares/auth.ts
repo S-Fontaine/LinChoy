@@ -26,9 +26,6 @@ export function requireAuth(
 
 const NOT_FOUND = { result: false, message: "Not found" };
 
-// Combine l'auth et la vérification du rôle en une seule réponse 404 : un token
-// manquant/invalide et un rôle non-admin doivent être indiscernables d'une route
-// qui n'existe pas (pas de 401/403 qui confirmerait l'existence de /admin/*).
 export function requireAdmin(
   req: AuthRequest,
   res: Response,

@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppUIProvider } from "@/context/AppUIContext";
 import "../styles/globals.css";
-import Footer from "@/components/Footer/Footer";
+import ConditionalFooter from "@/components/Footer/ConditionalFooter";
 import Header from "@/components/Header/Header";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,8 +106,8 @@ export default function RootLayout({
               }}
             >
               <Header />
-              {children}
-              <Footer />
+              <div style={{ flex: 1 }}>{children}</div>
+              <ConditionalFooter />
             </div>
           </AppUIProvider>
         </AuthProvider>

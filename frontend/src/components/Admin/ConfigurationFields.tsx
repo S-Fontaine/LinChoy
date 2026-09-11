@@ -3,6 +3,7 @@ import {
   fieldRowInputClass,
   fieldRowLabelClass,
   inputClass,
+  readOnlyFieldClass,
   requiredInputClass,
   sectionColumnClass,
   sectionHeaderClass,
@@ -14,10 +15,14 @@ const GAME_TYPES: GameServerType[] = ["palworld", "minecraft", "protocol-valve"]
 export default function ConfigurationFields({
   value,
   onChange,
+  readOnly,
 }: {
   value: GameServerFormValue;
   onChange: (value: GameServerFormValue) => void;
+  readOnly?: boolean;
 }) {
+  const inputClassName = `${readOnly ? readOnlyFieldClass : inputClass} ${fieldRowInputClass}`;
+
   return (
     <div className={sectionColumnClass}>
       <p className={sectionHeaderClass}>Configuration</p>
@@ -25,9 +30,10 @@ export default function ConfigurationFields({
         <span className={fieldRowLabelClass}>Joueurs max.</span>
         <input
           type="number"
-          className={`${inputClass} ${fieldRowInputClass}`}
+          className={inputClassName}
           value={value.playerInfo.maxPlayers}
           placeholder="ex : 10"
+          disabled={readOnly}
           onChange={(e) =>
             onChange({
               ...value,
@@ -39,8 +45,9 @@ export default function ConfigurationFields({
       <label className={fieldRowClass}>
         <span className={fieldRowLabelClass}>Type de jeu</span>
         <select
-          className={`${inputClass} ${fieldRowInputClass}`}
+          className={inputClassName}
           value={value.gameData.type}
+          disabled={readOnly}
           onChange={(e) =>
             onChange({
               ...value,
@@ -61,11 +68,14 @@ export default function ConfigurationFields({
       <label className={fieldRowClass}>
         <span className={fieldRowLabelClass}>Conteneur</span>
         <input
-          className={`${requiredInputClass(
-            value.gameData.containerName.trim().length > 0,
-          )} ${fieldRowInputClass}`}
+          className={`${
+            readOnly
+              ? readOnlyFieldClass
+              : requiredInputClass(value.gameData.containerName.trim().length > 0)
+          } ${fieldRowInputClass}`}
           value={value.gameData.containerName}
-          placeholder="ex : minecraft-server"
+          placeholder="minecraft-server"
+          disabled={readOnly}
           onChange={(e) =>
             onChange({
               ...value,
@@ -77,9 +87,14 @@ export default function ConfigurationFields({
       <label className={fieldRowClass}>
         <span className={fieldRowLabelClass}>Slug</span>
         <input
-          className={`${requiredInputClass(value.gameData.slug.trim().length > 0)} ${fieldRowInputClass}`}
+          className={`${
+            readOnly
+              ? readOnlyFieldClass
+              : requiredInputClass(value.gameData.slug.trim().length > 0)
+          } ${fieldRowInputClass}`}
           value={value.gameData.slug}
-          placeholder="ex : minecraft-hard"
+          placeholder="minecraft"
+          disabled={readOnly}
           onChange={(e) =>
             onChange({
               ...value,
