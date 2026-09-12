@@ -12,7 +12,7 @@ import {
   accessTokenCookieOptions,
   refreshTokenCookieOptions,
 } from "../../utils/auth/cookieOptions.js";
-import { getMinecraftLinkExpiresAt } from "../../utils/linking/minecraftVerification.js";
+import { getMinecraftLinkExpiresAt } from "../../games/minecraft/verification.js";
 
 const router = Router();
 

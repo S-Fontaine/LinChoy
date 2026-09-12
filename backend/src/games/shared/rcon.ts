@@ -8,6 +8,15 @@ export async function runRconCommand(
   port: string,
   password: string,
   command: string,
-): Promise<void> {
-  await execFileAsync("mcrcon", ["-H", host, "-P", port, "-p", password, command]);
+): Promise<string> {
+  const { stdout } = await execFileAsync("mcrcon", [
+    "-H",
+    host,
+    "-P",
+    port,
+    "-p",
+    password,
+    command,
+  ]);
+  return stdout.trim();
 }

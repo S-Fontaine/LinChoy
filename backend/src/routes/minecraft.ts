@@ -2,9 +2,9 @@ import { Router } from "express";
 import User from "../models/User.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
+import { revokeAllWhitelistsForUser } from "../games/index.js";
 import { resolveMinecraftPlayer } from "../utils/linking/minecraftAuth.js";
-import { getMinecraftLinkExpiresAt } from "../utils/linking/minecraftVerification.js";
+import { getMinecraftLinkExpiresAt } from "../games/minecraft/verification.js";
 import { minecraftLinkLimiter } from "../middlewares/rateLimit.js";
 const router = Router();
 

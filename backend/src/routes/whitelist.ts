@@ -4,7 +4,7 @@ import ServerWhitelist from "../models/ServerWhitelist.js";
 import User, { type IUser } from "../models/User.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import { syncWhitelist } from "../utils/linking/gameWhitelist.js";
+import { syncWhitelist } from "../games/index.js";
 
 const router = Router();
 

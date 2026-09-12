@@ -1,7 +1,9 @@
-import GameServer, { type IGameServer } from "../../models/GameServer.js";
+import GameServer from "../../models/GameServer.js";
 import ServerWhitelist from "../../models/ServerWhitelist.js";
-import { getContainerState } from "./docker.js";
+import { getContainerState } from "../../utils/gameServers/docker.js";
+import { palworldApiUrl, palworldAuthHeader } from "./api.js";
 import type { HydratedDocument } from "mongoose";
+import type { IGameServer } from "../../models/GameServer.js";
 
 export interface IPalworldPlayer {
   name: string;
@@ -25,16 +27,6 @@ export interface IPalworldInfo {
 
 const FETCH_TIMEOUT_MS = 5000;
 const KICK_DELAY_MS = 500;
-
-function palworldApiUrl(server: HydratedDocument<IGameServer>, path: string): string {
-  return `http://${server.hostInfo.address}:${server.hostInfo.port}/v1/api${path}`;
-}
-
-function palworldAuthHeader(server: HydratedDocument<IGameServer>): string {
-  return (
-    "Basic " + Buffer.from(`admin:${server.hostInfo.password}`).toString("base64")
-  );
-}
 
 function extractSteamId(userId: string): string | null {
   const match = /^steam_(\d+)$/.exec(userId);

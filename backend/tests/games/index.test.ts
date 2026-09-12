@@ -22,19 +22,16 @@ const syncValheimMock =
     ) => Promise<void>
   >();
 
-jest.unstable_mockModule(
-  "../../src/utils/linking/minecraftWhitelist.js",
-  () => ({
-    syncMinecraftWhitelist: syncMinecraftMock,
-  }),
-);
+jest.unstable_mockModule("../../src/games/minecraft/whitelist.js", () => ({
+  syncMinecraftWhitelist: syncMinecraftMock,
+}));
 
-jest.unstable_mockModule("../../src/utils/linking/valheimWhitelist.js", () => ({
+jest.unstable_mockModule("../../src/games/valheim/whitelist.js", () => ({
   syncValheimWhitelist: syncValheimMock,
 }));
 
 const { syncWhitelist, revokeAllWhitelistsForUser } =
-  await import("../../src/utils/linking/gameWhitelist.js");
+  await import("../../src/games/index.js");
 const { default: GameServer } = await import("../../src/models/GameServer.js");
 const { default: ServerWhitelist } =
   await import("../../src/models/ServerWhitelist.js");

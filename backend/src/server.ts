@@ -4,7 +4,7 @@ import { syncGameServers } from "./utils/gameServers/syncGameServers.js";
 import {
   verifyOnlineMinecraftLinks,
   cleanupExpiredMinecraftLinks,
-} from "./utils/linking/minecraftVerification.js";
+} from "./games/minecraft/verification.js";
 
 const PORT = Number(process.env.PORT) || 5000;
 const SYNC_ENABLED = process.env.SYNC_GAME_SERVERS !== "false";

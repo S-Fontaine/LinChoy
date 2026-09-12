@@ -6,7 +6,7 @@ import {
   stopContainer,
   startContainer,
 } from "./docker.js";
-import { runRconCommand } from "./rcon.js";
+import { getProvider } from "../../games/index.js";
 
 export type PowerAction =
   | "restart"
@@ -15,56 +15,12 @@ export type PowerAction =
   | "shutdown"
   | "start";
 
-const FETCH_TIMEOUT_MS = 5000;
-
-function palworldApiUrl(server: HydratedDocument<IGameServer>, path: string): string {
-  return `http://${server.hostInfo.address}:${server.hostInfo.port}/v1/api${path}`;
-}
-
-function palworldAuthHeader(server: HydratedDocument<IGameServer>): string {
-  return (
-    "Basic " + Buffer.from(`admin:${server.hostInfo.password}`).toString("base64")
-  );
-}
-
 async function announce(
   server: HydratedDocument<IGameServer>,
   message: string,
 ): Promise<void> {
   try {
-    const { type, containerName } = server.gameData;
-    if (type === "palworld") {
-      await fetch(palworldApiUrl(server, "/announce"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: palworldAuthHeader(server),
-        },
-        body: JSON.stringify({ message }),
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      });
-    } else if (type === "minecraft") {
-      await runRconCommand(
-        server.hostInfo.address,
-        String(server.hostInfo.port ?? ""),
-        server.hostInfo.password,
-        `say ${message}`,
-      );
-    } else if (containerName === "valheim-server") {
-      await runRconCommand(
-        server.hostInfo.address,
-        String(server.hostInfo.port ?? ""),
-        server.hostInfo.password,
-        `say ${message}`,
-      );
-    } else if (containerName === "vrising-server") {
-      await runRconCommand(
-        server.hostInfo.address,
-        String(server.hostInfo.port ?? ""),
-        server.hostInfo.password,
-        `announce ${message}`,
-      );
-    }
+    await getProvider(server.gameData.slug)?.announce?.(server, message);
   } catch (err) {
     console.warn(`[power] Annonce échouée pour ${server.name} :`, err);
   }
@@ -72,21 +28,7 @@ async function announce(
 
 async function save(server: HydratedDocument<IGameServer>): Promise<void> {
   try {
-    const { type } = server.gameData;
-    if (type === "palworld") {
-      await fetch(palworldApiUrl(server, "/save"), {
-        method: "POST",
-        headers: { Authorization: palworldAuthHeader(server) },
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      });
-    } else if (type === "minecraft") {
-      await runRconCommand(
-        server.hostInfo.address,
-        String(server.hostInfo.port ?? ""),
-        server.hostInfo.password,
-        "save-all",
-      );
-    }
+    await getProvider(server.gameData.slug)?.save?.(server);
   } catch (err) {
     console.warn(`[power] Sauvegarde échouée pour ${server.name} :`, err);
   }

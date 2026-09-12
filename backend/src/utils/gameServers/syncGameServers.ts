@@ -1,5 +1,6 @@
 import GameServer from "../../models/GameServer.js";
-import { syncGameServerData } from "./getPalworldData.js";
+import { syncGameServerData } from "../../games/palworld/data.js";
+import { getProvider } from "../../games/index.js";
 import { getContainerState } from "./docker.js";
 import { getSourceQueryStatus } from "./gameStatusProviders.js";
 import { gameServerEvents } from "./gameServerEvents.js";
@@ -86,6 +87,20 @@ export async function syncGameServers() {
       );
       const newState = status.online ? "online" : "starting";
       const newPlayerCount = status.playerCount;
+
+      const getPlayers = status.online
+        ? getProvider(server.gameData.slug)?.getPlayers
+        : undefined;
+      if (getPlayers) {
+        try {
+          status.players = await getPlayers(server);
+        } catch (err) {
+          console.warn(
+            `[sync] ${server.name} : échec de la récupération des joueurs via RCON`,
+            err,
+          );
+        }
+      }
 
       await GameServer.updateOne(
         { _id: server._id },

@@ -1,6 +1,6 @@
 import User from "../../models/User.js";
 import GameServer from "../../models/GameServer.js";
-import { revokeAllWhitelistsForUser } from "./gameWhitelist.js";
+import { revokeAllWhitelistsForUser } from "../index.js";
 
 export const MINECRAFT_LINK_TTL_MS = Number(4 * 60 * 60 * 1000);
 

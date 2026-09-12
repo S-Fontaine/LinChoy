@@ -1,17 +1,17 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import GameServer from "../../src/models/GameServer.js";
-import User from "../../src/models/User.js";
-import ServerWhitelist from "../../src/models/ServerWhitelist.js";
+import GameServer from "../../../src/models/GameServer.js";
+import User from "../../../src/models/User.js";
+import ServerWhitelist from "../../../src/models/ServerWhitelist.js";
 
 const getContainerStateMock = jest.fn<() => Promise<{ running: boolean }>>();
 
-jest.unstable_mockModule("../../src/utils/gameServers/docker.js", () => ({
+jest.unstable_mockModule("../../../src/utils/gameServers/docker.js", () => ({
   getContainerState: getContainerStateMock,
   isServerOnline: jest.fn<() => Promise<boolean>>(),
 }));
 
 const { syncGameServerData } =
-  await import("../../src/utils/gameServers/getPalworldData.js");
+  await import("../../../src/games/palworld/data.js");
 
 function jsonResponse(body: unknown, ok = true): Response {
   return {

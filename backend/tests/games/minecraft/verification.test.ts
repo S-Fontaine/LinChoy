@@ -1,8 +1,8 @@
 import { describe, it, expect } from "@jest/globals";
-import User from "../../src/models/User.js";
-import GameServer from "../../src/models/GameServer.js";
-import ServerWhitelist from "../../src/models/ServerWhitelist.js";
-import { cleanupExpiredMinecraftLinks } from "../../src/utils/linking/minecraftVerification.js";
+import User from "../../../src/models/User.js";
+import GameServer from "../../../src/models/GameServer.js";
+import ServerWhitelist from "../../../src/models/ServerWhitelist.js";
+import { cleanupExpiredMinecraftLinks } from "../../../src/games/minecraft/verification.js";
 
 const userPayload = {
   username: "linchoyTest",

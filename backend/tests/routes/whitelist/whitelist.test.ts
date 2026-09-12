@@ -3,9 +3,10 @@ import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 const revokeAllWhitelistsForUserMock = jest.fn<() => Promise<void>>();
 const syncWhitelistMock = jest.fn<(server: unknown) => Promise<void>>();
 
-jest.unstable_mockModule("../../../src/utils/linking/gameWhitelist.js", () => ({
+jest.unstable_mockModule("../../../src/games/index.js", () => ({
   syncWhitelist: syncWhitelistMock,
   revokeAllWhitelistsForUser: revokeAllWhitelistsForUserMock,
+  getProvider: jest.fn(),
 }));
 
 const { default: app } = await import("../../../src/app.js");

@@ -4,7 +4,7 @@ import { verifyAccessToken } from "../utils/auth/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { getSteamRedirectUrl, verifySteamOpenId } from "../utils/linking/steamAuth.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
+import { revokeAllWhitelistsForUser } from "../games/index.js";
 import crypto from "crypto";
 
 const router = Router();

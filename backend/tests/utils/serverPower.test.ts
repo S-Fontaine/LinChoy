@@ -7,7 +7,7 @@ const runRconCommandMock =
     (host: string, port: string, password: string, command: string) => Promise<void>
   >();
 
-jest.unstable_mockModule("../../src/utils/gameServers/rcon.js", () => ({
+jest.unstable_mockModule("../../src/games/shared/rcon.js", () => ({
   runRconCommand: runRconCommandMock,
 }));
 

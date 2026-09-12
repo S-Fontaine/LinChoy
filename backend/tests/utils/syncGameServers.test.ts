@@ -9,12 +9,14 @@ jest.unstable_mockModule("../../src/models/GameServer.js", () => ({
 
 const syncGameServerDataMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
-jest.unstable_mockModule(
-  "../../src/utils/gameServers/getPalworldData.js",
-  () => ({
-    syncGameServerData: syncGameServerDataMock,
-  }),
-);
+jest.unstable_mockModule("../../src/games/palworld/data.js", () => ({
+  syncGameServerData: syncGameServerDataMock,
+}));
+
+const getProviderMock = jest.fn<(slug: string) => unknown>();
+jest.unstable_mockModule("../../src/games/index.js", () => ({
+  getProvider: getProviderMock,
+}));
 
 const getContainerStateMock =
   jest.fn<(...args: unknown[]) => Promise<{ running: boolean }>>();
@@ -56,6 +58,7 @@ describe("Test utilitaire: syncGameServers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     updateOneMock.mockResolvedValue(undefined);
+    getProviderMock.mockReturnValue(undefined);
   });
 
   it("Délègue les serveurs Palworld à syncGameServerData", async () => {
@@ -141,6 +144,77 @@ describe("Test utilitaire: syncGameServers", () => {
           "playerInfo.playerCount": 5,
           "serverInfo.version": "1.20",
           "serverInfo.displayName": "Mon serveur",
+        }),
+      }),
+    );
+  });
+
+  it("Remplace les noms de joueurs par ceux du provider quand il expose getPlayers (Valheim via RCON)", async () => {
+    const getPlayersMock = jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue([{ id: "76561198000000000", name: "Ragnar" }]);
+    getProviderMock.mockReturnValue({ getPlayers: getPlayersMock });
+
+    findMock.mockResolvedValue([
+      makeServer({
+        gameData: {
+          type: "protocol-valve",
+          slug: "valheim",
+          containerName: "valheim-server",
+        },
+        hostInfo: { address: "192.0.2.1", port: 2458, password: "secret" },
+      }),
+    ]);
+    getContainerStateMock.mockResolvedValue({ running: true });
+    getSourceQueryStatusMock.mockResolvedValue({
+      online: true,
+      playerCount: 1,
+      players: [{ name: "" }],
+    });
+
+    await syncGameServers();
+
+    expect(getPlayersMock).toHaveBeenCalledTimes(1);
+    expect(updateOneMock).toHaveBeenCalledWith(
+      { _id: "id1" },
+      expect.objectContaining({
+        $set: expect.objectContaining({
+          "playerInfo.players": [{ id: "76561198000000000", name: "Ragnar" }],
+        }),
+      }),
+    );
+  });
+
+  it("Ignore l'échec RCON du provider et garde le statut renvoyé par la query", async () => {
+    const getPlayersMock = jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockRejectedValue(new Error("spawn mcrcon ENOENT"));
+    getProviderMock.mockReturnValue({ getPlayers: getPlayersMock });
+
+    findMock.mockResolvedValue([
+      makeServer({
+        gameData: {
+          type: "protocol-valve",
+          slug: "valheim",
+          containerName: "valheim-server",
+        },
+        hostInfo: { address: "192.0.2.1", port: 2458, password: "secret" },
+      }),
+    ]);
+    getContainerStateMock.mockResolvedValue({ running: true });
+    getSourceQueryStatusMock.mockResolvedValue({
+      online: true,
+      playerCount: 1,
+      players: [{ name: "" }],
+    });
+
+    await syncGameServers();
+
+    expect(updateOneMock).toHaveBeenCalledWith(
+      { _id: "id1" },
+      expect.objectContaining({
+        $set: expect.objectContaining({
+          "playerInfo.players": [{ name: "" }],
         }),
       }),
     );

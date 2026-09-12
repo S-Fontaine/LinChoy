@@ -5,7 +5,7 @@ import { generateVerifyToken } from "../utils/auth/jwt.js";
 import { requireAuth, type AuthRequest } from "../middlewares/auth.js";
 import { mailer } from "../utils/mailer.js";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import { revokeAllWhitelistsForUser } from "../utils/linking/gameWhitelist.js";
+import { revokeAllWhitelistsForUser } from "../games/index.js";
 
 const router = Router();
 
