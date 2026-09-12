@@ -1,6 +1,6 @@
 import { runRconCommand } from "../shared/rcon.js";
 
-const PLAYER_LINE = /^\s*\d+:\s*(.+?)\s*\((\d+)\)/;
+const PLAYER_LINE = /^(.+?)\s+Steam ID:(\d+)/;
 
 export function parseValheimPlayers(
   output: string,
