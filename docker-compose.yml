@@ -2,6 +2,8 @@ services:
   nginx:
     image: nginx:latest
     restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
     ports:
       - "80:80"
       - "443:443"
@@ -19,12 +21,16 @@ services:
       args:
         NEXT_PUBLIC_BACKEND_URL: https://api.linchoy.com
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.5
     env_file:
       - ./frontend/.env
 
   docker-proxy:
     image: tecnativa/docker-socket-proxy
     restart: unless-stopped
+    mem_limit: 64m
+    cpus: 0.25
     environment:
       CONTAINERS: 1
       POST: 0
@@ -36,6 +42,8 @@ services:
   docker-power-proxy:
     build: ./docker-power-proxy
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -44,6 +52,8 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 1.0
     env_file:
       - ./backend/.env
     environment:
@@ -60,7 +70,7 @@ services:
       - default
       - docker-proxy-net
     volumes:
-      - ${MINECRAFT_DATA_DIR}:/whitelist/minecraft-solocorp
+      - ${MINECRAFT_DATA_DIR}:/whitelist/minecraft-multicorp
       - ${VALHEIM_DATA_DIR}:/whitelist/valheim-server
 
 networks:
