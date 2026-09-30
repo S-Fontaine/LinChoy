@@ -36,6 +36,47 @@ export async function syncGameServers() {
         continue;
       }
 
+      if (server.gameData.type === "dragonwilds") {
+        let containerRunning = false;
+        try {
+          const container = await getContainerState(
+            server.gameData.containerName,
+          );
+          containerRunning = container.running;
+        } catch {
+          console.warn(
+            `[sync] ${server.name} : container "${server.gameData.containerName}" introuvable`,
+          );
+        }
+
+        const newState = containerRunning ? "online" : "offline";
+        const newPlayerCount = containerRunning
+          ? before.playerInfo.playerCount
+          : 0;
+
+        await GameServer.updateOne(
+          { _id: server._id },
+          {
+            $set: {
+              "statusInfo.state": newState,
+              "statusInfo.online": containerRunning,
+              "playerInfo.playerCount": newPlayerCount,
+              "statusInfo.lastChecked": new Date(),
+            },
+          },
+        );
+
+        const hasChanged =
+          before.statusInfo.state !== newState ||
+          before.playerInfo.playerCount !== newPlayerCount;
+
+        if (hasChanged) {
+          const updated = await GameServer.findById(server._id);
+          gameServerEvents.emit("update", updated);
+        }
+        continue;
+      }
+
       if (!server.connectionInfo.address || !server.connectionInfo.port) {
         console.warn(`[sync] ${server.name} : address/port manquant, ignoré`);
         continue;

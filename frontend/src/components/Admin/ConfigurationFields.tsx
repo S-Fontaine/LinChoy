@@ -10,7 +10,12 @@ import {
 } from "./Admin.styles";
 import type { GameServerFormValue, GameServerType } from "./types";
 
-const GAME_TYPES: GameServerType[] = ["palworld", "minecraft", "protocol-valve"];
+const GAME_TYPES: GameServerType[] = [
+  "palworld",
+  "minecraft",
+  "protocol-valve",
+  "dragonwilds",
+];
 
 export default function ConfigurationFields({
   value,

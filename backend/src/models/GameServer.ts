@@ -1,5 +1,9 @@
 import mongoose, { Schema, Types } from "mongoose";
-export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
+export type GameServerType =
+  | "palworld"
+  | "minecraft"
+  | "protocol-valve"
+  | "dragonwilds";
 export type GameServerState = "offline" | "starting" | "online";
 
 export interface IConnectionInfo {
@@ -102,7 +106,7 @@ const GameDataSchema = new Schema<IGameData>(
   {
     type: {
       type: String,
-      enum: ["palworld", "minecraft", "protocol-valve"],
+      enum: ["palworld", "minecraft", "protocol-valve", "dragonwilds"],
       required: true,
     },
     containerName: { type: String, required: true },

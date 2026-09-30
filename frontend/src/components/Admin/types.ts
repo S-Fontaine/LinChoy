@@ -1,4 +1,8 @@
-export type GameServerType = "palworld" | "minecraft" | "protocol-valve";
+export type GameServerType =
+  | "palworld"
+  | "minecraft"
+  | "protocol-valve"
+  | "dragonwilds";
 
 export type PowerAction =
   | "restart"
