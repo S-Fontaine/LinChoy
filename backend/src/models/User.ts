@@ -12,6 +12,7 @@ export interface IUser extends Document {
   favoriteServer: string | null;
   comparePassword(userPassword: string): Promise<boolean>;
   steamId: string | null;
+  ps5PalworldId: string | null;
   minecraftUuid: string | null;
   minecraftUsername: string | null;
   minecraftVerified: boolean;
@@ -88,6 +89,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  ps5PalworldId: { type: String, default: null },
   minecraftUuid: { type: String, default: null },
   minecraftUsername: { type: String, default: null },
   minecraftVerified: { type: Boolean, default: false },

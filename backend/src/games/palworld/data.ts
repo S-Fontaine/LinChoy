@@ -27,11 +27,12 @@ export interface IPalworldInfo {
 
 const FETCH_TIMEOUT_MS = 5000;
 const KICK_DELAY_MS = 500;
+const PLATFORM_PREFIXES = {
+  steamId: "steam",
+  ps5PalworldId: "ps5",
+} as const;
 
-function extractSteamId(userId: string): string | null {
-  const match = /^steam_(\d+)$/.exec(userId);
-  return match?.[1] ?? null;
-}
+type PlatformField = keyof typeof PLATFORM_PREFIXES;
 
 async function kickPlayer(
   server: HydratedDocument<IGameServer>,
@@ -56,6 +57,29 @@ async function kickPlayer(
   }
 }
 
+function normalizeUserId(userId: string): string {
+  return userId.trim().toLowerCase();
+}
+
+function buildWhitelistedUserIds(
+  entries: Array<{ user: Partial<Record<PlatformField, string | null>> | null }>,
+): Set<string> {
+  const ids = new Set<string>();
+  for (const entry of entries) {
+    if (!entry.user) continue;
+    for (const field of Object.keys(PLATFORM_PREFIXES) as PlatformField[]) {
+      const value = entry.user[field];
+      if (!value) continue;
+      const prefix = PLATFORM_PREFIXES[field];
+      const raw = value.toLowerCase().startsWith(`${prefix}_`)
+        ? value
+        : `${prefix}_${value}`;
+      ids.add(normalizeUserId(raw));
+    }
+  }
+  return ids;
+}
+
 async function kickNonWhitelistedPlayers(
   server: HydratedDocument<IGameServer>,
   players: IPalworldPlayer[],
@@ -64,16 +88,17 @@ async function kickNonWhitelistedPlayers(
 
   const entries = await ServerWhitelist.find({
     gameServer: server._id,
-  }).populate<{ user: { steamId: string | null } }>("user", "steamId");
-  const whitelistedSteamIds = new Set(
-    entries
-      .map((entry) => entry.user?.steamId)
-      .filter((id): id is string => Boolean(id)),
-  );
+  }).populate<{
+    user: { steamId: string | null; ps5PalworldId: string | null } | null;
+  }>("user", "steamId ps5PalworldId");
+
+  const whitelisted = buildWhitelistedUserIds(entries);
 
   for (const player of players) {
-    const steamId = extractSteamId(player.userId);
-    if (!steamId || !whitelistedSteamIds.has(steamId)) {
+    if (!whitelisted.has(normalizeUserId(player.userId))) {
+      console.log(
+        `[palworld-kick] Non whitelisté : ${player.name} (${player.userId})`,
+      );
       await kickPlayer(server, player.userId);
       await new Promise((resolve) => setTimeout(resolve, KICK_DELAY_MS));
     }
