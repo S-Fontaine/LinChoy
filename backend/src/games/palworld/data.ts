@@ -99,7 +99,7 @@ async function kickNonWhitelistedPlayers(
       console.log(
         `[palworld-kick] Non whitelisté : ${player.name} (${player.userId})`,
       );
-      await kickPlayer(server, player.userId);
+      // await kickPlayer(server, player.userId);
       await new Promise((resolve) => setTimeout(resolve, KICK_DELAY_MS));
     }
   }
