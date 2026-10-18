@@ -4,7 +4,8 @@ import { getContainerState } from "../../utils/gameServers/docker.js";
 import { palworldApiUrl, palworldAuthHeader } from "./api.js";
 import type { HydratedDocument } from "mongoose";
 import type { IGameServer } from "../../models/GameServer.js";
-const AUTO_KICK_ENABLED = process.env.PALWORLD_AUTO_KICK === "true";
+
+const isAutoKickEnabled = () => process.env.PALWORLD_AUTO_KICK === "true";
 
 export interface IPalworldPlayer {
   name: string;
@@ -158,7 +159,7 @@ export async function syncGameServerData() {
         | { players?: IPalworldPlayer[] }
         | IPalworldPlayer[];
       players = Array.isArray(json) ? json : json.players || [];
-      if (AUTO_KICK_ENABLED) {
+      if (isAutoKickEnabled()) {
         await kickNonWhitelistedPlayers(existing, players);
       }
     }

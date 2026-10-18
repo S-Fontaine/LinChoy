@@ -1,4 +1,11 @@
-import { jest, describe, it, expect, beforeEach } from "@jest/globals";
+import {
+  jest,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+} from "@jest/globals";
 import GameServer from "../../../src/models/GameServer.js";
 import User from "../../../src/models/User.js";
 import ServerWhitelist from "../../../src/models/ServerWhitelist.js";
@@ -171,7 +178,7 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
   });
 
   describe("Auto-kick des joueurs non whitelistés", () => {
-    it("Kick un joueur non whitelisté et laisse un joueur whitelisté tranquille", async () => {
+    async function setupServerWithWhitelistedAlice() {
       const server = await GameServer.create({
         name: "Palworld",
         gameData: {
@@ -191,65 +198,88 @@ describe("Test utilitaire: syncGameServerData (Palworld)", () => {
         gameServer: server._id,
       });
       getContainerStateMock.mockResolvedValue({ running: true });
+    }
 
-      const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
-      mockedFetch
-        .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
-        .mockResolvedValueOnce(
-          jsonResponse({
-            players: [
-              { name: "Alice", userId: "steam_76561198000000001" },
-              { name: "Intrus", userId: "steam_99999999999999999" },
-            ],
-          }),
-        )
-        .mockResolvedValueOnce(jsonResponse({}));
+    describe("quand PALWORLD_AUTO_KICK=true", () => {
+      beforeEach(() => {
+        process.env.PALWORLD_AUTO_KICK = "true";
+      });
 
-      await syncGameServerData();
+      afterEach(() => {
+        delete process.env.PALWORLD_AUTO_KICK;
+      });
 
-      expect(mockedFetch).toHaveBeenCalledTimes(3);
-      const [kickUrl, kickInit] = mockedFetch.mock.calls[2] as [
-        string,
-        RequestInit,
-      ];
-      expect(kickUrl).toContain("/kick");
-      const body = JSON.parse(kickInit.body as string);
-      expect(body.userid).toBe("steam_99999999999999999");
+      it("Kick un joueur non whitelisté et laisse un joueur whitelisté tranquille", async () => {
+        await setupServerWithWhitelistedAlice();
+
+        const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        mockedFetch
+          .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
+          .mockResolvedValueOnce(
+            jsonResponse({
+              players: [
+                { name: "Alice", userId: "steam_76561198000000001" },
+                { name: "Intrus", userId: "steam_99999999999999999" },
+              ],
+            }),
+          )
+          .mockResolvedValueOnce(jsonResponse({}));
+
+        await syncGameServerData();
+
+        expect(mockedFetch).toHaveBeenCalledTimes(3);
+        const [kickUrl, kickInit] = mockedFetch.mock.calls[2] as [
+          string,
+          RequestInit,
+        ];
+        expect(kickUrl).toContain("/kick");
+        const body = JSON.parse(kickInit.body as string);
+        expect(body.userid).toBe("steam_99999999999999999");
+      });
+
+      it("Ne kick personne si tous les joueurs sont whitelistés", async () => {
+        await setupServerWithWhitelistedAlice();
+
+        const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        mockedFetch
+          .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
+          .mockResolvedValueOnce(
+            jsonResponse({
+              players: [{ name: "Alice", userId: "steam_76561198000000001" }],
+            }),
+          );
+
+        await syncGameServerData();
+
+        expect(mockedFetch).toHaveBeenCalledTimes(2);
+      });
     });
 
-    it("Ne kick personne si tous les joueurs sont whitelistés", async () => {
-      const server = await GameServer.create({
-        name: "Palworld",
-        gameData: {
-          slug: "palworld",
-          type: "palworld",
-          containerName: "palworld-server",
-        },
+    describe("quand PALWORLD_AUTO_KICK n'est pas activé (défaut)", () => {
+      beforeEach(() => {
+        delete process.env.PALWORLD_AUTO_KICK;
       });
-      const whitelistedUser = await User.create({
-        username: "alice",
-        email: "alice@linchoy.com",
-        password: "MotDePasse123!",
-        steamId: "76561198000000001",
-      });
-      await ServerWhitelist.create({
-        user: whitelistedUser._id,
-        gameServer: server._id,
-      });
-      getContainerStateMock.mockResolvedValue({ running: true });
 
-      const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
-      mockedFetch
-        .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
-        .mockResolvedValueOnce(
-          jsonResponse({
-            players: [{ name: "Alice", userId: "steam_76561198000000001" }],
-          }),
+      it("N'envoie aucun kick, même pour un joueur non whitelisté", async () => {
+        await setupServerWithWhitelistedAlice();
+
+        const mockedFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+        mockedFetch
+          .mockResolvedValueOnce(jsonResponse({ servername: "Mon Pal" }))
+          .mockResolvedValueOnce(
+            jsonResponse({
+              players: [{ name: "Intrus", userId: "steam_99999999999999999" }],
+            }),
+          );
+
+        await syncGameServerData();
+
+        expect(mockedFetch).toHaveBeenCalledTimes(2);
+        expect(mockedFetch).not.toHaveBeenCalledWith(
+          expect.stringContaining("/kick"),
+          expect.anything(),
         );
-
-      await syncGameServerData();
-
-      expect(mockedFetch).toHaveBeenCalledTimes(2);
+      });
     });
   });
 });
