@@ -4,6 +4,7 @@ import { getContainerState } from "../../utils/gameServers/docker.js";
 import { palworldApiUrl, palworldAuthHeader } from "./api.js";
 import type { HydratedDocument } from "mongoose";
 import type { IGameServer } from "../../models/GameServer.js";
+const AUTO_KICK_ENABLED = process.env.PALWORLD_AUTO_KICK === "true";
 
 export interface IPalworldPlayer {
   name: string;
@@ -62,7 +63,9 @@ function normalizeUserId(userId: string): string {
 }
 
 function buildWhitelistedUserIds(
-  entries: Array<{ user: Partial<Record<PlatformField, string | null>> | null }>,
+  entries: Array<{
+    user: Partial<Record<PlatformField, string | null>> | null;
+  }>,
 ): Set<string> {
   const ids = new Set<string>();
   for (const entry of entries) {
@@ -99,7 +102,7 @@ async function kickNonWhitelistedPlayers(
       console.log(
         `[palworld-kick] Non whitelisté : ${player.name} (${player.userId})`,
       );
-      // await kickPlayer(server, player.userId);
+      await kickPlayer(server, player.userId);
       await new Promise((resolve) => setTimeout(resolve, KICK_DELAY_MS));
     }
   }
@@ -155,7 +158,9 @@ export async function syncGameServerData() {
         | { players?: IPalworldPlayer[] }
         | IPalworldPlayer[];
       players = Array.isArray(json) ? json : json.players || [];
-      await kickNonWhitelistedPlayers(existing, players);
+      if (AUTO_KICK_ENABLED) {
+        await kickNonWhitelistedPlayers(existing, players);
+      }
     }
 
     const info = infoRes.ok
